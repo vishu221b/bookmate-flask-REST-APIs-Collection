@@ -1,0 +1,6 @@
+from .userEmailUpdateResource import UserEmailUpdateResource
+from .userNameUpdateResource import UserNameUpdateResource
+from .userPasswordUpdateResource import UserPasswordUpdateResource
+from .userDetailsUpdateResource import UpdateUserDetails
+from .userLoginResource import Login
+from .userRegistrationResource import UserRegister
