@@ -34,6 +34,6 @@ api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/us
 
 if __name__ == "__main__":
     try:
-        application.run(host='0.0.0.0', port=8080, debug=False)
+        application.run(host='0.0.0.0', port=8080, debug=Fgit alse)
     except Exception as e:
         print("Then this happened->{}".format(e))
