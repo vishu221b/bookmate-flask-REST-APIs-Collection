@@ -4,7 +4,7 @@ from Utils import UserUtils as UserConverter
 from Utils import SecurityUtils as UserSecurity
 import Utils.TimeUtils as TimeUtils
 from service import userCreateUpdateService as UserCreateUpdateService
-import constants.userConstants as UserConstants
+import Constants.userConstants as UserConstants
 
 
 class UserRegister(Resource):
