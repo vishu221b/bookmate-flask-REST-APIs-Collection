@@ -34,9 +34,4 @@ api.add_resource(Resources.UserEmailUpdateResource, '/user/update/email', '/user
 api.add_resource(Resources.UserPasswordUpdateResource, '/user/update/password', '/user/update/password/')
 api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/user/update/username/')
 
-
-if __name__ == "__main__":
-    try:
-        application.run(port=8080, debug=False)
-    except Exception as e:
-        print("Then this happened->{}".format(e))
+application.run(port=8080, debug=False)
