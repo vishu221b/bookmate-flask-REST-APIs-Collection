@@ -19,14 +19,17 @@ except Exception as e:
 
 # ======================================all-books====================================#
 
-# api.add_resource(Resources.Books, '/books/', '/books')
-# api.add_resource(Resources.Book, '/book/', '/book', '/book/<int:b_id>')
+# api.add_resource(Resources.CreateUpdateBook, '/books/', '/books')
+# api.add_resource(Resources.CreateUpdateBook, '/book/', '/book', '/book/<str:book_id>', '/book/<str:book_id>')
 
 # ===============================User======================================= #
 
 api.add_resource(Resources.UserRegister, '/', '/user/register', '/user/register/')
 api.add_resource(Resources.Login, '/user/login', '/user/login/')
-api.add_resource(Resources.UpdateUserDetails, '/user/update/details', '/user/update/details/', '/user/<string:user_email>')
+api.add_resource(Resources.UpdateUserDetails,
+                 '/user/update/details',
+                 '/user/update/details/',
+                 '/user/<string:user_email>')
 api.add_resource(Resources.UserEmailUpdateResource, '/user/update/email', '/user/update/email/')
 api.add_resource(Resources.UserPasswordUpdateResource, '/user/update/password', '/user/update/password/')
 api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/user/update/username/')
@@ -34,6 +37,6 @@ api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/us
 
 if __name__ == "__main__":
     try:
-        application.run(host='0.0.0.0', port=8080, debug=False)
+        application.run(port=8080, debug=False)
     except Exception as e:
         print("Then this happened->{}".format(e))
