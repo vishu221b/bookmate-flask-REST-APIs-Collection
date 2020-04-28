@@ -34,4 +34,4 @@ api.add_resource(Resources.UserEmailUpdateResource, '/user/update/email', '/user
 api.add_resource(Resources.UserPasswordUpdateResource, '/user/update/password', '/user/update/password/')
 api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/user/update/username/')
 
-application.run(debug=False)
+# application.run(debug=False)
