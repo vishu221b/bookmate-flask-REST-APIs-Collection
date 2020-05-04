@@ -1,9 +1,10 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_restful import Api
 import hashlib
 from flask_jwt_extended import JWTManager, jwt_required
 import Resources
 import DB
+from flask_swagger_ui import get_swaggerui_blueprint
 
 
 application = Flask(__name__)
@@ -11,6 +12,19 @@ application.config['JWT_SECRET_KEY'] = hashlib.sha3_512("S3c|eT@K3Y".encode()).h
 application.config['JWT_ACCESS_TOKEN_EXPIRES'] = 60 * 60
 application.config['PROPAGATE_EXCEPTIONS'] = True
 api = Api(application)
+
+SWAGGER_URL = "/def"
+API_URL_SWAG = "/static/swagger.json"
+
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL_SWAG,
+    config={
+        "app_name": "BUKME"
+    }
+)
+
+application.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 jwt = JWTManager(application)
 try:
     DB.global_mongo_init()
@@ -19,7 +33,7 @@ except Exception as e:
 
 # ======================================all-books====================================#
 
-# api.add_resource(Resources.CreateUpdateBook, '/books/', '/books')
+api.add_resource(Resources.BookCreateUpdateResource, '/book/create/', '/book/create')
 # api.add_resource(Resources.CreateUpdateBook, '/book/', '/book', '/book/<str:book_id>', '/book/<str:book_id>')
 
 # ===============================User======================================= #
@@ -35,8 +49,13 @@ api.add_resource(Resources.UserPasswordUpdateResource, '/user/update/password', 
 api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/user/update/username/')
 
 
+@application.route('/static/<path>')
+def swag_route(path):
+    return send_from_directory('static', path)
+
+
 if __name__ == "__main__":
     try:
-        application.run(port=8080, debug=False)
+        application.run(port=5000, debug=False)
     except Exception as e:
         print("Then this happened->{}".format(e))

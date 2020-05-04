@@ -103,7 +103,6 @@ def delete_user(curr_user, email):
 
 
 def update_password(user, old_password, new_password):
-
     if not UserUtils.validate_length(
             old_password, 8) or not UserUtils.validate_length(new_password, 8):
         return [{'error': 'Please check the length of your input.',

@@ -2,29 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c7fb4778-dd5a-4a10-998d-3356dcbd1a23" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/Book-Management-System.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Constants/BookConstants.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Constants/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Resources/books/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Resources/books/bookCreateUpdate.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/service/bookCreateUpdateService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Constants/BookConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/Constants/BookConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dao/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dao/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dao/book.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dao/user.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dao/userDAO.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dao/userDAO.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Models/book.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models/book.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/users/userDetailsUpdateResource.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/users/userDetailsUpdateResource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/users/userEmailUpdateResource.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/users/userEmailUpdateResource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/users/userNameUpdateResource.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/users/userNameUpdateResource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/users/userPasswordUpdateResource.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/users/userPasswordUpdateResource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/users/userRegistrationResource.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/users/userRegistrationResource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/UserUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/UserUtils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/Models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/books/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/books/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/books/bookCreateUpdate.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/books/bookCreateUpdateResource.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application.py" beforeDir="false" afterPath="$PROJECT_DIR$/application.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants/userConstants.py" beforeDir="false" afterPath="$PROJECT_DIR$/Constants/userConstants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/bookCreateUpdateService.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/bookCreateUpdateService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/userCreateUpdateService.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/userCreateUpdateService.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,6 +75,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="application" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Book-Management-System" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Vishal\.ebcli-virtual-env\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/application.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.application" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -98,27 +115,42 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="WindowStateProjectService">
     <state x="137" y="19" width="1092" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1585721410555">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="137" y="19" width="1092" height="706" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1585721410555" />
-    <state width="1345" height="405" key="GridCell.Tab.0.bottom" timestamp="1588031179456">
+    <state x="413" y="111" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1588482368543">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="405" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1588031179456" />
-    <state width="1345" height="405" key="GridCell.Tab.0.center" timestamp="1588031179455">
+    <state x="413" y="111" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1366.728@0.0.1366.728" timestamp="1588482368543" />
+    <state width="1345" height="210" key="GridCell.Tab.0.bottom" timestamp="1588557957882">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="405" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1588031179455" />
-    <state width="1345" height="405" key="GridCell.Tab.0.left" timestamp="1588031179455">
+    <state width="1345" height="210" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1588557957882" />
+    <state width="1345" height="210" key="GridCell.Tab.0.center" timestamp="1588557957882">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="405" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1588031179455" />
-    <state width="1345" height="405" key="GridCell.Tab.0.right" timestamp="1588031179455">
+    <state width="1345" height="210" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1588557957882" />
+    <state width="1345" height="210" key="GridCell.Tab.0.left" timestamp="1588557957882">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="405" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1588031179455" />
+    <state width="1345" height="210" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1588557957882" />
+    <state width="1345" height="210" key="GridCell.Tab.0.right" timestamp="1588557957882">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1345" height="210" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1588557957882" />
     <state x="184" y="6" key="SettingsEditor" timestamp="1585721439603">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -127,5 +159,19 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="379" y="188" key="com.intellij.ide.util.TipDialog/0.0.1366.728@0.0.1366.728" timestamp="1588027627373" />
+    <state x="379" y="0" width="607" height="728" key="find.popup" timestamp="1588474365644">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="379" y="0" width="607" height="728" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1588474365644" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Resources/users/userLoginResource.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

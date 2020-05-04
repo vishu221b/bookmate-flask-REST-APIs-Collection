@@ -1,1 +1,1 @@
-from .bookCreateUpdate import CreateUpdateBook
+from .bookCreateUpdateResource import BookCreateUpdateResource

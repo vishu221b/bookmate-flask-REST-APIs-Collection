@@ -11,7 +11,7 @@ class User(meng.Document):
     email = meng.EmailField(required=True, unique=True)
     username = meng.StringField(required=True, unique=True)
     password = meng.StringField(required=True)
-    last_updated_at = meng.DateTimeField()
+    last_updated_at = meng.DateTimeField(default=datetime.datetime.now)
     is_admin = meng.BooleanField(default=False)
     is_active = meng.BooleanField(default=True)
     fav_books = meng.ListField(default=[])
