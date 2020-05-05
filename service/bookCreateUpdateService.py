@@ -44,6 +44,20 @@ class BookCreateUpdateService:
         except Exception as e:
             return {'error': e.args}
 
+    @staticmethod
+    def restore_book(book_id, owner):
+        validate = validate_book_id(book_id)
+        if validate['error']:
+            return validate['response'][0], validate['response'][1]
+        verify_status = verify_delete(book_id)
+        if not verify_status:
+            return {'error': 'Book is already active.'}, 409
+        book = BookDAO.find_active_inactive_book_by_id(book_id)
+        if book.created_by == owner:
+            response = BookDAO.restore_inactive_book(book_id)
+            return response
+        return {'error': 'Books can be restored only by their respective owners.'}, 403
+
 
 def verify_delete(book_id):
     fresh_book = BookDAO.find_active_inactive_book_by_id(book_id)

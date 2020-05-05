@@ -60,6 +60,16 @@ class BookDAO:
         return response
 
     @staticmethod
+    def restore_inactive_book(book_id):
+        try:
+            book = Models.Book.objects(pk=str(book_id)).first()
+            book.is_active = True
+            book.save()
+            return {'response': 'Book was successfully restored.'}, 200
+        except Exception as e:
+            return {'error': e.args}, 500
+
+    @staticmethod
     def find_by_created_by_user(email):
         all_books = []
         books = Models.Book.objects(created_by=email)
