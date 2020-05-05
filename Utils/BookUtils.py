@@ -1,4 +1,4 @@
-from Constants.BookConstants import MANDATORY_FIELDS_FOR_CREATION, REQUEST_FIELDS_FOR_CREATE_UPDATE
+from Constants.BookConstants import MANDATORY_FIELDS_FOR_CREATION, REQUEST_FIELDS_FOR_CREATION
 import Models
 import json
 

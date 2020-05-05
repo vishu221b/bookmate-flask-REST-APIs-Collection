@@ -1,6 +1,7 @@
 import Models
 import datetime
 from Utils import BookUtils
+from Constants.BookConstants import REQUEST_FIELDS_FOR_UPDATE
 
 
 class BookDAO:
@@ -27,13 +28,44 @@ class BookDAO:
         return {'response': 'Book can only be deleted by it\'s owner.'}, 403
 
     @staticmethod
+    def update_book_by_id(req_book):
+        book = BookDAO.find_active_inactive_book_by_id(req_book['id'])
+        if not book.is_active:
+            return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
+        up_book = BookUtils.book_dto(book)
+        for field in REQUEST_FIELDS_FOR_UPDATE:
+            if field != "id" and req_book[field] and len(req_book[field].strip()) > 0:
+                up_book[field] = req_book[field]
+        validated_existence = BookDAO.find_by_name_author_genre(up_book)
+        book_by_barcode = BookDAO.get_by_barcode(up_book['barcode'])
+        if validated_existence and BookUtils.book_dto(validated_existence)['id'] != req_book['id']:
+            return {'error': 'Book with the same name already exists for this author.'}, 409
+        if up_book['barcode']\
+                and len(up_book['barcode'].strip()) > 1\
+                and book_by_barcode and BookUtils.book_dto(book_by_barcode)['id'] != req_book['id']:
+            return {'error': 'Another book with the same barcode already exists. Please use a fresh barcode.'}, 409
+        book.name = up_book['name']
+        book.summary = up_book['summary']
+        book.genre = up_book['genre']
+        book.barcode = up_book['barcode']
+        book.author = up_book['author']
+        book.last_updated_at = datetime.datetime.now()
+        book.save()
+        response = {
+                       'response': {
+                           'Success': 'Book Sucessfully updated.',
+                           'book': BookUtils.book_dto(book)
+                       }
+                   }, 200
+        return response
+
+    @staticmethod
     def find_by_created_by_user(email):
         all_books = []
         books = Models.Book.objects(created_by=email)
         for book in books:
             all_books.append(BookUtils.book_dto(book))
         return all_books
-
 
     @staticmethod
     def find_all_active_books():
@@ -53,4 +85,9 @@ class BookDAO:
     @staticmethod
     def find_active_inactive_book_by_id(book_id):
         book = Models.Book.objects(pk=str(book_id)).first()
+        return book
+
+    @staticmethod
+    def get_by_barcode(barcode):
+        book = Models.Book.objects(barcode=barcode).first()
         return book

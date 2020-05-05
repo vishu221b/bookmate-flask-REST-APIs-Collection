@@ -1,14 +1,20 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Constants import REQUEST_FIELDS_FOR_CREATE_UPDATE, MANDATORY_FIELDS_FOR_CREATION
+from Constants import REQUEST_FIELDS_FOR_CREATION, REQUEST_FIELDS_FOR_UPDATE
 from service.bookCreateUpdateService import BookCreateUpdateService
 from Utils.BookUtils import validate_incoming_request_dto
 
 
 class BookCreateUpdateResource(Resource):
     creation_parser = reqparse.RequestParser()
-    for field in REQUEST_FIELDS_FOR_CREATE_UPDATE:
+    for field in REQUEST_FIELDS_FOR_CREATION:
         creation_parser.add_argument(field)
+
+    updation_parser = reqparse.RequestParser()
+    for field in REQUEST_FIELDS_FOR_UPDATE:
+        updation_parser.add_argument(field,
+                                     required=True if field == "id" else False,
+                                     help=f"{field} is a mandatory field.")
 
     @jwt_required
     def post(self):
@@ -26,10 +32,10 @@ class BookCreateUpdateResource(Resource):
         return response
 
     @jwt_required
-    def put(self, book_id):
-        request = reqparse.RequestParser().parse_args()
-        # Update book through service
-        return
+    def put(self):
+        request = BookCreateUpdateResource.updation_parser.parse_args()
+        response = BookCreateUpdateService.update_book(request)
+        return response
 
     @jwt_required
     def delete(self, book_id):

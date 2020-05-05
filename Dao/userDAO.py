@@ -19,6 +19,7 @@ class UserDAO:
         users = Models.User.objects()
         return users
 # #----------------------------Email------------------------------------------
+
     @staticmethod
     def get_active_inactive_single_user_by_email(email):
         user_instance = Models.User.objects(email=email).first()
@@ -29,6 +30,7 @@ class UserDAO:
         user_instance = Models.User.objects(email=email, is_active=True).first()
         return user_instance
 # #----------------------------Username----------------------------------------
+
     @staticmethod
     def get_active_user_by_username(username):
         user_instance = Models.User.objects(username=username, is_active=True).first()
@@ -39,6 +41,7 @@ class UserDAO:
         user_instance = Models.User.objects(username=username).first()
         return user_instance
 # #----------------------------------------------------------------------------
+
     @staticmethod
     def get_user_by_id(uid):
         try:
