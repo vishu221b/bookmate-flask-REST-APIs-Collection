@@ -18,18 +18,24 @@ class BookCreateUpdateResource(Resource):
 
     @jwt_required
     def post(self):
-        request = BookCreateUpdateResource.creation_parser.parse_args()
-        validate = validate_incoming_request_dto(request)
-        if not validate:
-            user = get_jwt_identity()
-            response = BookCreateUpdateService.create_new_book(request, user['email'])
-            return response
-        return validate
+        try:
+            request = BookCreateUpdateResource.creation_parser.parse_args()
+            validate = validate_incoming_request_dto(request)
+            if not validate:
+                user = get_jwt_identity()
+                response = BookCreateUpdateService.create_new_book(request, user['email'])
+                return response
+            return validate
+        except Exception as e:
+            return {'error': e.args}, 500
 
     @jwt_required
     def get(self):
-        response = BookCreateUpdateService.get_books_for_user(get_jwt_identity())
-        return response
+        try:
+            response = BookCreateUpdateService.get_books_for_user(get_jwt_identity())
+            return response
+        except Exception as e:
+            return {'error': e.args}, 500
 
     @jwt_required
     def put(self):
@@ -50,4 +56,4 @@ class BookCreateUpdateResource(Resource):
             response = BookCreateUpdateService.restore_book(book_id, user['email'])
             return response
         except Exception as e:
-            return {'error': e.args}, 404
+            return {'error': e.args}, 500

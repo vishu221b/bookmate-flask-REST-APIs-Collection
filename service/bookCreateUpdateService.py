@@ -1,4 +1,5 @@
 from Dao.bookDAO import BookDAO
+from Utils.BookUtils import book_dto
 
 
 class BookCreateUpdateService:
@@ -31,7 +32,9 @@ class BookCreateUpdateService:
     @staticmethod
     def get_books_for_user(user):
         books = BookDAO.find_by_created_by_user(user['email'])
-        return {'response': books}, 200
+        if books and len(books) > 0:
+            return {'response': books}, 200
+        return {'error': 'No books have been added yet.'}, 404
 
     @staticmethod
     def update_book(book):
@@ -42,7 +45,7 @@ class BookCreateUpdateService:
             response = BookDAO.update_book_by_id(book)
             return response
         except Exception as e:
-            return {'error': e.args}
+            return {'error': e.args}, 500
 
     @staticmethod
     def restore_book(book_id, owner):
@@ -57,6 +60,16 @@ class BookCreateUpdateService:
             response = BookDAO.restore_inactive_book(book_id)
             return response
         return {'error': 'Books can be restored only by their respective owners.'}, 403
+
+    @staticmethod
+    def get_all_books():
+        all_books = BookDAO.find_all_active_books()
+        response = []
+        if not all_books:
+            return {'error': 'No active books found in the repository.'}, 404
+        for book in all_books:
+            response.append(book_dto(book))
+        return response, 200
 
 
 def verify_delete(book_id):

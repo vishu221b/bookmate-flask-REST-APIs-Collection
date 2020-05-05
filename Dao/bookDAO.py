@@ -54,7 +54,7 @@ class BookDAO:
         response = {
                        'response': {
                            'Success': 'Book Sucessfully updated.',
-                           'book': BookUtils.book_dto(book)
+                           'updated_book': BookUtils.book_dto(book)
                        }
                    }, 200
         return response
@@ -64,6 +64,7 @@ class BookDAO:
         try:
             book = Models.Book.objects(pk=str(book_id)).first()
             book.is_active = True
+            book.last_updated_at = datetime.datetime.now()
             book.save()
             return {'response': 'Book was successfully restored.'}, 200
         except Exception as e:

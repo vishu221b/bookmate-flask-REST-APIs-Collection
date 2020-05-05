@@ -1,7 +1,7 @@
 from flask import Flask, send_from_directory
 from flask_restful import Api
 import hashlib
-from flask_jwt_extended import JWTManager, jwt_required
+from flask_jwt_extended import JWTManager
 import Resources
 import DB
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -34,7 +34,7 @@ except Exception as e:
 # ======================================all-books====================================#
 
 api.add_resource(Resources.BookCreateUpdateResource, '/book/', '/book', '/book/<book_id>/', '/book/<book_id>')
-# api.add_resource(Resources.CreateUpdateBook, '/book/', '/book', '/book/<str:book_id>', '/book/<str:book_id>')
+api.add_resource(Resources.AllBookResource, '/book/all/', '/book/all')
 
 # ===============================User======================================= #
 
