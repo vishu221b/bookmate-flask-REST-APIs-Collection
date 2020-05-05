@@ -27,6 +27,15 @@ class BookDAO:
         return {'response': 'Book can only be deleted by it\'s owner.'}, 403
 
     @staticmethod
+    def find_by_created_by_user(email):
+        all_books = []
+        books = Models.Book.objects(created_by=email)
+        for book in books:
+            all_books.append(BookUtils.book_dto(book))
+        return all_books
+
+
+    @staticmethod
     def find_all_active_books():
         books = Models.Book.objects(is_active=True)
         return books

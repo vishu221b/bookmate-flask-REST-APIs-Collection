@@ -21,9 +21,9 @@ class BookCreateUpdateResource(Resource):
         return validate
 
     @jwt_required
-    def get(self, book_id):
-        # Get book through service
-        return
+    def get(self):
+        response = BookCreateUpdateService.get_books_for_user(get_jwt_identity())
+        return response
 
     @jwt_required
     def put(self, book_id):

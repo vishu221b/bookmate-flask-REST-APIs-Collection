@@ -26,6 +26,11 @@ class BookCreateUpdateService:
             print(e.__cause__)
             return {'error': e.args}
 
+    @staticmethod
+    def get_books_for_user(user):
+        books = BookDAO.find_by_created_by_user(user['email'])
+        return {'response': books}, 200
+
 
 def verify_delete(book_id):
     fresh_book = BookDAO.find_active_inactive_book_by_id(book_id)
