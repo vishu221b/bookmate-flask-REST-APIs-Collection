@@ -33,5 +33,6 @@ class BookCreateUpdateResource(Resource):
 
     @jwt_required
     def delete(self, book_id):
-        # Delete book through service
-        return
+        user = get_jwt_identity()
+        response = BookCreateUpdateService.delete_book(book_id, user['email'])
+        return response

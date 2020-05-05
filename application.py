@@ -33,7 +33,7 @@ except Exception as e:
 
 # ======================================all-books====================================#
 
-api.add_resource(Resources.BookCreateUpdateResource, '/book/create/', '/book/create')
+api.add_resource(Resources.BookCreateUpdateResource, '/book/', '/book', '/book/<book_id>/', '/book/<book_id>')
 # api.add_resource(Resources.CreateUpdateBook, '/book/', '/book', '/book/<str:book_id>', '/book/<str:book_id>')
 
 # ===============================User======================================= #
