@@ -57,10 +57,3 @@ def index():
 @application.route('/static/<path>')
 def swag_route(path):
     return send_from_directory('static', path)
-
-
-if __name__ == "__main__":
-    try:
-        application.run(port=5000, debug=False)
-    except Exception as e:
-        print("Then this happened->{}".format(e))
