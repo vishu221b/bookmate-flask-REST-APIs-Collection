@@ -1,0 +1,562 @@
+openapi: 3.0.1
+info:
+  title: Bookme
+  description: 'This is a basic flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code and documentation for this app
+    here [BookMeApp](https://github.com/vishu221b/bukme-REST-APIs) .'
+  termsOfService: https://github.com/vishu221b/bukme-REST-APIs
+  contact:
+    email: vishal.dogra738@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: userops
+  description: Operations about user
+  externalDocs:
+    description: Find out more
+    url: http://swagger.io
+- name: book
+  description: Access to book operations
+paths:
+  /user/register:
+    post:
+      tags:
+      - userops
+      summary: Registers a new user
+      operationId: registerNewUser
+      requestBody:
+        description: User details body for registration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRegistration'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userLogin'
+        404:
+          description: Bad Request Input
+    get:
+      tags:
+      - userops
+      summary: Get all active users
+      operationId: getAllActiveUsers
+      responses:
+        200:
+          description: Success
+        404:
+          description: Not found
+        500:
+          description: Internal sever error
+  /user/login:
+    post:
+      tags:
+      - userops
+      summary: Generates a session token for the user
+      operationId: createUsersWithListInput
+      requestBody:
+        description: User Credentials
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/userLogin'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userLoginResponse'
+        400:
+          description: Bad request
+    get:
+      tags:
+      - userops
+      summary: Fetch the details of the logged in user
+      operationId: loggedInUserDetailsFetch
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/userLogin'
+        400:
+          description: Bad request
+      security:
+      - bearerAuth: []
+  /user/update/details:  
+    put:
+      tags:
+      - userops
+      summary: Update user details
+      description: Update user details for the logged in user.
+      operationId: updateUserDetails
+      requestBody:
+        description: User details update request body
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/userGeneralDetailsUpdate'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              'schema':
+                $ref: '#/components/schemas/userGeneralDetailsUpdateResponse'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+      security:
+      - bearerAuth: []
+  /user/{user-email}:
+    delete:
+      tags:
+      - userops
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - name: user-email
+        in: path
+        description: The email of the user that needs to be deleted
+        required: true
+        schema:
+          type: string
+          format: email
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+        404:
+          description: User not found
+      security:
+        - bearerAuth: []
+  /user/update/email:
+    patch:
+      tags:
+      - userops
+      summary: Updates user email
+      operationId: updateUserEmail
+      requestBody:
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userEmailUpdate'
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+      security:
+        - bearerAuth: []
+  /user/update/username:
+    patch:
+      tags:
+      - userops
+      summary: Updates username for the user
+      operationId: updateUserName
+      requestBody:
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userNameUpdate'
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+      security:
+        - bearerAuth: []
+  /user/update/password:
+    patch:
+      tags:
+      - userops
+      summary: Updates user password
+      operationId: updateUserPassword
+      requestBody:
+        required: True
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/passwordUpdate'
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+      security:
+        - bearerAuth: []
+  /books/all:
+    get:
+      tags:
+      - book
+      summary: Returns all the active books for all users
+      description: Returns a list of all the currently active books
+      operationId: getActiveBooksForAllUsers
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateBookResponse'
+      security:
+      - bearerAuth: []
+  /book:
+    get:
+      tags:
+      - book
+      summary: Returns all the books for the current user
+      description: Returns a list of active/inactive books for the current user
+      operationId: getBooksForCurrentUser
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateBookResponse'
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - book
+      summary: Creates a new book
+      operationId: createBook
+      requestBody:
+        description: Book details
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBookResponse'
+        400:
+          description: Invalid Order
+          content: {}
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - book
+      summary: Update book details
+      description: Update book details for the book with id.
+      operationId: updateBookDetails
+      requestBody:
+        description: Update book request details
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/UpdateBookRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              'schema':
+                $ref: '#/components/schemas/UpdateBookResponse'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+      security:
+      - bearerAuth: []
+  /book/{bookId}:
+    patch:
+      tags:
+      - book
+      summary: Restore deleted book by ID
+      description: For valid response enter valid book ID with length 24 
+      operationId: restoreBookById
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of book that needs to be restored
+        required: true
+        schema:
+          type: string
+          format: hexadecimal
+      responses:
+        200:
+          description: Book successfully restored
+        400:
+          description: Invalid ID supplied
+        403:
+          description: Access forbidden
+        404:
+          description: Not found
+        409:
+          description: Book already active
+        500:
+          description: Unexpected error
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+      - book
+      summary: Delete book by ID
+      description: For valid response enter valid book ID with length 24 
+      operationId: deleteBookById
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of book that needs to be deleted
+        required: true
+        schema:
+          type: string
+          format: hexadecimal
+      responses:
+        200:
+          description: Book successfully deleted
+        400:
+          description: Invalid ID supplied
+        403:
+          description: Access forbidden
+        404:
+          description: Not found
+        409:
+          description: Book already deleted
+        500:
+          description: Unexpected error
+      security:
+      - bearerAuth: []
+  
+components:
+  schemas:
+    userRegistration:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        phone_number:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+      required: [first_name, date_of_birth, phone_number, email, username,password]
+    userLogin:
+      type: object
+      properties:
+        email/usernamme:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+    userGeneralDetailsUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        phone_number:
+          type: string
+        email:
+          type: string
+          format: email
+      required :
+      - email
+    userEmailUpdate:
+      type: object
+      properties:
+        oldEmail:
+          type: string
+          format: email
+        newEmail:
+          type: string
+          format: email
+      required: [oldEmail, newEmail]
+    userNameUpdate:
+      type: object
+      properties:
+        oldUsername:
+          type: string
+        newUsername:
+          type: string
+      required: [oldUsername, newUsername]
+    passwordUpdate:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+      required:
+      - oldPassword
+      - newPassword
+    CreateBookRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        summary:
+          type: string
+        barcode:
+          type: string
+      required: [name, author, genre]
+    UpdateBookRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        summary:
+          type: string
+        barcode:
+          type: string
+      required: [id]
+    userRegistrationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        phone_number:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+    userLoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+    userGeneralDetailsUpdateResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            updatedUser:
+              type: object
+              properties:
+                id:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                date_of_birth:
+                  type: string
+                  format: date-time
+                phone_number:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                is_active:
+                  type: boolean
+                created_at:
+                  type: string
+                  format: date-time
+    
+    CreateBookResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: hexadecimal
+        book_name:
+          type: string
+        author:
+          type: string
+        book_genre:
+          type: string
+        summary:
+          type: string
+        barcode:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: email
+        last_updated_at:
+          type: string
+          format: date-time
+        last_updated_by:
+          type: string
+          format: email
+        is_active:
+          type: boolean
+    UpdateBookResponse:
+      type: object
+      properties:
+        response:
+          type: object
+          properties:
+            Success: 
+              type: string
+            book:
+              $ref: '#/components/schemas/CreateBookResponse'
+      description: Success response on book updation
+    
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
