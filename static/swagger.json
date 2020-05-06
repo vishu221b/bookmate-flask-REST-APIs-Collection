@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Bookme",
-    "description": "This is a simple flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code for this app at [/vishu221b/BookMeApp](https://github.com/vishu221b/bukme-REST-APIs) .      For this sample, you can use the api key `special-key` to test the authorization     filters.",
+    "description": "This is a basic flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code and documentation for this app here [BookMeApp](https://github.com/vishu221b/bukme-REST-APIs) .",
     "termsOfService": "https://github.com/vishu221b/bukme-REST-APIs",
     "contact": {
       "email": "vishal.dogra738@gmail.com"
@@ -12,10 +12,6 @@
       "url": "https://opensource.org/licenses/MIT"
     },
     "version": "1.0.0"
-  },
-  "externalDocs": {
-    "description": "Find out more about Swagger",
-    "url": "http://swagger.io"
   },
   "servers": [
     {
@@ -87,12 +83,7 @@
           "500": {
             "description": "Internal sever error"
           }
-        },
-        "security": [
-          {
-            "beareAuth": []
-          }
-        ]
+        }
       }
     },
     "/user/login": {
@@ -158,7 +149,9 @@
             "bearerAuth": []
           }
         ]
-      },
+      }
+    },
+    "/user/update/details": {
       "put": {
         "tags": [
           "userops"
@@ -183,7 +176,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/userRegistrationResponse"
+                  "$ref": "#/components/schemas/userGeneralDetailsUpdateResponse"
                 }
               }
             }
@@ -223,6 +216,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "Success"
+          },
           "400": {
             "description": "Invalid input supplied"
           },
@@ -324,6 +320,36 @@
           },
           "400": {
             "description": "Invalid input supplied"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/books/all": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Returns all the active books for all users",
+        "description": "Returns a list of all the currently active books",
+        "operationId": "getActiveBooksForAllUsers",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreateBookResponse"
+                  }
+                }
+              }
+            }
           }
         },
         "security": [
@@ -451,7 +477,7 @@
         ],
         "summary": "Restore deleted book by ID",
         "description": "For valid response enter valid book ID with length 24",
-        "operationId": "getOrderById",
+        "operationId": "restoreBookById",
         "parameters": [
           {
             "name": "bookId",
@@ -511,7 +537,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Book successfully restored"
+            "description": "Book successfully deleted"
           },
           "400": {
             "description": "Invalid ID supplied"
@@ -523,7 +549,7 @@
             "description": "Not found"
           },
           "409": {
-            "description": "Book already active"
+            "description": "Book already deleted"
           },
           "500": {
             "description": "Unexpected error"
@@ -732,7 +758,8 @@
             "type": "string"
           },
           "email": {
-            "type": "string"
+            "type": "string",
+            "format": "email"
           },
           "username": {
             "type": "string"
@@ -751,6 +778,51 @@
         "properties": {
           "access_token": {
             "type": "string"
+          }
+        }
+      },
+      "userGeneralDetailsUpdateResponse": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "object",
+            "properties": {
+              "updatedUser": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "date_of_birth": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "phone_number": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "is_active": {
+                    "type": "boolean"
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
           }
         }
       },
