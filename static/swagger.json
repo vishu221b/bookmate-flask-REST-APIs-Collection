@@ -1,13 +1,21 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.0.1",
   "info": {
-    "description": "Bookme app - by Vishal Dogra",
-    "version": "1.0.0",
     "title": "Bookme",
+    "description": "This is a simple flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code for this app at [/vishu221b/BookMeApp](https://github.com/vishu221b/bukme-REST-APIs) .      For this sample, you can use the api key `special-key` to test the authorization     filters.",
+    "termsOfService": "https://github.com/vishu221b/bukme-REST-APIs",
+    "contact": {
+      "email": "vishal.dogra738@gmail.com"
+    },
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
-    }
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
   },
   "servers": [
     {
@@ -16,302 +24,803 @@
   ],
   "tags": [
     {
-      "name": "User Operations",
-      "description": "APIs for requesting and return user requests"
-    }, {
-      "name": "Book Request",
-      "description": "Example API for requesting and return book requests"
+      "name": "userops",
+      "description": "Operations about user",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://swagger.io"
+      }
+    },
+    {
+      "name": "book",
+      "description": "Access to book operations"
     }
   ],
   "paths": {
     "/user/register": {
-      "get": {
-        "tags": [
-          "User Operations"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "summary": "Returns all active users",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/singleUserRequest"
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
-          "User Operations"
+          "userops"
         ],
-        "summary": "Registers a new user.",
-        "parameters": [{
-          "in": "body",
-          "name": "body",
-          "required": true,
-          "description": "User Registeration Request Body",
-          "schema": {
-            "type": "object",
-            "$ref": "#/components/schemas/userRegisterationRequestBody"
-          }
-        }],
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "201": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/individualUserDetailsResponseBody"
+        "summary": "Registers a new user",
+        "operationId": "registerNewUser",
+        "requestBody": {
+          "description": "User details body for registration",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userRegistration"
+              }
             }
           },
-          "400": {
-            "description": "Bad Request. Please check the details passed in your Request Body."
-          }
-        }
-      }
-    },
-    "/request/{id}": {
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "description": "ID of the cat that we want to match",
-          "type": "string"
-        }
-      ],
-      "get": {
-        "tags": [
-          "Book Request"
-        ],
-        "summary": "Get book request with given ID",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "description": "Book Request id",
-            "schema": {
-              "$ref": "#/components/schemas/id"
-            }
-          }
-        ],
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/bookRequest"
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userLogin"
+                }
+              }
             }
           },
-          "400": {
-            "description": "Failed. Misunderstood Request."
-          },
           "404": {
-            "description": "Failed. Book request not found."
+            "description": "Bad Request Input"
           }
         }
       },
-      "put": {
-        "summary": "edit a book request by ID",
+      "get": {
         "tags": [
-          "Book Request"
+          "userops"
         ],
+        "summary": "Get all active users",
+        "operationId": "getAllActiveUsers",
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal sever error"
+          }
+        },
+        "security": [
+          {
+            "beareAuth": []
+          }
+        ]
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Generates a session token for the user",
+        "operationId": "createUsersWithListInput",
+        "requestBody": {
+          "description": "User Credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userLoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Fetch the details of the logged in user",
+        "operationId": "loggedInUserDetailsFetch",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/userLogin"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Update user details",
+        "description": "Update user details for the logged in user.",
+        "operationId": "updateUserDetails",
+        "requestBody": {
+          "description": "User details update request body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userGeneralDetailsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/userRegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/{user-email}": {
+      "delete": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Delete user",
+        "description": "This can only be done by the logged in user.",
+        "operationId": "deleteUser",
         "parameters": [
           {
+            "name": "user-email",
             "in": "path",
-            "name": "id",
+            "description": "The email of the user that needs to be deleted",
             "required": true,
-            "description": "Book Request id",
             "schema": {
-              "$ref": "#/components/schemas/id"
+              "type": "string",
+              "format": "email"
             }
           }
         ],
+        "responses": {
+          "400": {
+            "description": "Invalid input supplied"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/update/email": {
+      "patch": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Updates user email",
+        "operationId": "updateUserEmail",
         "requestBody": {
-          "description": "Book Request Object",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/bookRequest"
+                "$ref": "#/components/schemas/userEmailUpdate"
               }
             }
           }
         },
-        "produces": [
-          "application/json"
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input supplied"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/update/username": {
+      "patch": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Updates username for the user",
+        "operationId": "updateUserName",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/userNameUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input supplied"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/update/password": {
+      "patch": {
+        "tags": [
+          "userops"
+        ],
+        "summary": "Updates user password",
+        "operationId": "updateUserPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/passwordUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid input supplied"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/book": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Returns all the books for the current user",
+        "description": "Returns a list of active/inactive books for the current user",
+        "operationId": "getBooksForCurrentUser",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CreateBookResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Creates a new book",
+        "operationId": "createBook",
+        "requestBody": {
+          "description": "Book details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateBookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Order",
+            "content": {}
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Update book details",
+        "description": "Update book details for the book with id.",
+        "operationId": "updateBookDetails",
+        "requestBody": {
+          "description": "Update book request details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateBookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/book/{bookId}": {
+      "patch": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Restore deleted book by ID",
+        "description": "For valid response enter valid book ID with length 24",
+        "operationId": "getOrderById",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "description": "ID of book that needs to be restored",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "hexadecimal"
+            }
+          }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/bookRequest"
-            }
+            "description": "Book successfully restored"
           },
           "400": {
-            "description": "Failed. Bad post data."
+            "description": "Invalid ID supplied"
+          },
+          "403": {
+            "description": "Access forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Book already active"
+          },
+          "500": {
+            "description": "Unexpected error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "delete": {
-        "summary": "Delete Book Request by ID",
         "tags": [
-          "Book Request"
+          "book"
         ],
+        "summary": "Delete book by ID",
+        "description": "For valid response enter valid book ID with length 24",
+        "operationId": "deleteBookById",
         "parameters": [
           {
+            "name": "bookId",
             "in": "path",
-            "name": "id",
+            "description": "ID of book that needs to be deleted",
             "required": true,
-            "description": "Book Request Id",
             "schema": {
-              "$ref": "#/components/schemas/id"
+              "type": "string",
+              "format": "hexadecimal"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/id"
-            }
+          "200": {
+            "description": "Book successfully restored"
           },
           "400": {
-            "description": "Failed. Misunderstood Request."
+            "description": "Invalid ID supplied"
+          },
+          "403": {
+            "description": "Access forbidden"
           },
           "404": {
-            "description": "Failed. Book Request not found."
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Book already active"
+          },
+          "500": {
+            "description": "Unexpected error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },
-"components": {
+  "components": {
     "schemas": {
-      "userRegisterationRequestBody": {
+      "userRegistration": {
+        "type": "object",
         "properties": {
-          "uuid": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "first_name",
+          "date_of_birth",
+          "phone_number",
+          "email",
+          "username",
+          "password"
+        ]
+      },
+      "userLogin": {
+        "type": "object",
+        "properties": {
+          "email/usernamme": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "userGeneralDetailsUpdate": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "userEmailUpdate": {
+        "type": "object",
+        "properties": {
+          "oldEmail": {
+            "type": "string",
+            "format": "email"
+          },
+          "newEmail": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "oldEmail",
+          "newEmail"
+        ]
+      },
+      "userNameUpdate": {
+        "type": "object",
+        "properties": {
+          "oldUsername": {
+            "type": "string"
+          },
+          "newUsername": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "oldUsername",
+          "newUsername"
+        ]
+      },
+      "passwordUpdate": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string"
+          },
+          "newPassword": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ]
+      },
+      "CreateBookRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "genre": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "barcode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "author",
+          "genre"
+        ]
+      },
+      "UpdateBookRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "genre": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "barcode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "userRegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "userLoginResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
             "type": "string"
           }
         }
       },
-      "userLoginRequestBody":{
-
-      },
-      "userDetailsUpdateRequestBody": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "format": "string"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          }
-        }
-      },
-      "userEmailUpdateRequestBody": {
-        "type": "object",
-        "properties": {
-            "oldEmail": {
-              "type": "string",
-              "format": "email"
-            },
-            "newEmail": {
-              "type": "string",
-              "format": "email"
-            }
-        }
-      },
-      "userPasswordUpdateRequestBody": {
-        "type": "object",
-        "properties": {
-            "oldPassword": {
-              "type": "string",
-              "format": "string"
-            },
-            "newPassword": {
-              "type": "string",
-              "format": "string"
-            }
-        }
-      },
-      "userNameUpdateRequestBody": {
-        "type": "object",
-        "properties": {
-            "oldUsername": {
-              "type": "string",
-              "format": "string"
-            },
-            "newUsername": {
-              "type": "string",
-              "format": "string"
-            }
-        }
-      },
-      "individualUserDetailsResponseBody": {
+      "CreateBookResponse": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "format": "string"
+            "format": "hexadecimal"
           },
-          "first_name": {
-            "type": "string",
-            "format": "string"
+          "book_name": {
+            "type": "string"
           },
-          "last_name": {
-            "type": "string",
-            "format": "string"
+          "author": {
+            "type": "string"
           },
-          "phone_number": {
-            "type": "string",
-            "format": "number"
+          "book_genre": {
+            "type": "string"
           },
-          "date_of_birth": {
-            "type": "string",
-            "format": "timestamp"
+          "summary": {
+            "type": "string"
           },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "username": {
-            "type": "string",
-            "format": "string"
+          "barcode": {
+            "type": "string"
           },
           "created_at": {
             "type": "string",
-            "format": "timestamp"
+            "format": "date-time"
+          },
+          "created_by": {
+            "type": "string",
+            "format": "email"
+          },
+          "last_updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_updated_by": {
+            "type": "string",
+            "format": "email"
           },
           "is_active": {
-            "type": "boolean",
-            "format": "boolean"
+            "type": "boolean"
           }
         }
       },
-      "allUserDetailsResponseBody": {
+      "UpdateBookResponse": {
         "type": "object",
         "properties": {
           "response": {
-            "type": "array",
-            "items": {
-            "$ref": "#/components/schemas/individualUserDetailsResponseBody"
+            "type": "object",
+            "properties": {
+              "Success": {
+                "type": "string"
+              },
+              "book": {
+                "$ref": "#/components/schemas/CreateBookResponse"
+              }
             }
           }
-        }
+        },
+        "description": "Success response on book updation"
       }
     },
     "securitySchemes": {
-    "Bearer Authorization": { 
-      "type": "http",
-      "scheme": "bearer",
-      "bearerFormat": "JWT"
-      } 
-    },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
   }
 }

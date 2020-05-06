@@ -1,4 +1,4 @@
-from Dao.userDAO import UserDAO
+from Dao.userDAO import UserDAO, verify_if_email_already_exists, verify_if_username_already_exists
 from Utils import UserUtils as UserConverter, UserUtils, SecurityUtils
 
 
@@ -83,7 +83,7 @@ def update_user_email(user, old_em, new_em):
         return [{'error': '{} does not match your current email address. Please check and try again.'.format(old_em)}, 404]
     elif old_em == new_em:
         return [{'error': 'Email is already up to date for the user.'}, 200]
-    email_exists_already = UserDAO.verify_if_email_already_exists(new_em)
+    email_exists_already = verify_if_email_already_exists(new_em)
     if email_exists_already:
         return [{'error': 'Cannot update email as the user with email id - {} already exists.'.format(new_em)}, 409]
     updated_user = UserDAO.update_email(user['id'], new_em)
@@ -132,7 +132,7 @@ def update_user_name(user: dict, old_username: str, new_username: str):
         ]
     elif old_username == new_username:
         return [{'error': 'Username is already up to date for the user.'}, 200]
-    if UserDAO.verify_if_username_already_exists(new_username):
+    if verify_if_username_already_exists(new_username):
         return [{'error': 'User with username - {} already exists.'.format(new_username)}, 409]
     response = UserDAO.update_username(user['id'], new_username)
     return response

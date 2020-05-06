@@ -3,12 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="c7fb4778-dd5a-4a10-998d-3356dcbd1a23" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dao/bookDAO.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dao/bookDAO.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/books/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/books/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resources/books/bookCreateUpdateResource.py" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/books/bookCreateUpdateResource.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/BookUtils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/BookUtils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/DB/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/sqlite/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/sqlite/bookqueries.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/sqlite/dbConnectionInit.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/sqlite/userqueries.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/store/BMS.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/application.py" beforeDir="false" afterPath="$PROJECT_DIR$/application.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service/bookCreateUpdateService.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/bookCreateUpdateService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blueprints/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/userCreateUpdateService.py" beforeDir="false" afterPath="$PROJECT_DIR$/service/userCreateUpdateService.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/static/swagger.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,22 +142,22 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="462" y="119" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1588679639676" />
-    <state width="1345" height="170" key="GridCell.Tab.0.bottom" timestamp="1588719125659">
+    <state width="1328" height="130" key="GridCell.Tab.0.bottom" timestamp="1588731072502">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="170" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1588719125659" />
-    <state width="1345" height="170" key="GridCell.Tab.0.center" timestamp="1588719125659">
+    <state width="1328" height="130" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1588731072502" />
+    <state width="1328" height="130" key="GridCell.Tab.0.center" timestamp="1588731072501">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="170" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1588719125659" />
-    <state width="1345" height="170" key="GridCell.Tab.0.left" timestamp="1588719125658">
+    <state width="1328" height="130" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1588731072501" />
+    <state width="1328" height="130" key="GridCell.Tab.0.left" timestamp="1588731072501">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="170" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1588719125658" />
-    <state width="1345" height="170" key="GridCell.Tab.0.right" timestamp="1588719125659">
+    <state width="1328" height="130" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1588731072501" />
+    <state width="1328" height="130" key="GridCell.Tab.0.right" timestamp="1588731072502">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1345" height="170" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1588719125659" />
+    <state width="1328" height="130" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1588731072502" />
     <state x="184" y="6" key="SettingsEditor" timestamp="1585721439603">
       <screen x="0" y="0" width="1366" height="728" />
     </state>

@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, redirect, url_for
 from flask_restful import Api
 import hashlib
 from flask_jwt_extended import JWTManager
@@ -38,7 +38,7 @@ api.add_resource(Resources.AllBookResource, '/book/all/', '/book/all')
 
 # ===============================User======================================= #
 
-api.add_resource(Resources.UserRegister, '/', '/user/register', '/user/register/')
+api.add_resource(Resources.UserRegister, '/user/register', '/user/register/')
 api.add_resource(Resources.Login, '/user/login', '/user/login/')
 api.add_resource(Resources.UpdateUserDetails,
                  '/user/update/details',
@@ -47,6 +47,11 @@ api.add_resource(Resources.UpdateUserDetails,
 api.add_resource(Resources.UserEmailUpdateResource, '/user/update/email', '/user/update/email/')
 api.add_resource(Resources.UserPasswordUpdateResource, '/user/update/password', '/user/update/password/')
 api.add_resource(Resources.UserNameUpdateResource, '/user/update/username', '/user/update/username/')
+
+
+@application.route('/')
+def index():
+    return redirect('/def')
 
 
 @application.route('/static/<path>')
