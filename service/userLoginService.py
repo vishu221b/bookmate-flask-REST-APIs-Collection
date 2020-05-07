@@ -2,6 +2,7 @@ from Dao.userDAO import UserDAO
 from flask_jwt_extended import create_access_token
 import Utils.SecurityUtils as EncryptPass
 import Utils.UserUtils as UserConverter
+from Dao.sessionHistoryDAO import SessionHistoryDAO
 
 
 def get_by_username(username):
@@ -30,6 +31,20 @@ def get_active_inactive_users_by_email(email):
 def generate_session_token(user):
     user_session_token = create_access_token(identity=user)
     return user_session_token
+
+
+def revoke_session_token(jti):
+    session_history_dao = SessionHistoryDAO()
+    session_history_dao.update_session(jti)
+
+
+def get_revoked_tokens():
+    session_history_dao = SessionHistoryDAO()
+    token_list = set()
+    token_bucket = session_history_dao.get_revoked_tokens()
+    for token in token_bucket:
+        token_list.add(str(token.access_token_jti))
+    return token_list
 
 
 def convert_password(p) -> str:
