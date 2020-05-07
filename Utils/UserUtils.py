@@ -30,7 +30,7 @@ def user_dto(user):
             'id': str(user.pk),
             'first_name': user.first_name,
             'last_name': user.last_name if user.last_name else "",
-            'date_of_birth': str(user.date_of_birth),
+            'date_of_birth': str(user.date_of_birth)[:10],
             'email': user.email,
             'phone_number': user.phone_number,
             'username': user.username,
@@ -39,7 +39,6 @@ def user_dto(user):
             'password': str(user.password),
             'is_admin': bool(user.is_admin),
             'fav_books': list(user.fav_books),
-            'authored_books': list(user.authored_books)
         }
     except Exception as e:
         print("Error UDTO:2=>{}".format(e))
@@ -102,5 +101,7 @@ def verify_username_length(curr, new):
 
 def verify_email_length(curr, new):
     if len(curr) < 6 or len(new) < 6:
-        return [{'error': 'Invalid email length. Minimum email length should be 6. Please check your email and try again.'}, 404]
+        return [{
+            'error': 'Invalid email length. Minimum email length should be 6. Please check your email and try again.'},
+            404]
     return False

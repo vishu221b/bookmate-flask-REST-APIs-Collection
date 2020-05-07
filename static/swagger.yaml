@@ -34,6 +34,13 @@ paths:
       responses:
         200:
           description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/userGeneralDetailsResponse'
+                description: Array of all the active users
         404:
           description: Not found
         500:
@@ -121,7 +128,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/userLogin'
+                  $ref: '#/components/schemas/userPersonalDetailsResponse'
         400:
           description: Bad request
       security:
@@ -265,9 +272,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CreateBookResponse'
+                type: object
+                properties:
+                 response:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CreateBookResponse'
       security:
       - bearerAuth: []
     post:
@@ -407,7 +417,7 @@ components:
     userLogin:
       type: object
       properties:
-        email/usernamme:
+        email/username:
           type: string
         password:
           type: string
@@ -492,6 +502,9 @@ components:
       required: [id]
     userRegistrationResponse:
       type: object
+      $ref: '#/components/schemas/userPersonalDetailsResponse'
+    userPersonalDetailsResponse:
+      type: object
       properties:
         id:
           type: string
@@ -517,6 +530,42 @@ components:
         created_at:
           type: string
           format: date-time
+        password:
+          type: string
+        is_admin:
+          type: boolean
+        fav_books:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateBookResponse'
+          description: Array of favourite books
+    userGeneralDetailsResponse:
+          type: object
+          properties:
+            id:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            date_of_birth:
+              type: string
+              format: date
+            phone_number:
+              type: string
+              format: int64
+              minLength: 9
+              maxLength: 10
+            email:
+              type: string
+              format: email
+            username:
+              type: string
+            is_active:
+              type: boolean
+            created_at:
+              type: string
+              format: date-time
     userLoginResponse:
       type: object
       properties:
@@ -530,32 +579,7 @@ components:
           properties:
             updatedUser:
               type: object
-              properties:
-                id:
-                  type: string
-                first_name:
-                  type: string
-                last_name:
-                  type: string
-                date_of_birth:
-                  type: string
-                  format: date
-                phone_number:
-                  type: string
-                  format: int64
-                  minLength: 9
-                  maxLength: 10
-                email:
-                  type: string
-                  format: email
-                username:
-                  type: string
-                is_active:
-                  type: boolean
-                created_at:
-                  type: string
-                  format: date-time
-    
+              $ref: '#/components/schemas/userGeneralDetailsResponse'
     CreateBookResponse:
       type: object
       properties:
