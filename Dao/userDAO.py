@@ -69,7 +69,7 @@ class UserDAO:
             returned_user.save()
             return UserUtils.user_dto(returned_user)  # type is dictionary
         except Exception as e:
-            return "error: [{}]".format(e)
+            return "[{}]".format(e)
 
     @staticmethod
     def update_user_generic_data(user_id, user):

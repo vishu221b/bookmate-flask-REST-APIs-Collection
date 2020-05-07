@@ -13,18 +13,35 @@ info:
 servers:
 - url: /
 tags:
-- name: userops
-  description: Operations about user
-  externalDocs:
-    description: Find out more
-    url: http://swagger.io
-- name: book
+- name: User
+  description: Register a new user
+- name: User Authentication
+  description: Log in-to or out-of the app
+- name: User Operations
+  description: Basic user operations
+  # externalDocs:
+  #   description: Find out more
+  #   url: http://swagger.io
+- name: Book Operations
   description: Access to book operations
 paths:
+  /user/all:
+    get:
+      tags:
+      - User
+      summary: Get all active users
+      operationId: getAllActiveUsers
+      responses:
+        200:
+          description: Success
+        404:
+          description: Not found
+        500:
+          description: Internal sever error
   /user/register:
     post:
       tags:
-      - userops
+      - User
       summary: Registers a new user
       operationId: registerNewUser
       requestBody:
@@ -40,27 +57,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userLogin'
-        404:
+                $ref: '#/components/schemas/userRegistrationResponse'
+        400:
           description: Bad Request Input
-    get:
-      tags:
-      - userops
-      summary: Get all active users
-      operationId: getAllActiveUsers
-      responses:
-        200:
-          description: Success
         404:
           description: Not found
         500:
-          description: Internal sever error
+          description: Internal server error
   /user/login:
     post:
       tags:
-      - userops
-      summary: Generates a session token for the user
-      operationId: createUsersWithListInput
+      - User Authentication
+      summary: Generate session
+      operationId: generateAppAccess
       requestBody:
         description: User Credentials
         content:
@@ -77,11 +86,33 @@ paths:
                 $ref: '#/components/schemas/userLoginResponse'
         400:
           description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+  /user/logout:
+    delete:
+      tags:
+      - User Authentication
+      summary: Revoke session
+      operationId: revokeAppAccess
+      responses:
+        200:
+          description: Success
+        403:
+          description: Resource forbidden
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+      security:
+        - bearerAuth: []
+  /user:
     get:
       tags:
-      - userops
-      summary: Fetch the details of the logged in user
-      operationId: loggedInUserDetailsFetch
+      - User Operations
+      summary: Fetch the details of the current user
+      operationId: getCurrentUserDetails
       responses:
         200:
           description: Success
@@ -95,12 +126,12 @@ paths:
           description: Bad request
       security:
       - bearerAuth: []
-  /user/update/details:  
+  /user/update/:
     put:
       tags:
-      - userops
-      summary: Update user details
-      description: Update user details for the logged in user.
+      - User Operations
+      summary: Update general details of the user
+      description: Update genral details of the logged in user.
       operationId: updateUserDetails
       requestBody:
         description: User details update request body
@@ -125,7 +156,7 @@ paths:
   /user/{user-email}:
     delete:
       tags:
-      - userops
+      - User Operations
       summary: Delete user
       description: This can only be done by the logged in user.
       operationId: deleteUser
@@ -149,7 +180,7 @@ paths:
   /user/update/email:
     patch:
       tags:
-      - userops
+      - User Operations
       summary: Updates user email
       operationId: updateUserEmail
       requestBody:
@@ -168,7 +199,7 @@ paths:
   /user/update/username:
     patch:
       tags:
-      - userops
+      - User Operations
       summary: Updates username for the user
       operationId: updateUserName
       requestBody:
@@ -187,7 +218,7 @@ paths:
   /user/update/password:
     patch:
       tags:
-      - userops
+      - User Operations
       summary: Updates user password
       operationId: updateUserPassword
       requestBody:
@@ -206,7 +237,7 @@ paths:
   /books/all:
     get:
       tags:
-      - book
+      - Book Operations
       summary: Returns all the active books for all users
       description: Returns a list of all the currently active books
       operationId: getActiveBooksForAllUsers
@@ -224,7 +255,7 @@ paths:
   /book:
     get:
       tags:
-      - book
+      - Book Operations
       summary: Returns all the books for the current user
       description: Returns a list of active/inactive books for the current user
       operationId: getBooksForCurrentUser
@@ -241,7 +272,7 @@ paths:
       - bearerAuth: []
     post:
       tags:
-      - book
+      - Book Operations
       summary: Creates a new book
       operationId: createBook
       requestBody:
@@ -265,7 +296,7 @@ paths:
       - bearerAuth: []
     put:
       tags:
-      - book
+      - Book Operations
       summary: Update book details
       description: Update book details for the book with id.
       operationId: updateBookDetails
@@ -292,9 +323,9 @@ paths:
   /book/{bookId}:
     patch:
       tags:
-      - book
+      - Book Operations
       summary: Restore deleted book by ID
-      description: For valid response enter valid book ID with length 24 
+      description: For valid response enter valid book ID with length 24
       operationId: restoreBookById
       parameters:
       - name: bookId
@@ -321,9 +352,9 @@ paths:
         - bearerAuth: []
     delete:
       tags:
-      - book
+      - Book Operations
       summary: Delete book by ID
-      description: For valid response enter valid book ID with length 24 
+      description: For valid response enter valid book ID with length 24
       operationId: deleteBookById
       parameters:
       - name: bookId
@@ -348,7 +379,7 @@ paths:
           description: Unexpected error
       security:
       - bearerAuth: []
-  
+
 components:
   schemas:
     userRegistration:
@@ -360,9 +391,12 @@ components:
           type: string
         date_of_birth:
           type: string
-          format: date-time
+          format: date
         phone_number:
           type: string
+          format: int64
+          minLength: 9
+          maxLength: 10
         email:
           type: string
         username:
@@ -387,9 +421,12 @@ components:
           type: string
         date_of_birth:
           type: string
-          format: date-time
+          format: date
         phone_number:
           type: string
+          format: int64
+          minLength: 9
+          maxLength: 10
         email:
           type: string
           format: email
@@ -464,9 +501,12 @@ components:
           type: string
         date_of_birth:
           type: string
-          format: date-time
+          format: date
         phone_number:
           type: string
+          format: int64
+          minLength: 9
+          maxLength: 10
         email:
           type: string
           format: email
@@ -499,9 +539,12 @@ components:
                   type: string
                 date_of_birth:
                   type: string
-                  format: date-time
+                  format: date
                 phone_number:
                   type: string
+                  format: int64
+                  minLength: 9
+                  maxLength: 10
                 email:
                   type: string
                   format: email

@@ -1,12 +1,12 @@
 import mongoengine
 
 
-def global_mongo_init():
+def global_mongo_init(host, name):
     try:
         mongoengine.register_connection(
             alias='bms_ent',
-            host='mongodb+srv://prod_point:toor@mongo221-bb6hj.mongodb.net',
-            name='bookmanagementsystem')
+            host=host,
+            name=name)
     except Exception as e:
         print(e)
 
