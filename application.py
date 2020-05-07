@@ -5,11 +5,10 @@ import Resources
 import DB
 from flask_swagger_ui import get_swaggerui_blueprint
 import os
-import config
 
 
 application = Flask(__name__)
-application.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY  # os.environ['JWT_SECRET_KEY']
+application.config['JWT_SECRET_KEY'] = os.environ['JWT_SECRET_KEY']
 application.config['JWT_ACCESS_TOKEN_EXPIRES'] = 60 * 60
 application.config['PROPAGATE_EXCEPTIONS'] = True
 api = Api(application)
@@ -28,8 +27,8 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
 application.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 jwt = JWTManager(application)
 try:
-    DB.global_mongo_init(config.MONGO_HOST,  # os.environ['MONGO_HOST']
-                         config.MONGO_DB_NAME)  # os.environ['MONGO_DB_NAME']
+    DB.global_mongo_init(os.environ['MONGO_HOST'],
+                         os.environ['MONGO_DB_NAME'])
 except Exception as e:
     print(f"Error: {e}")
 
@@ -61,6 +60,3 @@ def index():
 @application.route('/static/<path>')
 def swag_route(path):
     return send_from_directory('static', path)
-
-
-application.run(port=5000, debug=True)
