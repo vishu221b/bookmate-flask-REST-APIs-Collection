@@ -14,7 +14,7 @@ application.config['PROPAGATE_EXCEPTIONS'] = True
 api = Api(application)
 
 SWAGGER_URL = "/def"
-API_URL_SWAG = "/static/swagger.json"
+API_URL_SWAG = "/static/openapi.yaml"
 
 swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
@@ -57,3 +57,6 @@ def index():
 @application.route('/static/<path>')
 def swag_route(path):
     return send_from_directory('static', path)
+
+
+application.run(port=5000, debug=True)
