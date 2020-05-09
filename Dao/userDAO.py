@@ -124,11 +124,12 @@ class UserDAO:
         return [{'Error': 'There was some error. Please retry again. Error code: {}'.format(str(int(time.time()*1000)))}, 500]
 
     @staticmethod
-    def delete_user(user):
-        user_instance = UserDAO.get_user_by_id(user['id'])
-        user_instance.is_active = False
-        user_instance.save()
-        confirm_operation = UserDAO.get_active_inactive_single_user_by_email(user['id'])
+    def delete_user(email):
+        user_instance = UserDAO.get_active_user_by_email(email)
+        if user_instance:
+            user_instance.is_active = False
+            user_instance.save()
+        confirm_operation = UserDAO.get_active_inactive_single_user_by_email(email)
         if confirm_operation and not confirm_operation.is_active:
             return True
         return False

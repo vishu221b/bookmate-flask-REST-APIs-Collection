@@ -46,14 +46,14 @@ class BookCreateUpdateResource(Resource):
     @jwt_required
     def delete(self, book_id):
         user = get_jwt_identity()
-        response = BookCreateUpdateService.delete_book(book_id, user['email'])
+        response = BookCreateUpdateService.delete_book(book_id, user)
         return response
 
     @jwt_required
     def patch(self, book_id):
         try:
             user = get_jwt_identity()
-            response = BookCreateUpdateService.restore_book(book_id, user['email'])
+            response = BookCreateUpdateService.restore_book(book_id, user)
             return response
         except Exception as e:
             return {'error': e.args}, 500

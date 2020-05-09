@@ -18,9 +18,9 @@ class BookDAO:
             return {'error': f"Exception, {e}, occurred."}, 500
 
     @staticmethod
-    def delete_book_by_id(book_id, user_email):
+    def delete_book_by_id(book_id, user):
         book = Models.Book.objects(pk=str(book_id)).first()
-        if book.created_by == user_email:
+        if user['is_admin'] or book.created_by == user['email']:
             book.is_active = False
             book.last_updated_at = datetime.datetime.now()
             book.save()
