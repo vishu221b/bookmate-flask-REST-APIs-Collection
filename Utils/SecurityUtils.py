@@ -6,5 +6,6 @@ def encrypt_pass(password):
 
 
 def convert_and_compare_plain_passwords(old_password, new_password):
-    pass1 = hashlib.old_password
+    pass1 = old_password
     pass2 = new_password
+    pass

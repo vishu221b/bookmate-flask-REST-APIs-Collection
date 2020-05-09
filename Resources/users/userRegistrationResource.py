@@ -1,6 +1,5 @@
 from flask_restful import Resource, reqparse
 from Dao.userDAO import UserDAO
-from Utils import UserUtils as UserConverter
 from Utils import SecurityUtils as UserSecurity
 import Utils.TimeUtils as TimeUtils
 from service import userCreateUpdateService as UserCreateUpdateService
@@ -27,17 +26,14 @@ class UserRegister(Resource):
             return {"error": str(is_exist_user['value'])}, 409
         try:
             result = UserDAO.create_user(user_details)
+            if isinstance(result, str):
+                return {'response': result}, 400
             return {"result": result}, 201
         except Exception as e:
             result = e
             return {"error": result}, 404
 
 # # ---------------------------------------x-x-GET-x-x-----------------------------------------------
-    def get(self):
-        all_users = []
-        for i in UserCreateUpdateService.get_all_users():
-            all_users.append(UserConverter.convert_user_dto_to_public_response_dto(i))
-        return {'response': all_users}, 200
 
     def put(self):
         return {'error': 'Method not supported'}

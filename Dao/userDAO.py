@@ -19,6 +19,7 @@ class UserDAO:
         users = Models.User.objects()
         return users
 # #----------------------------Email------------------------------------------
+
     @staticmethod
     def get_active_inactive_single_user_by_email(email):
         user_instance = Models.User.objects(email=email).first()
@@ -29,6 +30,7 @@ class UserDAO:
         user_instance = Models.User.objects(email=email, is_active=True).first()
         return user_instance
 # #----------------------------Username----------------------------------------
+
     @staticmethod
     def get_active_user_by_username(username):
         user_instance = Models.User.objects(username=username, is_active=True).first()
@@ -39,6 +41,7 @@ class UserDAO:
         user_instance = Models.User.objects(username=username).first()
         return user_instance
 # #----------------------------------------------------------------------------
+
     @staticmethod
     def get_user_by_id(uid):
         try:
@@ -66,7 +69,7 @@ class UserDAO:
             returned_user.save()
             return UserUtils.user_dto(returned_user)  # type is dictionary
         except Exception as e:
-            return "error: [{}]".format(e)
+            return "[{}]".format(e)
 
     @staticmethod
     def update_user_generic_data(user_id, user):
@@ -121,11 +124,12 @@ class UserDAO:
         return [{'Error': 'There was some error. Please retry again. Error code: {}'.format(str(int(time.time()*1000)))}, 500]
 
     @staticmethod
-    def delete_user(user):
-        user_instance = UserDAO.get_user_by_id(user['id'])
-        user_instance.is_active = False
-        user_instance.save()
-        confirm_operation = UserDAO.get_active_inactive_single_user_by_email(user['id'])
+    def delete_user(email):
+        user_instance = UserDAO.get_active_user_by_email(email)
+        if user_instance:
+            user_instance.is_active = False
+            user_instance.save()
+        confirm_operation = UserDAO.get_active_inactive_single_user_by_email(email)
         if confirm_operation and not confirm_operation.is_active:
             return True
         return False

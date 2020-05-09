@@ -1,4 +1,4 @@
-from Dao.userDAO import UserDAO
+from Dao.userDAO import UserDAO, verify_if_email_already_exists, verify_if_username_already_exists
 from Utils import UserUtils as UserConverter, UserUtils, SecurityUtils
 
 
@@ -73,9 +73,9 @@ def get_existing_user_by_id(identity) -> dict:
 
 
 def update_user_email(user, old_em, new_em):
-    is_length_valid = UserUtils.verify_email_length(old_em, new_em)
-    if is_length_valid:
-        return is_length_valid
+    is_length_invalid = UserUtils.verify_email_length(old_em, new_em)
+    if is_length_invalid:
+        return is_length_invalid
     u = get_existing_user_by_id(user['id'])
     if 'error' in u.keys():
         return [u, 500]
@@ -83,7 +83,7 @@ def update_user_email(user, old_em, new_em):
         return [{'error': '{} does not match your current email address. Please check and try again.'.format(old_em)}, 404]
     elif old_em == new_em:
         return [{'error': 'Email is already up to date for the user.'}, 200]
-    email_exists_already = UserDAO.verify_if_email_already_exists(new_em)
+    email_exists_already = verify_if_email_already_exists(new_em)
     if email_exists_already:
         return [{'error': 'Cannot update email as the user with email id - {} already exists.'.format(new_em)}, 409]
     updated_user = UserDAO.update_email(user['id'], new_em)
@@ -91,19 +91,18 @@ def update_user_email(user, old_em, new_em):
 
 
 def delete_user(curr_user, email):
-    is_length_valid = UserUtils.verify_email_length(email, email)
-    if is_length_valid:
-        return is_length_valid
-    elif curr_user['email'] != email:
+    email_length_invalid = UserUtils.verify_email_length(email, email)
+    if email_length_invalid:
+        return email_length_invalid
+    elif curr_user['email'] != email and not curr_user['is_admin']:
         return [{'error': 'Please provide a valid current email address.'}, 404]
-    operation = UserDAO.delete_user(curr_user)
+    operation = UserDAO.delete_user(email)
     if operation:  # # Active tokens for current user should be revoked as soon as the user marks himself as inactive.
-        return [{'Success': operation}, 200]
+        return [{'response': 'User successfully deleted.'}, 200]
     return [{'error': 'No active user found for email {}.'.format(email)}, 500]
 
 
 def update_password(user, old_password, new_password):
-
     if not UserUtils.validate_length(
             old_password, 8) or not UserUtils.validate_length(new_password, 8):
         return [{'error': 'Please check the length of your input.',
@@ -133,7 +132,7 @@ def update_user_name(user: dict, old_username: str, new_username: str):
         ]
     elif old_username == new_username:
         return [{'error': 'Username is already up to date for the user.'}, 200]
-    if UserDAO.verify_if_username_already_exists(new_username):
+    if verify_if_username_already_exists(new_username):
         return [{'error': 'User with username - {} already exists.'.format(new_username)}, 409]
     response = UserDAO.update_username(user['id'], new_username)
     return response

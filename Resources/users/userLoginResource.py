@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from service import userLoginService as UserLoginService
+from Dao.sessionHistoryDAO import SessionHistoryDAO
 
 
 class Login(Resource):
@@ -14,6 +15,7 @@ class Login(Resource):
 
     def post(self):
         login_args = Login.parser.parse_args()
+        session_history = SessionHistoryDAO()
         if login_args['username']:
             user = UserLoginService.get_by_username(login_args['username'])
             req_pass = UserLoginService.convert_password(login_args['password'])
@@ -23,8 +25,8 @@ class Login(Resource):
                 return {'error': user}, 404
             if str(user['password']) == req_pass:
                 access_token = UserLoginService.generate_session_token(user)
+                session_history.insert_login_session(user['email'], access_token)
                 return {'access_token': access_token}, 200
-
         if login_args['email']:
             user = UserLoginService.get_by_email(login_args['email'])
             req_pass = UserLoginService.convert_password(login_args['password'])
@@ -34,6 +36,7 @@ class Login(Resource):
                 return {'error': user}, 404
             if str(user['password']) == req_pass:
                 access_token = UserLoginService.generate_session_token(user)
+                session_history.insert_login_session(user['email'], access_token)
                 return {'access_token': access_token}, 200
         return {'error': 'Invalid credentials'}, 401
 
