@@ -6,3 +6,4 @@ __pycache__/
 !.elasticbeanstalk/*.global.yml
 config.py
 **/.idea/workspace.xml
+.idea
