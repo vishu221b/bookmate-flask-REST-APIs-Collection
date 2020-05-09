@@ -73,9 +73,9 @@ def get_existing_user_by_id(identity) -> dict:
 
 
 def update_user_email(user, old_em, new_em):
-    is_length_valid = UserUtils.verify_email_length(old_em, new_em)
-    if is_length_valid:
-        return is_length_valid
+    is_length_invalid = UserUtils.verify_email_length(old_em, new_em)
+    if is_length_invalid:
+        return is_length_invalid
     u = get_existing_user_by_id(user['id'])
     if 'error' in u.keys():
         return [u, 500]
@@ -91,14 +91,14 @@ def update_user_email(user, old_em, new_em):
 
 
 def delete_user(curr_user, email):
-    is_length_valid = UserUtils.verify_email_length(email, email)
-    if is_length_valid:
-        return is_length_valid
-    elif curr_user['email'] != email:
+    email_length_invalid = UserUtils.verify_email_length(email, email)
+    if email_length_invalid:
+        return email_length_invalid
+    elif curr_user['email'] != email and not curr_user['is_admin']:
         return [{'error': 'Please provide a valid current email address.'}, 404]
-    operation = UserDAO.delete_user(curr_user)
+    operation = UserDAO.delete_user(email)
     if operation:  # # Active tokens for current user should be revoked as soon as the user marks himself as inactive.
-        return [{'Success': operation}, 200]
+        return [{'response': 'User successfully deleted.'}, 200]
     return [{'error': 'No active user found for email {}.'.format(email)}, 500]
 
 

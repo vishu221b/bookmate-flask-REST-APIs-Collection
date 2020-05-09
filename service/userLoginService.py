@@ -40,11 +40,11 @@ def revoke_session_token(jti):
 
 def get_revoked_tokens():
     session_history_dao = SessionHistoryDAO()
-    token_list = set()
+    blacklisted_token_bucket = set()
     token_bucket = session_history_dao.get_revoked_tokens()
     for token in token_bucket:
-        token_list.add(str(token.access_token_jti))
-    return token_list
+        blacklisted_token_bucket.add(str(token.access_token_jti))
+    return blacklisted_token_bucket
 
 
 def convert_password(p) -> str:

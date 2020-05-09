@@ -16,16 +16,16 @@ class BookCreateUpdateService:
         return BookDAO.create_new_book(new_book)
 
     @staticmethod
-    def delete_book(book_id, user_email):
+    def delete_book(book_id, user):
         try:
             book = validate_for_deletion(book_id)
             if book['error']:
                 return book['response'][0], book['response'][1]
-            response = BookDAO.delete_book_by_id(book_id, user_email)
+            response = BookDAO.delete_book_by_id(book_id, user)
             verify_deleted_book = verify_delete(book_id)
             if verify_deleted_book:
                 return response
-            return {'error': 'There was some internal error, please contact the developer.'}, 500
+            return {'error': response[0]['response']}, response[1]
         except Exception as e:
             return {'error': e.args}
 
@@ -56,7 +56,7 @@ class BookCreateUpdateService:
         if not verify_status:
             return {'error': 'Book is already active.'}, 409
         book = BookDAO.find_active_inactive_book_by_id(book_id)
-        if book.created_by == owner:
+        if owner['is_admin'] or book.created_by == owner['email']:
             response = BookDAO.restore_inactive_book(book_id)
             return response
         return {'error': 'Books can be restored only by their respective owners.'}, 403

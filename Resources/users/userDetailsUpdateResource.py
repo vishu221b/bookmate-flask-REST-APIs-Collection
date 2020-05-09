@@ -30,7 +30,7 @@ class UpdateUserDetails(Resource):
     def delete(self, user_email):
         current_user = get_jwt_identity()
         if not user_email:
-            return {'response': {'error': 'Please provide an email Id.'}}
+            return {'response': {'error': 'Please provide an email Id.'}}, 404
         resp = UserCreateUpdateService.delete_user(current_user, user_email)
         return {'response': resp[0]}, int(resp[1])
 

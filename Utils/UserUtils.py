@@ -64,7 +64,8 @@ def convert_user_dto_to_public_response_dto(user):
 
 def convert_request_to_user_update_dto(request_dto, user_identity):
     try:
-        request_dto['date_of_birth'] = TimeUtils.convert_time(request_dto['date_of_birth']) if request_dto['date_of_birth'] else None
+        request_dto['date_of_birth'] = TimeUtils.convert_time(
+            request_dto['date_of_birth']) if request_dto['date_of_birth'] else None
         response_user = clone_dto(user_identity)
         for field in UserConstants.USER_FIELDS_FOR_GENERIC_UPDATE:
             if field is not None:
