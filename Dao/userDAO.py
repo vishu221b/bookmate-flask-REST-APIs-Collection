@@ -1,6 +1,9 @@
 import Models
 import Utils.UserUtils as UserUtils
 import time
+import dto.UserDTO
+from Enums import AdminPermissionEnums
+import datetime
 
 
 class UserDAO:
@@ -67,17 +70,17 @@ class UserDAO:
             if isinstance(returned_user, str):
                 return {"error": returned_user}
             returned_user.save()
-            return UserUtils.user_dto(returned_user)  # type is dictionary
+            return dto.UserDTO.user_dto(returned_user)  # type is dictionary
         except Exception as e:
             return "[{}]".format(e)
 
     @staticmethod
     def update_user_generic_data(user_id, user):
-        new_user = UserDAO.get_user_by_id(user_id)
+        old_user = UserDAO.get_user_by_id(user_id)
         try:
-            updated_user = UserUtils.convert_update_request_for_persistence(user, new_user)
+            updated_user = UserUtils.convert_update_request_for_persistence(user, old_user)
             updated_user.save(force_insert=False)
-            return UserUtils.user_dto(updated_user)
+            return dto.UserDTO.user_dto(updated_user)
         except Exception as e:
             return "error: {}".format(e)
 
@@ -90,7 +93,7 @@ class UserDAO:
             is_update_verified = verify_email_update_for_user(user, new_em)
             if not is_update_verified:
                 return [{'error':'There was some error. Error Code: {}'.format(str(int(time.time()*1000)))}, 500]
-            response = UserUtils.convert_user_dto_to_public_response_dto(UserUtils.user_dto(user))
+            response = UserUtils.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(user))
             return [{'Success': 'Email updated successfully.', 'updatedUserDetails': response}, 200]
         except Exception as e:
             return [{"error": "There was some error. Exception: {}, Error Code: {}".format(e, str(int(time.time()*1000)))}, 500]
@@ -104,15 +107,27 @@ class UserDAO:
         user.save()
         verify_user = UserDAO.get_active_user_by_email(user.email)
         if verify_user.password == npa:
-            return [{'Success': 'Password updated successfully for user.'}, 200]
-        return [{'error': 'There was some error. Please retry again. Error code: {}'.format(str(int(time.time()*1000)))}, 500]
+            return [
+                {
+                    'Success':
+                        'Password updated successfully for user.'
+                }, 200
+            ]
+        return [
+            {
+                'error':
+                    'There was some error. Please retry again. Error code: {}'.format(
+                        str(int(time.time()*1000))
+                    )
+            }, 500
+        ]
 
     @staticmethod
     def update_username(identity, new_username):
         user = UserDAO.get_user_by_id(identity)
         user.username = new_username
         user.save()
-        user = UserUtils.user_dto(user)
+        user = dto.UserDTO.user_dto(user)
         is_validated = verify_username_update_for_user(user, new_username)
         if is_validated:
             return [
@@ -124,15 +139,30 @@ class UserDAO:
         return [{'Error': 'There was some error. Please retry again. Error code: {}'.format(str(int(time.time()*1000)))}, 500]
 
     @staticmethod
-    def delete_user(email):
-        user_instance = UserDAO.get_active_user_by_email(email)
+    def activate_deactivate_user(action_performer_user_email, target_email, is_admin_action, action):
+        user_instance = UserDAO.get_active_inactive_single_user_by_email(target_email)
         if user_instance:
-            user_instance.is_active = False
-            user_instance.save()
-        confirm_operation = UserDAO.get_active_inactive_single_user_by_email(email)
-        if confirm_operation and not confirm_operation.is_active:
-            return True
-        return False
+            if action == AdminPermissionEnums.DEACTIVATE.name:
+                user_instance.update(
+                    set__marked_active_inactive_by_admin=is_admin_action,
+                    set__is_active=AdminPermissionEnums.DEACTIVATE.value,
+                    set__last_updated_at=datetime.datetime.now(),
+                    set__last_updated_by=action_performer_user_email
+                )
+            elif action == AdminPermissionEnums.ACTIVATE.name:
+                user_instance.update(
+                    set__marked_active_inactive_by_admin=is_admin_action,
+                    set__is_active=AdminPermissionEnums.ACTIVATE.value,
+                    set__last_updated_at=datetime.datetime.now(),
+                    set__last_updated_by=action_performer_user_email
+                )
+
+    @staticmethod
+    def admin_access(user_email, give_permission):
+        user = Models.User.objects(email=user_email).first()
+        user.update(
+            set__is_admin=give_permission
+        )
 
 
 def verify_username_update_for_user(user: dict, username: str) -> bool:

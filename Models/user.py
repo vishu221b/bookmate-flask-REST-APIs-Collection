@@ -1,6 +1,5 @@
 import mongoengine as meng
 import datetime
-from .book import Book
 
 
 class User(meng.Document):
@@ -15,6 +14,8 @@ class User(meng.Document):
     last_updated_at = meng.ComplexDateTimeField(default=datetime.datetime.now)
     is_admin = meng.BooleanField(default=False)
     is_active = meng.BooleanField(default=True)
+    last_updated_by = meng.EmailField()
+    marked_active_inactive_by_admin = meng.BooleanField(default=False)
     fav_books = meng.ListField(default=[])
     authored_books = meng.ListField(default=[])
 

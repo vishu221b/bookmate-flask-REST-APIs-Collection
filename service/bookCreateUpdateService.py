@@ -1,5 +1,5 @@
 from Dao.bookDAO import BookDAO
-from Utils.BookUtils import book_dto
+from dto.BookDTO import book_dto
 
 
 class BookCreateUpdateService:
@@ -16,18 +16,21 @@ class BookCreateUpdateService:
         return BookDAO.create_new_book(new_book)
 
     @staticmethod
-    def delete_book(book_id, user):
+    def delete_book(book_id, user, is_admin_request: bool) -> list:
         try:
-            book = validate_for_deletion(book_id)
-            if book['error']:
-                return book['response'][0], book['response'][1]
-            response = BookDAO.delete_book_by_id(book_id, user)
-            verify_deleted_book = verify_delete(book_id)
-            if verify_deleted_book:
-                return response
-            return {'error': response[0]['response']}, response[1]
+            valid_book = validate_for_deletion(book_id)
+            if valid_book.get('error'):
+                return valid_book.get('response')
+            book = BookDAO.find_active_inactive_book_by_id(book_id)
+            if is_admin_request or book.created_by == user.get('email'):
+                response = BookDAO.delete_book_by_id(book_id)
+                verify_deleted_book = verify_delete(book_id)
+                if verify_deleted_book:
+                    return [response, 200]
+                return [{'error': 'There was some error.'}, 500]
+            return [{'error': 'Book can only be deleted by it\'s respective owner.'}, 403]
         except Exception as e:
-            return {'error': e.args}
+            return [{'error': e.args}, 400]
 
     @staticmethod
     def get_books_for_user(user):
@@ -48,18 +51,18 @@ class BookCreateUpdateService:
             return {'error': e.args}, 500
 
     @staticmethod
-    def restore_book(book_id, owner):
+    def restore_book(book_id, owner, is_admin_request: bool) -> list:
         validate = validate_book_id(book_id)
-        if validate['error']:
-            return validate['response'][0], validate['response'][1]
+        if validate.get('error'):
+            return validate.get('response')
         verify_status = verify_delete(book_id)
         if not verify_status:
-            return {'error': 'Book is already active.'}, 409
+            return [{'error': 'Book is already active.'}, 409]
         book = BookDAO.find_active_inactive_book_by_id(book_id)
-        if owner['is_admin'] or book.created_by == owner['email']:
+        if is_admin_request or book.created_by == owner['email']:
             response = BookDAO.restore_inactive_book(book_id)
-            return response
-        return {'error': 'Books can be restored only by their respective owners.'}, 403
+            return [response, 200]
+        return [{'error': 'Books can be restored only by their respective owners.'}, 403]
 
     @staticmethod
     def get_all_books():
@@ -81,7 +84,7 @@ def verify_delete(book_id):
 
 def validate_for_deletion(book_id):
     book = validate_book_id(book_id)
-    if book['error']:
+    if book.get('error'):
         return book
     book = verify_delete(book_id)
     if book:

@@ -27,7 +27,14 @@ def initiate_resources(api):
 
     api.add_resource(AdminUserOperationsResource,
                      '/admin/user/delete/<user_email>',
-                     '/admin/user/delete/<user_email>/')
+                     '/admin/user/delete/<user_email>/',
+                     '/admin/user/activate/<user_email>',
+                     '/admin/user/activate/<user_email>/',
+                     '/admin/privileges/<permission_type>/<user_email>',
+                     '/admin/privileges/<permission_type>/<user_email>/')
     api.add_resource(AdminBookOperationsResource,
                      '/admin/book/delete/<book_id>', '/admin/book/delete/<book_id>/',
                      '/admin/book/restore/<book_id>', '/admin/book/restore/<book_id>/')
+    api.add_resource(SessionDetailsResource,
+                     '/admin/sessionDetails',
+                     '/admin/sessionDetails/')

@@ -391,17 +391,89 @@ paths:
           description: Unexpected error
       security:
       - bearerAuth: []
+  /admin/privileges/grant/{userEmail}:
+    put:
+      tags:
+        - Admin Panel
+      summary: Grant admin rights to the user
+      description: Grants the user with email admin privileges
+      operationId: grantAdminAccessToUser
+      parameters:
+        - name: userEmail
+          in: path
+          description: The email of the user
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+        404:
+          description: User not found
+      security:
+        - bearerAuth: []
+  /admin/privileges/revoke/{userEmail}:
+    put:
+      tags:
+        - Admin Panel
+      summary: Revoke admin rights for the user
+      description: Revoke admin rights for the user
+      operationId: revokeAdminAccessForUser
+      parameters:
+        - name: userEmail
+          in: path
+          description: The email of the user
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+        404:
+          description: User not found
+      security:
+        - bearerAuth: []
   /admin/user/delete/{userEmail}:
     delete:
       tags:
         - Admin Panel
       summary: Delete user
-      description: Admins can delete any inactive user
-      operationId: deleteUserAdminPanel
+      description: Admins can delete any active user
+      operationId: deleteUserFromAdminPanel
       parameters:
         - name: userEmail
           in: path
           description: The email of the user that needs to be deleted
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+        404:
+          description: User not found
+      security:
+        - bearerAuth: []
+  /admin/user/activate/{userEmail}:
+    post:
+      tags:
+        - Admin Panel
+      summary: Activate user
+      description: Admins can activate any inactive user
+      operationId: activateUserFromAdminPanel
+      parameters:
+        - name: userEmail
+          in: path
+          description: The email of the user that needs to be activated
           required: true
           schema:
             type: string
@@ -473,6 +545,30 @@ paths:
           description: Book already active
         500:
           description: Unexpected error
+      security:
+        - bearerAuth: []
+  /admin/sessionDetails:
+    post:
+      tags:
+        - Admin Panel
+      summary: Fetch session details for token
+      operationId: getUserSessionDetails
+      requestBody:
+        description: Session token to fetch details for
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDetailsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDetailsResponse'
+        400:
+          description: Bad request
       security:
         - bearerAuth: []
 components:
@@ -706,7 +802,32 @@ components:
             book:
               $ref: '#/components/schemas/CreateBookResponse'
       description: Success response on book updation
-    
+    SessionDetailsRequest:
+      type: object
+      properties:
+        session_token:
+          type: string
+    SessionDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        user_details:
+          $ref: '#/components/schemas/userGeneralDetailsResponse'
+        access_token:
+          type: string
+        access_token_jti:
+          type: string
+        revoked_at:
+          type: date-time
+        is_revoked:
+          type: boolean
+        expiry:
+          type: string
+          format: date-time
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
       type: http

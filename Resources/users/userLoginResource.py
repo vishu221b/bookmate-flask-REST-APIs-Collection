@@ -1,7 +1,10 @@
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required, decode_token
+from Utils.TimeUtils import TimeUtils
+from service.sessionService import SessionService
 from service import userLoginService as UserLoginService
-from Dao.sessionHistoryDAO import SessionHistoryDAO
+from service import userCreateUpdateService
+from Enums import AdminPermissionEnums
 
 
 class Login(Resource):
@@ -14,38 +17,49 @@ class Login(Resource):
                             help=arg + ' is required')
 
     def post(self):
+        time = TimeUtils()
+        session_service = SessionService()
         login_args = Login.parser.parse_args()
-        session_history = SessionHistoryDAO()
-        if login_args['username']:
-            user = UserLoginService.get_by_username(login_args['username'])
-            req_pass = UserLoginService.convert_password(login_args['password'])
+        if login_args.get('username'):
+            user = UserLoginService.get_by_username(login_args.get('username'))
+            req_pass = UserLoginService.convert_password(login_args.get('password'))
             if not user:
-                return {'message': 'No such user. Please check your Username/Email and password and try again.'}, 404
+                return {'error': 'No such user. Please check your username.'}, 404
             if isinstance(user, str):
                 return {'error': user}, 404
             if str(user['password']) == req_pass:
-                access_token = UserLoginService.generate_session_token(user)
-                session_history.insert_login_session(user['email'], access_token)
-                return {'access_token': access_token}, 200
-        if login_args['email']:
-            user = UserLoginService.get_by_email(login_args['email'])
-            req_pass = UserLoginService.convert_password(login_args['password'])
+                if not user.get('is_active'):
+                    userCreateUpdateService.activate_deactivate_user(
+                        user, user.get('email'), False, AdminPermissionEnums.ACTIVATE.name)
+                    user.__setitem__('is_active', True)
+                access_token = session_service.generate_session_token(user)
+                return {
+                    'access_token': access_token,
+                    'expiry': str(time.format_epoch_to_date_time(decode_token(access_token).get('exp')))
+                }, 200
+        elif login_args.get('email'):
+            user = UserLoginService.get_by_email(login_args.get('email'))
+            req_pass = UserLoginService.convert_password(login_args.get('password'))
             if not user:
-                return {'error': 'No such user. Please check your Username/Email and password and try again.'}, 401
+                return {'error': 'No such user. Please check your email.'}, 401
             if isinstance(user, str):
                 return {'error': user}, 404
             if str(user['password']) == req_pass:
-                access_token = UserLoginService.generate_session_token(user)
-                session_history.insert_login_session(user['email'], access_token)
-                return {'access_token': access_token}, 200
-        return {'error': 'Invalid credentials'}, 401
+                if not user.get('is_active'):
+                    userCreateUpdateService.activate_deactivate_user(
+                        user, user.get('email'), False, AdminPermissionEnums.ACTIVATE.name)
+                    user.__setitem__('is_active', True)
+                access_token = session_service.generate_session_token(user)
+                return {
+                    'access_token': access_token,
+                    'expiry': str(time.format_epoch_to_date_time(decode_token(access_token).get('exp')))
+                }, 200
+        return {'error': 'Invalid credentials.'}, 401
 
     @jwt_required
     def get(self):
         user = get_jwt_identity()
-        if not user:
-            return {'error': 'You are not authorised to access this Resource.'}, 401
-        verified_user = UserLoginService.get_by_email(user['email'])
+        verified_user = UserLoginService.get_by_email(user.get('email'))
         if not isinstance(verified_user, str):
             return verified_user
         return {'error': verified_user}, 403
