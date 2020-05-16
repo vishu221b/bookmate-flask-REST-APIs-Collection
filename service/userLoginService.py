@@ -1,50 +1,30 @@
+import dto.UserDTO
 from Dao.userDAO import UserDAO
-from flask_jwt_extended import create_access_token
 import Utils.SecurityUtils as EncryptPass
 import Utils.UserUtils as UserConverter
-from Dao.sessionHistoryDAO import SessionHistoryDAO
 
 
 def get_by_username(username):
-    user_hold = UserDAO.get_user_by_username(username)
-    if user_hold and not user_hold.is_active:
-        return "User is currently inactive."
-    user_hold_dto = UserConverter.user_dto(user_hold)
-    return user_hold_dto  # create separate for login purpose with password field
+    user = UserDAO.get_user_by_username(username)
+    if user and not user.is_active and user.marked_active_inactive_by_admin:
+        return "User is currently inactive. Please contact admin."
+    user_dto = dto.UserDTO.user_dto(user)
+    return user_dto
 
 
 def get_by_email(email):
-    user_hold = UserDAO.get_active_inactive_single_user_by_email(email)
-    if not user_hold:
+    user = UserDAO.get_active_inactive_single_user_by_email(email)
+    if not user:
         return "No user found with email - {}.".format(email)
-    if user_hold and not user_hold.is_active:
-        return "User is currently inactive."
-    final_use = UserConverter.user_dto(user_hold)
-    return final_use
+    if user and not user.is_active and user.marked_active_inactive_by_admin:
+        return "User is currently inactive. Please contact admin"
+    user_dto = dto.UserDTO.user_dto(user)
+    return user_dto
 
 
 def get_active_inactive_users_by_email(email):
     user_hold = UserDAO.get_active_inactive_single_user_by_email(email)
-    return UserConverter.user_dto(user_hold)
-
-
-def generate_session_token(user):
-    user_session_token = create_access_token(identity=user)
-    return user_session_token
-
-
-def revoke_session_token(jti):
-    session_history_dao = SessionHistoryDAO()
-    session_history_dao.update_session(jti)
-
-
-def get_revoked_tokens():
-    session_history_dao = SessionHistoryDAO()
-    blacklisted_token_bucket = set()
-    token_bucket = session_history_dao.get_revoked_tokens()
-    for token in token_bucket:
-        blacklisted_token_bucket.add(str(token.access_token_jti))
-    return blacklisted_token_bucket
+    return dto.UserDTO.user_dto(user_hold)
 
 
 def convert_password(p) -> str:

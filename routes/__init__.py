@@ -1,5 +1,5 @@
 from flask import redirect, send_from_directory
-from service.userLoginService import get_revoked_tokens
+from service.sessionService import get_revoked_tokens
 
 
 def initiate_routes(application, jwt):
