@@ -27,7 +27,7 @@ class AdminUserOperationsResource(Resource):
             user = get_jwt_identity()
             if not user.get('is_admin'):
                 return ErrorEnums.UNAUTHORIZATION_ERROR.value, 403
-            response = UserCreateUpdateService.admin_access(user_email, permission_type)
+            response = UserCreateUpdateService.admin_access(user, user_email, permission_type)
             return response[0], response[1]
         except Exception as e:
             return {'error': e.args}, 400

@@ -1,8 +1,8 @@
 import Models
 import json
 import Constants.userConstants as UserConstants
-from Utils import TimeUtils
 from Enums import UserEnums
+from Dao.bookDAO import BookDAO
 
 
 def validate_and_convert_new_user_request_object(aa: dict, bb: Models.User):
@@ -88,3 +88,15 @@ def verify_email_length(curr, new):
             }, 404
         ]
     return False
+
+
+def get_user_favourite_books(user):
+    book_service = BookDAO()
+    book_bucket = list()
+    for book in user.fav_books:
+        book_bucket.append(
+            (
+                book_service.find_active_book_by_id(book.id)
+            )
+        )
+    return book_bucket

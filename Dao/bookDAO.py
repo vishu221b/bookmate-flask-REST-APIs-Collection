@@ -1,6 +1,5 @@
 import Models
 import datetime
-
 import dto.BookDTO
 from Utils import BookUtils
 from Constants.BookConstants import REQUEST_FIELDS_FOR_UPDATE
@@ -92,6 +91,11 @@ class BookDAO:
 
     @staticmethod
     def find_active_inactive_book_by_id(book_id):
+        book = Models.Book.objects(pk=str(book_id)).first()
+        return book
+
+    @staticmethod
+    def find_active_book_by_id(book_id):
         book = Models.Book.objects(pk=str(book_id)).first()
         return book
 

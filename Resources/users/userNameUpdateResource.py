@@ -13,7 +13,9 @@ class UserNameUpdateResource(Resource):
     def patch(self):
         user_request = UserNameUpdateResource.parser.parse_args()
         current_user = get_jwt_identity()
-        response = UserCreateUpdateService.update_user_name(current_user, user_request['oldUsername'], user_request['newUsername'])
+        response = UserCreateUpdateService.update_user_name(
+            current_user, user_request['oldUsername'], user_request['newUsername']
+        )
         return {'response': response[0]}, int(response[1])
 
     @jwt_required

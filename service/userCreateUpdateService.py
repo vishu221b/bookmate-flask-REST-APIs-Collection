@@ -7,6 +7,7 @@ from Utils import SecurityUtils as UserSecurity
 import Utils.TimeUtils as TimeUtils
 from Dao.sessionHistoryDAO import SessionHistoryDAO
 from .sessionService import SessionService
+from.bookCreateUpdateService import BookCreateUpdateService
 
 
 def confirm_if_username_or_email_exists_already_during_registration(user_email, user_name) -> dict:
@@ -64,7 +65,7 @@ def get_active_user_by_email(email):
     return dto.UserDTO.user_dto(user)
 
 
-def create_update_user(user_id, user, is_user_id_provided: bool):
+def create_update_user(user_identity, user, is_user_identity_provided: bool):
     phone_length_is_valid = is_phone_vaild(user.setdefault('phone_number', None))
     if not phone_length_is_valid:
         return ErrorEnums.INVALID_PHONE_LENGTH_ERROR.value
@@ -72,12 +73,12 @@ def create_update_user(user_id, user, is_user_id_provided: bool):
         return ErrorEnums.INVALID_PASSWORD_LENGTH_ERROR.value
     user['password'] = UserSecurity.encrypt_pass(user.get('password'))
     user['date_of_birth'] = TimeUtils.convert_time(user.get('date_of_birth'))
-    if not is_user_id_provided:
+    if not is_user_identity_provided:
         created_user = UserDAO.create_user(user)
         if isinstance(created_user, str):
             return {'error': created_user}
         return UserConverter.convert_user_dto_to_public_response_dto(created_user)
-    updated_user = UserDAO.update_user_generic_data(user_id, user)
+    updated_user = UserDAO.update_user_generic_data(user_identity, user)
     return updated_user
 
 
@@ -102,7 +103,7 @@ def update_user_email(user, old_em, new_em):
     email_exists_already = verify_if_email_already_exists(new_em)
     if email_exists_already:
         return [{'error': 'Cannot update email as the user with email id - {} already exists.'.format(new_em)}, 409]
-    updated_user = UserDAO.update_email(user['id'], new_em)
+    updated_user = UserDAO.update_email(user, new_em)
     return updated_user
 
 
@@ -118,7 +119,7 @@ def activate_deactivate_user(
         return email_length_invalid
     elif curr_user.get('email') != email and not is_admin_action:
         return [{'error': 'Please provide your own valid email id address.'}, 404]
-    UserDAO.activate_deactivate_user(curr_user.get('email'), email, is_admin_action, action)
+    UserDAO.activate_deactivate_user(curr_user, email, is_admin_action, action)
     if action == AdminPermissionEnums.DEACTIVATE.name:
         deleted_user = dto.UserDTO.user_dto(UserDAO.get_active_inactive_single_user_by_email(email))
         if deleted_user and not deleted_user.get('is_active'):
@@ -149,7 +150,7 @@ def update_password(user, old_password, new_password):
             }, 404
         ]
     persisted_p, requested_p = SecurityUtils.encrypt_pass(old_password), SecurityUtils.encrypt_pass(new_password)
-    updated_user = UserDAO.update_password(user.get('id'), persisted_p, requested_p)
+    updated_user = UserDAO.update_password(user, persisted_p, requested_p)
     return updated_user
 
 
@@ -171,7 +172,7 @@ def update_user_name(user: dict, old_username: str, new_username: str):
         return [{'error': 'Username is already up to date for the user.'}, 200]
     if verify_if_username_already_exists(new_username):
         return [{'error': 'User with username - {} already exists.'.format(new_username)}, 409]
-    response = UserDAO.update_username(user['id'], new_username)
+    response = UserDAO.update_username(user, new_username)
     return response
 
 
@@ -184,15 +185,35 @@ def is_phone_vaild(phone_num):
     return True
 
 
-def admin_access(user_email: str, permission_type: str) -> list:
+def admin_access(performer, user_email: str, permission_type: str) -> list:
     user = UserDAO.get_active_inactive_single_user_by_email(user_email)
     if not user.is_active:
         return [{'error': 'Cannot grant access as the user is inactive. Please activate the user profile first.'}, 400]
     access_type = AdminPermissionEnums.__dict__.get(permission_type.upper())
-    UserDAO.admin_access(user_email, access_type.value)
+    UserDAO.admin_access(performer, user_email, access_type.value)
     verify_user_access = UserDAO.get_active_user_by_email(user_email).is_admin
     if verify_user_access is True:
         return [{'response': 'User granted admin privileges.'}, 200]
     elif verify_user_access is False:
         return [{'response': 'User revoked from admin privileges.'}, 200]
     return [{'error': 'There was some error.'}, 500]
+
+
+def mark_unmark_book_as_favourite(user, book_id, action):
+    print(
+        'INFO: Request to add/remove book as favourite by user: {} for bookId: {} with action {}. Session - {}.'.format(
+            user, book_id, action, user.get('_session_signature')
+        ))
+    book_service = BookCreateUpdateService()
+    user_dao = UserDAO()
+    books = user_dao.get_favourite_books_ids_by_email(user.get('email'))
+    if book_id in books and action == UserEnums.MARK.name:
+        return [{'error': 'Book is already marked as favourite.'}, 400]
+    if book_id not in books and action == UserEnums.REMOVE.name:
+        return [{'error': 'Book is not listed as a favourite.'}, 400]
+    book = book_service.get_active_book_by_id(book_id)
+    if isinstance(book, list):
+        return book
+    user_dao.set_unset_book_as_favourite(user, book, action)
+    response = UserEnums.MARK.value if action == UserEnums.MARK.name else UserEnums.REMOVE.value
+    return response

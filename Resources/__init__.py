@@ -8,6 +8,9 @@ def initiate_resources(api):
 
     api.add_resource(BookCreateUpdateResource, '/book', '/book/', '/book/<book_id>', '/book/<book_id>/')
     api.add_resource(AllBookResource, '/books/all', '/books/all/')
+    api.add_resource(AddRemoveBookFromFavourites,
+                     '/book/favourite/<book_id>/<action>',
+                     '/book/favourite/<book_id>/<action>/')
 
     # ===============================User======================================= #
 

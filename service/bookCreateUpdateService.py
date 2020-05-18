@@ -3,6 +3,9 @@ from dto.BookDTO import book_dto
 
 
 class BookCreateUpdateService:
+    def __init__(self):
+        self.book = None
+
     @staticmethod
     def create_new_book(new_book, created_by):
         validated_existence = check_if_book_already_exists(new_book)
@@ -34,7 +37,7 @@ class BookCreateUpdateService:
 
     @staticmethod
     def get_books_for_user(user):
-        books = BookDAO.find_by_created_by_user(user['email'])
+        books = BookDAO.find_by_created_by_user(user.get('email'))
         if books and len(books) > 0:
             return {'response': books}, 200
         return {'error': 'No books have been added yet.'}, 404
@@ -73,6 +76,13 @@ class BookCreateUpdateService:
         for book in all_books:
             response.append(book_dto(book))
         return response, 200
+
+    def get_active_book_by_id(self, book_id):
+        valid_book = validate_book_id(book_id)
+        if valid_book.get('error'):
+            return valid_book.get('response')
+        self.book = BookDAO.find_active_book_by_id(book_id)
+        return self.book
 
 
 def verify_delete(book_id):
