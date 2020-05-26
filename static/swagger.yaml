@@ -306,7 +306,7 @@ paths:
           description: Invalid input supplied
       security:
         - bearerAuth: []
-  /books/fetch/all:
+  /book/fetch/all:
     get:
       tags:
       - Book Operations
