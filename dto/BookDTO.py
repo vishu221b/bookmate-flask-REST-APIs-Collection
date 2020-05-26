@@ -14,4 +14,16 @@ def book_dto(book):
             'is_active': book.is_active
         }
     except Exception as e:
-        print("Error at book_dto=>{}".format(e))
+        print("DEBUG: Exception - {}, occurred at BOOK_DTO.".format(e))
+
+
+def embed_book_dto(book):
+    try:
+        return {
+            'id': str(book.pk),
+            'book_name': book.name,
+            'author': book.author,
+            'summary': book.summary
+        }
+    except Exception as e:
+        print("DEBUG: Exception - {}, occurred at EMBED_BOOK_DTO.".format(e))

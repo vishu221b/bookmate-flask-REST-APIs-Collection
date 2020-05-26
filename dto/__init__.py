@@ -1,1 +1,1 @@
-from . import SessionDTO, BookDTO, UserDTO
+from . import SessionDTO, BookDTO, UserDTO, EmbeddedDocumentDTO

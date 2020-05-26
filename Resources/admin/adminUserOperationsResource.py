@@ -10,7 +10,7 @@ class AdminUserOperationsResource(Resource):
         try:
             current_user = get_jwt_identity()
             if not current_user.get('is_admin'):
-                return ErrorEnums.UNAUTHORIZATION_ERROR.value, 403
+                return ErrorEnums.UNAUTHORIZED_ERROR.value, 403
             if not user_email:
                 return {'response': {'error': 'Please provide an email Id.'}}, 400
             resp = UserCreateUpdateService.activate_deactivate_user(current_user,
@@ -26,8 +26,8 @@ class AdminUserOperationsResource(Resource):
         try:
             user = get_jwt_identity()
             if not user.get('is_admin'):
-                return ErrorEnums.UNAUTHORIZATION_ERROR.value, 403
-            response = UserCreateUpdateService.admin_access(user_email, permission_type)
+                return ErrorEnums.UNAUTHORIZED_ERROR.value, 403
+            response = UserCreateUpdateService.admin_access(user, user_email, permission_type)
             return response[0], response[1]
         except Exception as e:
             return {'error': e.args}, 400
@@ -37,7 +37,7 @@ class AdminUserOperationsResource(Resource):
         try:
             current_user = get_jwt_identity()
             if not current_user.get('is_admin'):
-                return ErrorEnums.UNAUTHORIZATION_ERROR.value, 403
+                return ErrorEnums.UNAUTHORIZED_ERROR.value, 403
             if not user_email:
                 return {'response': {'error': 'Please provide an email Id.'}}, 400
             resp = UserCreateUpdateService.activate_deactivate_user(current_user,

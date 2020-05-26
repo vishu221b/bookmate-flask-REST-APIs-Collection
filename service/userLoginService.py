@@ -1,7 +1,6 @@
 import dto.UserDTO
 from Dao.userDAO import UserDAO
 import Utils.SecurityUtils as EncryptPass
-import Utils.UserUtils as UserConverter
 
 
 def get_by_username(username):

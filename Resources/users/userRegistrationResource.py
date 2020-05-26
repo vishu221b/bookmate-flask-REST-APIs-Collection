@@ -14,9 +14,9 @@ class UserRegister(Resource):
 
 # # ---------------------------------------x-x-POST-x-x-----------------------------------------------
     def post(self):
-        user_details = UserRegister.parser.parse_args()
+        user_request_details = UserRegister.parser.parse_args()
         is_exist_user = UserCreateUpdateService.confirm_if_username_or_email_exists_already_during_registration(
-            user_details.get('email'), user_details.get('username'))
+            user_request_details.get('email'), user_request_details.get('username'))
         if is_exist_user and is_exist_user.get('result'):
             return {
                        "error": str(
@@ -24,7 +24,7 @@ class UserRegister(Resource):
                        )
                    }, 409
         try:
-            result = UserCreateUpdateService.create_update_user(None, user_details, False)
+            result = UserCreateUpdateService.create_update_user(None, user_request_details, False)
             if isinstance(result, str):
                 return {'error': result}, 400
             return {"response": result}, 201

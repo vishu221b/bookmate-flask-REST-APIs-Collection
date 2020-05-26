@@ -1,7 +1,6 @@
 from flask import Flask
-from flask_restful import Api
 from flask_jwt_extended import JWTManager
-import Resources
+from Resources import *
 import DB
 import routes
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -16,10 +15,9 @@ application.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 application.config['JWT_ERROR_MESSAGE_KEY'] = 'error'
 application.config['PROPAGATE_EXCEPTIONS'] = True
 
-api = Api(application)
 jwt = JWTManager(application)
 DB.initiate_mongo()
-Resources.initiate_resources(api)
+generate_resources_for_app(application)
 routes.initiate_routes(application, jwt)
 
 SWAGGER_URL = "/swagger"
@@ -29,7 +27,7 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL_SWAG,
     config={
-        "app_name": "BooKME"
+        "app_name": "BooKMate"
     }
 )
 application.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)

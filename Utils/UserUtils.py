@@ -1,8 +1,8 @@
 import Models
 import json
 import Constants.userConstants as UserConstants
-from Utils import TimeUtils
 from Enums import UserEnums
+from Dao.bookDAO import BookDAO
 
 
 def validate_and_convert_new_user_request_object(aa: dict, bb: Models.User):
@@ -13,11 +13,24 @@ def validate_and_convert_new_user_request_object(aa: dict, bb: Models.User):
 
 
 def convert_update_request_for_persistence(user_request, user_object):
-    user_object.last_name = user_request.get('last_name')
-    user_object.first_name = user_request.get('first_name')
-    user_object.date_of_birth = user_request.get('date_of_birth')
-    user_object.phone_number = user_request.get('phone_number')
-    return user_object
+    try:
+        user_object.last_name = user_request.get(
+            'last_name') if user_request.get('last_name') else user_object.last_name
+        user_object.first_name = user_request.get(
+            'first_name') if user_request.get('first_name') else user_object.first_name
+        user_object.date_of_birth = user_request.get(
+            'date_of_birth') if user_request.get('date_of_birth') else user_object.date_of_birth
+        user_object.phone_number = user_request.get(
+            'phone_number') if user_request.get('phone_number') else user_object.phone_number
+        user_object.email = user_request.get(
+            'email') if user_request.get('email') else user_object.email
+        user_object.username = user_request.get(
+            'username') if user_request.get('username') else user_object.username
+        user_object.alt_username = user_request.get(
+            'email').rsplit('@')[0] if user_request.get('email') else user_object.alt_username
+        return user_object
+    except Exception as e:
+        return e
 
 
 def convert_email_update_request_for_persistence(user_request, user_object):
@@ -35,18 +48,17 @@ def convert_user_dto_to_public_response_dto(user):
         response_dto.setdefault('email', user.get('email'))
         response_dto.setdefault('phone_number', user.get('phone_number'))
         response_dto.setdefault('username', user.get('username'))
-        response_dto.setdefault('is_active', user.get('is_active'))
         response_dto.setdefault('created_at', str(user.get('created_at')))
         return response_dto
     except Exception as e:
-        print("Error URC:2=>{}".format(e))
+        print("DEBUG: Exception occurred in _USER_DTO_PUBLIC - {}".format(e))
         return "There was some error."
 
 
 def convert_request_to_user_update_dto(request_dto, user_identity):
     try:
         response_user = clone_dto(user_identity)
-        for field in UserConstants.USER_FIELDS_FOR_GENERIC_UPDATE:
+        for field in UserConstants.USER_FIELDS_FOR_DETAILS_UPDATE:
             if field is not None:
                 response_user[field] = request_dto[field]
         return response_user
@@ -88,3 +100,15 @@ def verify_email_length(curr, new):
             }, 404
         ]
     return False
+
+
+def get_user_favourite_books(user):
+    book_service = BookDAO()
+    book_bucket = list()
+    for book in user.fav_books:
+        book_bucket.append(
+            (
+                book_service.find_active_book_by_id(book.id)
+            )
+        )
+    return book_bucket

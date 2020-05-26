@@ -6,7 +6,7 @@ USER_MANDATORY_FIELDS = ["first_name", "date_of_birth", "phone_number", "email",
 
 USER_UPDATE_MANDATORY_FIELDS = ["first_name", "last_name", "date_of_birth", "phone_number", "email"]
 
-USER_FIELDS_FOR_GENERIC_UPDATE = ["first_name", "last_name", "date_of_birth", "phone_number"]
+USER_FIELDS_FOR_DETAILS_UPDATE = ["first_name", "last_name", "date_of_birth", "phone_number", "email", "username"]
 
 PARSER_FIELDS_FOR_EMAIL_UPDATE = ["oldEmail", "newEmail"]
 

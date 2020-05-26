@@ -14,11 +14,11 @@ class SessionService:
     def get_session_details_for_user(self, token, user):
         try:
             if not user.get('is_admin'):
-                return [ErrorEnums.UNAUTHORIZATION_ERROR.value, 403]
+                return [ErrorEnums.UNAUTHORIZED_ERROR.value, 403]
             time = TimeUtils()
             self.session_dao = SessionHistoryDAO()
             if not user.get('is_admin'):
-                return ErrorEnums.UNAUTHORIZATION_ERROR.value, 403
+                return ErrorEnums.UNAUTHORIZED_ERROR.value, 403
             decoded_token_details = decode_token(token, allow_expired=True)
             session_details_bucket = self.session_dao.get_session_details(token)
             session_details_bucket = session_dto(session_details_bucket)
