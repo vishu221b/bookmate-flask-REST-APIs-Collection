@@ -27,7 +27,7 @@ tags:
 - name: Admin Panel
   description: Basic admin priviledges
 paths:
-  /user/all:
+  /user/fetch/all:
     get:
       tags:
       - User
@@ -162,7 +162,7 @@ paths:
           description: Not found
       security:
       - bearerAuth: []
-  /user/{userEmail}/{action}/fu:
+  /user/social/{action}/{userEmail}/:
     post:
       tags:
         - User Operations
@@ -170,13 +170,6 @@ paths:
       description: Follow the user with the email
       operationId: followUser
       parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user that needs to be followed
-          required: true
-          schema:
-            type: string
-            format: email
         - name: action
           in: path
           description: The action to be performed
@@ -184,6 +177,13 @@ paths:
           schema:
             type: string
             enum: [follow, unfollow]
+        - name: userEmail
+          in: path
+          description: The email of the user that needs to be followed
+          required: true
+          schema:
+            type: string
+            format: email
       responses:
         200:
           description: Success
@@ -193,7 +193,7 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  /user/{action}/{userEmail}:
+  /user/perform/{action}/{userEmail}:
     post:
       tags:
         - User Operations
@@ -306,7 +306,7 @@ paths:
           description: Invalid input supplied
       security:
         - bearerAuth: []
-  /books/all:
+  /books/fetch/all:
     get:
       tags:
       - Book Operations

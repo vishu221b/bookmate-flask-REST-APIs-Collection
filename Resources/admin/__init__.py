@@ -13,18 +13,18 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(AdminUserOperationsResource,
-                                         '/admin/user/delete/<user_email>',
-                                         '/admin/user/delete/<user_email>/',
-                                         '/admin/user/activate/<user_email>',
-                                         '/admin/user/activate/<user_email>/',
-                                         '/admin/privileges/<permission_type>/<user_email>',
-                                         '/admin/privileges/<permission_type>/<user_email>/')
+                                         '/user/delete/<user_email>',
+                                         '/user/delete/<user_email>/',
+                                         '/user/activate/<user_email>',
+                                         '/user/activate/<user_email>/',
+                                         '/privileges/<permission_type>/<user_email>',
+                                         '/privileges/<permission_type>/<user_email>/')
         resource.get('api').add_resource(AdminBookOperationsResource,
-                                         '/admin/book/delete/<book_id>', '/admin/book/delete/<book_id>/',
-                                         '/admin/book/restore/<book_id>', '/admin/book/restore/<book_id>/')
+                                         '/book/delete/<book_id>', '/book/delete/<book_id>/',
+                                         '/book/restore/<book_id>', '/book/restore/<book_id>/')
         resource.get('api').add_resource(SessionDetailsResource,
-                                         '/admin/sessionDetails',
-                                         '/admin/sessionDetails/')
+                                         '/sessionDetails',
+                                         '/sessionDetails/')
 
     def _init_singleton_resource(self):
         self.blueprint_map = self._generate_api_blueprint()

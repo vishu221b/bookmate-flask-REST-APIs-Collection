@@ -20,27 +20,27 @@ class SingletonResourceFactory:
         return self.blueprint_factory.generate_fresh_blueprint('user', __name__)
 
     def _init_api_resources(self, resource):
-        resource.get('api').add_resource(UserRegister, '/user/register', '/user/register/')
-        resource.get('api').add_resource(AllUserFetchResource, '/user/all', '/user/all/')
-        resource.get('api').add_resource(Login, '/user', '/user/', '/user/login', '/user/login/')
-        resource.get('api').add_resource(Logout, '/user/logout', '/user/logout/')
+        resource.get('api').add_resource(UserRegister, '/register', '/register/')
+        resource.get('api').add_resource(AllUserFetchResource, '/fetch/all', '/fetch/all/')
+        resource.get('api').add_resource(Login, '/', '/login', '/login/')
+        resource.get('api').add_resource(Logout, '/logout', '/logout/')
         resource.get('api').add_resource(UpdateUserDetails,
-                                         '/user/update/',
-                                         '/user/update',
-                                         '/user/<string:user_email>')
+                                         '/update/',
+                                         '/update',
+                                         '/<string:user_email>')
         resource.get('api').add_resource(UserEmailUpdateResource,
-                                         '/user/update/email', '/user/update/email/')
+                                         '/update/email', '/update/email/')
         resource.get('api').add_resource(UserPasswordUpdateResource,
-                                         '/user/update/password', '/user/update/password/')
+                                         '/update/password', '/update/password/')
         resource.get('api').add_resource(UserNameUpdateResource,
-                                         '/user/update/username', '/user/update/username/')
+                                         '/update/username', '/update/username/')
         resource.get('api').add_resource(FollowUnfollowUsers,
-                                         '/user/<user_to_be_followed_unfollowed>/<action>/fu',
-                                         '/user/<user_to_be_followed_unfollowed>/<action>/fu/'
+                                         '/social/<action>/<user_to_be_followed_unfollowed>',
+                                         '/social/<action>/<user_to_be_followed_unfollowed>/'
                                          )
         resource.get('api').add_resource(BlockUnblockUsers,
-                                         '/user/<action>/<user_to_be_blocked_unblocked>',
-                                         '/user/<action>/<user_to_be_blocked_unblocked>/')
+                                         '/perform/<action>/<user_to_be_blocked_unblocked>',
+                                         '/perform/<action>/<user_to_be_blocked_unblocked>/')
 
     def _init_singleton_resource(self):
         self.blueprint_map = self._generate_api_blueprint()

@@ -5,8 +5,8 @@ from .books import *
 from .admin import *
 
 
-def generate_all_resources_main(app):
-    all_resources = [users, books, admin]
-    resources = ResourceFactory(app, all_resources)
-    print(resources.resource_blueprints)
-    resources.create_blueprints()
+def generate_resources_for_app(app):
+    resources = [users, books, admin]
+    current_resources = ResourceFactory(app, resources)
+    print(current_resources.resource_blueprints)
+    current_resources.create_blueprints()

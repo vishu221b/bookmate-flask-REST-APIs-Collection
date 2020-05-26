@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint
+from flask import Flask
 from flask_jwt_extended import JWTManager
 from Resources import *
 import DB
@@ -16,24 +16,9 @@ application.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 application.config['JWT_ERROR_MESSAGE_KEY'] = 'error'
 application.config['PROPAGATE_EXCEPTIONS'] = True
 
-#
-# def init_blueprints(*args):
-#     for arg in args:
-#         if isinstance(arg, Blueprint):
-#             application.register_blueprint(arg)
-
-
-# # user = Blueprint('user', __name__, url_prefix="/user")
-# book = Blueprint('book', __name__, url_prefix="/book")
-# admin = Blueprint('admin', __name__, url_prefix="/admin")
-#
-# # user_api = Api(user)
-# book_api = Api(book)
-# admin_api = Api(admin)
-
 jwt = JWTManager(application)
 DB.initiate_mongo()
-generate_all_resources_main(application)
+generate_resources_for_app(application)
 routes.initiate_routes(application, jwt)
 
 SWAGGER_URL = "/swagger"

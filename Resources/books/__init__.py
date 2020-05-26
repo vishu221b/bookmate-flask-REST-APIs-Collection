@@ -14,13 +14,13 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(
-            BookCreateUpdateResource, '/book', '/book/', '/book/<book_id>', '/book/<book_id>/')
+            BookCreateUpdateResource, '/', '/<book_id>', '/<book_id>/')
         resource.get('api').add_resource(
-            AllBookResource, '/books/all', '/books/all/')
+            AllBookResource, '/fetch/all', '/fetch/all/')
         resource.get('api').add_resource(
             AddRemoveBookFromFavourites,
-            '/book/favourite/<book_id>/<action>',
-            '/book/favourite/<book_id>/<action>/')
+            '/favourite/<book_id>/<action>',
+            '/favourite/<book_id>/<action>/')
 
     def _init_singleton_resource(self):
         self.blueprint_map = self._generate_api_blueprint()
