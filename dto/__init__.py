@@ -1,2 +1,1 @@
-from Utils import UserUtils
-from . import SessionDTO, BookDTO, UserDTO
+from . import SessionDTO, BookDTO, UserDTO, EmbeddedDocumentDTO

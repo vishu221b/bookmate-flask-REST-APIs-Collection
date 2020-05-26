@@ -2,17 +2,19 @@ import Models
 import datetime
 import dto.BookDTO
 from Utils import BookUtils
-from Constants.BookConstants import REQUEST_FIELDS_FOR_UPDATE
+from Constants.BookConstants import FIELDS_FOR_BOOK_UPDATE_REQUEST
 
 
 class BookDAO:
     @staticmethod
-    def create_new_book(book_dto):
+    def create_new_book(book_dto, creator):
         book = Models.Book()
         try:
             new_book = BookUtils.convert_new_book_request_object_for_persistence(book_dto, book)
             if isinstance(new_book, str):
                 return {'error': new_book}, 404
+            new_book.created_by = Models.User.objects(email=creator.get('email'))
+            new_book.last_updated_by = Models.User.objects(email=creator.get('email'))
             new_book.save()
             return {'response': dto.BookDTO.book_dto(new_book)}, 201
         except Exception as e:
@@ -27,29 +29,32 @@ class BookDAO:
         return {'response': 'Book was successfully removed.'}
 
     @staticmethod
-    def update_book_by_id(req_book):
-        book = BookDAO.find_active_inactive_book_by_id(req_book['id'])
+    def update_book_by_id(req_book, updated_by):
+        book = BookDAO.find_active_inactive_book_by_id(req_book.get('id'))
         if not book.is_active:
             return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
         up_book = dto.BookDTO.book_dto(book)
-        for field in REQUEST_FIELDS_FOR_UPDATE:
+        for field in FIELDS_FOR_BOOK_UPDATE_REQUEST:
             if field != "id" and req_book[field] and len(req_book[field].strip()) > 0:
                 up_book[field] = req_book[field]
         validated_existence = BookDAO.find_by_name_author_genre(up_book)
-        book_by_barcode = BookDAO.get_by_barcode(up_book['barcode'])
-        if validated_existence and dto.BookDTO.book_dto(validated_existence)['id'] != req_book['id']:
+        is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
+        if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
             return {'error': 'Book with the same name already exists for this author.'}, 409
-        if up_book['barcode']\
-                and len(up_book['barcode'].strip()) > 1\
-                and book_by_barcode and dto.BookDTO.book_dto(book_by_barcode)['id'] != req_book['id']:
+        if up_book.get(
+                'barcode') and len(up_book.get(
+                'barcode').strip()) > 1 and is_book_by_barcode and dto.BookDTO.book_dto(
+                is_book_by_barcode).get('id') != req_book.get('id'):
             return {'error': 'Another book with the same barcode already exists. Please use a fresh barcode.'}, 409
-        book.name = up_book['name']
-        book.summary = up_book['summary']
-        book.genre = up_book['genre']
-        book.barcode = up_book['barcode']
-        book.author = up_book['author']
-        book.last_updated_at = datetime.datetime.now()
-        book.save()
+        book.update(
+            set__name=up_book.get('name') if up_book.get('name') else book.name,
+            set__summary=up_book.get('summary') if up_book.get('summary') else book.summary,
+            set__genre=up_book.get('genre') if up_book.get('genre') else book.summary,
+            set__barcode=up_book.get('barcode') if up_book.get('barcode') else book.summary,
+            set__author=up_book.get('author') if up_book.get('author') else book.summary,
+            set__last_updated_by=Models.User.objects(email=updated_by.get('email')).first(),
+            set__last_updated_at=datetime.datetime.now()
+        )
         response = {
                        'response': {
                            'Success': 'Book Sucessfully updated.',

@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
-  title: Bookme
+  title: BooKMate
   description: 'This is a basic flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code and documentation for this app
-    here [BookMeApp](https://github.com/vishu221b/bukme-REST-APIs) .'
+    here [BooKMate APIs collection](https://github.com/vishu221b/bukme-REST-APIs) .'
   termsOfService: https://github.com/vishu221b/bukme-REST-APIs
   contact:
     email: vishal.dogra738@gmail.com
@@ -162,6 +162,69 @@ paths:
           description: Not found
       security:
       - bearerAuth: []
+  /user/{userEmail}/{action}/fu:
+    post:
+      tags:
+        - User Operations
+      summary: Follow Unfollow user
+      description: Follow the user with the email
+      operationId: followUser
+      parameters:
+        - name: userEmail
+          in: path
+          description: The email of the user that needs to be followed
+          required: true
+          schema:
+            type: string
+            format: email
+        - name: action
+          in: path
+          description: The action to be performed
+          required: true
+          schema:
+            type: string
+            enum: [follow, unfollow]
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+        404:
+          description: User not found
+      security:
+        - bearerAuth: []
+  /user/{action}/{userEmail}:
+    post:
+      tags:
+        - User Operations
+      summary: Block Unblock a user
+      description: Block or Unblock the user with the email
+      operationId: blockUnblockUser
+      parameters:
+        - name: action
+          in: path
+          description: Action that needs to be performed
+          required: true
+          schema:
+            enum:
+              - block
+              - unblock
+        - name: userEmail
+          in: path
+          description: The email of the user that needs to be blocked or unblocked
+          required: true
+          schema:
+              type: string
+              format: email
+      responses:
+        200:
+          description: Success
+        400:
+          description: Invalid input supplied
+        404:
+          description: User not found
+      security:
+        - bearerAuth: []
   /user/{user-email}:
     delete:
       tags:

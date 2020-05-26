@@ -10,16 +10,17 @@ from .sessionService import SessionService
 from.bookCreateUpdateService import BookCreateUpdateService
 
 
-def confirm_if_username_or_email_exists_already_during_registration(user_email, user_name) -> dict:
+def confirm_if_username_or_email_exists_already_during_registration(user_email: str, user_name: str) -> dict:
     user_instance = UserDAO.get_active_inactive_single_user_by_email(user_email)
-    user_email_already_exists_error = "Another user with the same email already exists."
-    username_already_exists_error = "Another user with the same username already exists."
+
     if user_instance:
-        return {'result': True, 'value': user_email_already_exists_error}
-    else:
-        username_instance = UserDAO.get_user_by_username(user_name)
-        if username_instance:
-            return {'result': True, 'value': username_already_exists_error}
+        return {'result': True, 'value': ErrorEnums.EMAIL_ALREADY_EXISTS_ERROR.value}
+
+    alt_username_user = UserDAO.get_user_by_alt_username(user_name)
+    username_instance = UserDAO.get_user_by_username(user_name)
+
+    if username_instance or alt_username_user:
+        return {'result': True, 'value': ErrorEnums.USER_NAME_ALREADY_EXISTS.value}
 
 
 def verify_id_email_for_email_update(uid, email):
@@ -65,21 +66,45 @@ def get_active_user_by_email(email):
     return dto.UserDTO.user_dto(user)
 
 
-def create_update_user(user_identity, user, is_user_identity_provided: bool):
-    phone_length_is_valid = is_phone_vaild(user.setdefault('phone_number', None))
+def create_update_user(user_identity, user_request_details: dict, user_identity_provided: bool):
+    phone_length_is_valid = is_phone_vaild(user_request_details.setdefault('phone_number', None))
+
     if not phone_length_is_valid:
         return ErrorEnums.INVALID_PHONE_LENGTH_ERROR.value
-    if not UserUtils.validate_min_length(user.get('password'), UserEnums.MIN_PASSWORD_LENGTH.value):
+
+    if not UserUtils.validate_min_length(user_request_details.get('password'), UserEnums.MIN_PASSWORD_LENGTH.value):
         return ErrorEnums.INVALID_PASSWORD_LENGTH_ERROR.value
-    user['password'] = UserSecurity.encrypt_pass(user.get('password'))
-    user['date_of_birth'] = TimeUtils.convert_time(user.get('date_of_birth'))
-    if not is_user_identity_provided:
-        created_user = UserDAO.create_user(user)
+
+    user_request_details.__setitem__(
+        'date_of_birth', TimeUtils.convert_time(
+            user_request_details.get('date_of_birth')
+        )
+    ) if user_request_details.get('date_of_birth') else None
+
+    if not user_identity_provided:
+        user_request_details.__setitem__('password', UserSecurity.encrypt_pass(user_request_details.get('password')))
+        created_user = UserDAO.create_user(user_request_details)
         if isinstance(created_user, str):
-            return {'error': created_user}
-        return UserConverter.convert_user_dto_to_public_response_dto(created_user)
-    updated_user = UserDAO.update_user_generic_data(user_identity, user)
-    return updated_user
+            return created_user
+        return UserConverter.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(created_user))
+
+    if user_request_details.get('email') and user_identity.get('email') != user_request_details.get('email'):
+        verify_existence_for_user_email = UserDAO.get_active_user_by_email(user_request_details.get('email'))
+
+        if verify_existence_for_user_email:
+            return ErrorEnums.EMAIL_ALREADY_EXISTS_ERROR.value
+
+    if user_request_details.get('username') and user_identity.get('username') != user_request_details.get('username'):
+        verify_username_existence = UserDAO.get_active_user_by_username(user_request_details.get('username'))
+        verify_alt_username_existence = UserDAO().get_user_by_alt_username(user_request_details.get('username'))
+
+        if verify_username_existence or verify_alt_username_existence:
+            return ErrorEnums.USER_NAME_ALREADY_EXISTS.value
+
+    updated_user = UserDAO.update_user_generic_data(user_identity, user_request_details)
+    if isinstance(updated_user, str):
+        return updated_user
+    return UserUtils.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(updated_user))
 
 
 def get_existing_user_by_id(identity) -> dict:
@@ -110,7 +135,7 @@ def update_user_email(user, old_em, new_em):
 def activate_deactivate_user(
         curr_user: dict, email: str, is_admin_action: bool, action) -> list:
     print(
-        'Log: activation deactivation request received at {} for'
+        'INFO: activation deactivation request received at {} for'
         ' \nuser: {},\nemail: {},\nadmin_action: {},\npermission: {}]'.format(
             str(datetime.datetime.now()), curr_user, email, is_admin_action, action
         ))

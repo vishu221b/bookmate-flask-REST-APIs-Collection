@@ -1,5 +1,6 @@
 from Dao.bookDAO import BookDAO
 from dto.BookDTO import book_dto
+from Dao.userDAO import UserDAO
 
 
 class BookCreateUpdateService:
@@ -7,16 +8,14 @@ class BookCreateUpdateService:
         self.book = None
 
     @staticmethod
-    def create_new_book(new_book, created_by):
+    def create_new_book(new_book, created_by_user):
         validated_existence = check_if_book_already_exists(new_book)
         code_check = check_if_bar_code_exists(new_book)
         if code_check['error']:
             return code_check['response'][0], code_check['response'][1]
-        if validated_existence is True:
+        if validated_existence:
             return {'error': 'Book with the same name already exists for this author.'}, 409
-        new_book['created_by'] = created_by
-        new_book['last_updated_by'] = created_by
-        return BookDAO.create_new_book(new_book)
+        return BookDAO.create_new_book(new_book, created_by_user)
 
     @staticmethod
     def delete_book(book_id, user, is_admin_request: bool) -> list:
@@ -43,12 +42,12 @@ class BookCreateUpdateService:
         return {'error': 'No books have been added yet.'}, 404
 
     @staticmethod
-    def update_book(book):
+    def update_book(book: dict, updated_by: dict):
         try:
-            c_book = validate_book_id(book['id'])
-            if c_book['error']:
-                return c_book['response'][0], c_book['response'][1]
-            response = BookDAO.update_book_by_id(book)
+            c_book = validate_book_id(book.get('id'))
+            if c_book.get('error'):
+                return c_book.get('response')[0], c_book.get('response')[1]
+            response = BookDAO.update_book_by_id(book, updated_by)
             return response
         except Exception as e:
             return {'error': e.args}, 500
