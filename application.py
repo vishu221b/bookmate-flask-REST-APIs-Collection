@@ -5,11 +5,10 @@ import DB
 import routes
 from flask_swagger_ui import get_swaggerui_blueprint
 import os
-import config
 
 
 application = Flask(__name__)
-application.config['JWT_SECRET_KEY'] = config.JWT_SECRET_KEY  # os.environ['JWT_SECRET_KEY']
+application.config['JWT_SECRET_KEY'] = os.environ['JWT_SECRET_KEY']
 application.config['JWT_ACCESS_TOKEN_EXPIRES'] = 60 * 60
 application.config['JWT_BLACKLIST_ENABLED'] = True
 application.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
