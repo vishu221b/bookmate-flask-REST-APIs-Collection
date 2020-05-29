@@ -1,4 +1,4 @@
-from factories import BlueprintFactory
+from factories import ViewFactory
 from .userBlockUnblockResource import BlockUnblockUsers
 from .userFollowUnfollowResource import FollowUnfollowUsers
 from .userRegistrationResource import UserRegister
@@ -13,7 +13,7 @@ from.allUserFetchResource import AllUserFetchResource
 
 class SingletonResourceFactory:
     def __init__(self):
-        self.blueprint_factory = BlueprintFactory()
+        self.blueprint_factory = ViewFactory()
         self.blueprint_map = None
 
     def _generate_api_blueprint(self):
@@ -21,7 +21,7 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(UserRegister, '/register', '/register/')
-        resource.get('api').add_resource(AllUserFetchResource, '/fetch/all', '/fetch/all/')
+        resource.get('api').add_resource(AllUserFetchResource, '/fetch/all', '/fetch/all/')  # TODO: Get user by id
         resource.get('api').add_resource(Login, '/', '/login', '/login/')
         resource.get('api').add_resource(Logout, '/logout', '/logout/')
         resource.get('api').add_resource(UpdateUserDetails,

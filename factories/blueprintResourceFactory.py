@@ -1,4 +1,4 @@
-class ResourceFactory:
+class BlueprintResourceFactory:
     def __init__(self, app, resources):
         self.app = app
         self.resources = resources

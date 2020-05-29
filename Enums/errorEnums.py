@@ -12,3 +12,5 @@ class ErrorEnums(Enum):
     EMAIL_ALREADY_EXISTS_ERROR = "The email id already exists with another user. Please use different address."
     USER_NAME_ALREADY_EXISTS = "The username already exists for another user. Please try a different username."
     EXCEPTION_ERROR = "Exception - {} - occurred at - {}."
+    INVALID_TOKEN_EXCEPTION = "Please provide your own valid session token."
+    SESSION_NOT_FOUND_ERROR = "No session found. Please check your session token."

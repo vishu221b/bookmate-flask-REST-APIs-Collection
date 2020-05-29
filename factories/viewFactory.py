@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_restful import Api
 
 
-class BlueprintFactory:
+class ViewFactory:
     def __init__(self):
         self.blueprint = None
         self.api = None

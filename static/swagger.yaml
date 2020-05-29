@@ -668,7 +668,7 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-  /admin/sessionDetails:
+  /admin/session/details:
     post:
       tags:
         - Admin Panel

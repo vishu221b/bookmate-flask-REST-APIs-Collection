@@ -1,4 +1,4 @@
-from factories import BlueprintFactory
+from factories import ViewFactory
 from .bookCreateUpdateResource import BookCreateUpdateResource
 from .allBookResource import AllBookResource
 from.markUnmarkFavourite import AddRemoveBookFromFavourites
@@ -6,7 +6,7 @@ from.markUnmarkFavourite import AddRemoveBookFromFavourites
 
 class SingletonResourceFactory:
     def __init__(self):
-        self.blueprint_factory = BlueprintFactory()
+        self.blueprint_factory = ViewFactory()
         self.blueprint_map = None
 
     def _generate_api_blueprint(self):

@@ -2,3 +2,4 @@ from .userCreateUpdateService import confirm_if_username_or_email_exists_already
 from .bookCreateUpdateService import BookCreateUpdateService
 from .sessionService import SessionService
 from .userSocialService import UserSocialService
+from .AWS import AwsServiceBase

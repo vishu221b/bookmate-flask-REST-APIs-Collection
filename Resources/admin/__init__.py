@@ -1,12 +1,12 @@
-from factories import BlueprintFactory
+from factories import ViewFactory
 from .adminBookOperationsResource import AdminBookOperationsResource
 from .adminUserOperationsResource import AdminUserOperationsResource
-from .getSessionDetailsResource import SessionDetailsResource
+from .getSessionDetailsAdminResource import AdminSessionDetailsResource
 
 
 class SingletonResourceFactory:
     def __init__(self):
-        self.blueprint_factory = BlueprintFactory()
+        self.blueprint_factory = ViewFactory()
 
     def _generate_api_blueprint(self):
         return self.blueprint_factory.generate_fresh_blueprint('admin', __name__)
@@ -22,9 +22,9 @@ class SingletonResourceFactory:
         resource.get('api').add_resource(AdminBookOperationsResource,
                                          '/book/delete/<book_id>', '/book/delete/<book_id>/',
                                          '/book/restore/<book_id>', '/book/restore/<book_id>/')
-        resource.get('api').add_resource(SessionDetailsResource,
-                                         '/sessionDetails',
-                                         '/sessionDetails/')
+        resource.get('api').add_resource(AdminSessionDetailsResource,
+                                         '/session/details',
+                                         '/session/details/')
 
     def _init_singleton_resource(self):
         self.blueprint_map = self._generate_api_blueprint()
