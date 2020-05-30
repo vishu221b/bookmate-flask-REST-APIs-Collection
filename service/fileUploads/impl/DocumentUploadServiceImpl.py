@@ -24,14 +24,13 @@ class DocumentUploadServiceImpl(FileUploadServiceBaseModel):
         self._repo_key = None
 
     def upload_file(self):
-        response = self._aws_service.upload_file_to_s3(
+        return self._aws_service.upload_file_to_s3(
             repoKey=self._repo_key,
             fileName=self._file_name,
             fileContent=self._file_obj,
             fileContentType=self.get_mime_type(self._file_name),
-            contentACL='private'
+            contentACL=BookEnums.PRIVACY_SCOPES_FOR_DOCUMENT.value.get(self._privacy_scope)
         )
-        return response
 
     def verify_file_extension(self, f_name: str):
         _file_extension = f_name.rsplit('.')[1]
@@ -40,6 +39,7 @@ class DocumentUploadServiceImpl(FileUploadServiceBaseModel):
         return _file_extension
 
     def process_file_for_upload(self, _user_id: str, _book_id: str, f_obj: FileStorage, _privacy_scope: str):
+        print(f"INFO: user: {_user_id} for book: {_book_id} for file: {f_obj} and privacy: {_privacy_scope}")
         self._file_extension = self.verify_file_extension(f_obj.filename)
         if isinstance(self._file_extension, list):
             return self._file_extension
@@ -63,7 +63,7 @@ class DocumentUploadServiceImpl(FileUploadServiceBaseModel):
         return [{'response': {'updatedBookDetails': book_dto(response)}}, 200]
 
     def update_file_record(self, response):
-        e_tag = response.get('ETag')
+        e_tag = response.get('ETag')[1:-1]
         if not e_tag:
             print(
                 "{}: DEBUG: Response received is - {}, for file {} and book id {}.".format(

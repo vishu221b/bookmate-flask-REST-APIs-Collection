@@ -11,7 +11,6 @@ class ViewFactory:
     def create_blueprint(self, view, views_path):
         self.blueprint = Blueprint(name=view, import_name=views_path, url_prefix='/{}'.format(str(view)))
         self.api = Api(self.blueprint)
-        print(view, views_path)
         return {
             'blueprint': self.blueprint,
             'api': self.api,

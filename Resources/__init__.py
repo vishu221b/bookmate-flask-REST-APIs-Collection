@@ -9,5 +9,4 @@ from .fileUploads import *
 def generate_resources_for_app(app):
     resources = [users, books, admin]
     current_resources = BlueprintResourceFactory(app, resources)
-    print(current_resources.resource_blueprints)
     current_resources.create_blueprints()
