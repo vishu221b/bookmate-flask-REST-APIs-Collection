@@ -1,3 +1,4 @@
+from Resources.fileUploads import DocumentFileUploadResource
 from factories import ViewFactory
 from .bookCreateUpdateResource import BookCreateUpdateResource
 from .allBookResource import AllBookResource
@@ -21,6 +22,11 @@ class SingletonResourceFactory:
             AddRemoveBookFromFavourites,
             '/favourite/<book_id>/<action>',
             '/favourite/<book_id>/<action>/')
+        resource.get('api').add_resource(
+            DocumentFileUploadResource,
+            '/upload',
+            '/upload/'
+        )
 
     def _init_singleton_resource(self):
         self.blueprint_map = self._generate_api_blueprint()

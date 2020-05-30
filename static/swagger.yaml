@@ -395,6 +395,41 @@ paths:
           description: Not found
       security:
       - bearerAuth: []
+  /book/upload:
+    post:
+      tags:
+        - Book Operations
+      summary: Uploads a book document
+      operationId: uploadDocumentFile
+      parameters:
+        - name: bookId
+          in: query
+          description: Id of the book for which the file is uploaded
+          required: true
+          schema:
+            type: string
+        - name: privacyScope
+          in: query
+          description: Scope of privacy for the book
+          required: true
+          schema:
+            type: string
+            enum: [PUBLIC, PRIVATE]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documentFile:
+                  type: string
+                  description: file to upload
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+      security:
+      - bearerAuth: []
   /book/{bookId}:
     patch:
       tags:
