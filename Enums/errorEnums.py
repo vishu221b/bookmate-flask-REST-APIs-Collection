@@ -14,3 +14,6 @@ class ErrorEnums(Enum):
     EXCEPTION_ERROR = "Exception - {} - occurred at - {}."
     INVALID_TOKEN_EXCEPTION = "Please provide your own valid session token."
     SESSION_NOT_FOUND_ERROR = "No session found. Please check your session token."
+    NO_BOOK_FOUND_ERROR = {'error': 'No book found.'}
+    INACTIVE_BOOK_ERROR = {'error': 'Book cannot be updated as the book is currently inactive.'}
+

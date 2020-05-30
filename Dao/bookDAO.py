@@ -108,3 +108,18 @@ class BookDAO:
     def get_by_barcode(barcode):
         book = Models.Book.objects(barcode=barcode).first()
         return book
+
+    def update_document_details_for_book(self,
+                                         book: Models.Book,
+                                         repo_key: str,
+                                         e_tag: str,
+                                         doc_name: str,
+                                         privacy: str) -> Models.Book:
+        book.update(
+            set__repo_key=repo_key,
+            set__entity_tag=e_tag,
+            set__document_name=doc_name,
+            set__privacy_scope=privacy
+        )
+        book.reload()
+        return book

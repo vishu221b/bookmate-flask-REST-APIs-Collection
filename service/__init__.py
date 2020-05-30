@@ -3,3 +3,4 @@ from .bookCreateUpdateService import BookCreateUpdateService
 from .sessionService import SessionService
 from .userSocialService import UserSocialService
 from .AWS import AwsServiceBase
+from .fileUploads import FileUploadServiceBaseModel
