@@ -400,7 +400,7 @@ paths:
       tags:
         - Book Operations
       summary: Uploads a book document
-      operationId: uploadDocumentFile
+      operationId: uploadBookDocumentFile
       parameters:
         - name: bookId
           in: query
@@ -423,8 +423,25 @@ paths:
               properties:
                 documentFile:
                   type: string
-                  description: file to upload
                   format: binary
+      responses:
+        200:
+          description: successful operation
+      security:
+        - bearerAuth: []
+  /book/download:
+    get:
+      tags:
+        - Book Operations
+      summary: Download a Book Document
+      operationId: downloadBookDocumentFile
+      parameters:
+        - name: bookId
+          in: query
+          description: Id of the book for which link is required
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: successful operation

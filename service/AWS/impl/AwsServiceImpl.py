@@ -30,12 +30,11 @@ class AwsServiceBaseImpl(AwsServiceBase):
     def get_file_from_s3(self, **params):
         print(f"DEBUG: s3 GET Request params: {params}")
         s3 = self.get_aws_resource('s3')
-        response = s3.Object(
-            bucket_name=AWS_BUCKET,
-            key=f"{params.get('repoKey')}/{params.get('fileName')}"
-        ).get()
-        print(f"DEBUG: s3 GET Request Response: {response.get()}")
-        return response.get('Body')
+        response = s3.Bucket(AWS_BUCKET).Object(
+            f"{params.get('repoKey')}/{params.get('fileName')}"
+        ).get(IfMatch=params.get('eTag'))
+        print(f"DEBUG: s3 GET Request Response: {response}")
+        return response
 
     def replace_file_in_s3(self, repo_key: str, old_file_key: str, new_file_key: str):
         print(f"DEBUG: s3 PUT Request params: {repo_key}, {old_file_key}, {new_file_key}")

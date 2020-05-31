@@ -1,4 +1,4 @@
-from Resources.fileUploads import DocumentFileUploadResource
+from Resources.files import DocumentFileUploadResource, DocumentFileDownloadResource
 from factories import ViewFactory
 from .bookCreateUpdateResource import BookCreateUpdateResource
 from .allBookResource import AllBookResource
@@ -26,6 +26,11 @@ class SingletonResourceFactory:
             DocumentFileUploadResource,
             '/upload',
             '/upload/'
+        )
+        resource.get('api').add_resource(
+            DocumentFileDownloadResource,
+            '/download',
+            '/download/'
         )
 
     def _init_singleton_resource(self):

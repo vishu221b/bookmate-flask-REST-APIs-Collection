@@ -3,7 +3,7 @@ from mimetypes import guess_type
 from werkzeug.utils import secure_filename
 
 
-class FileUploadServiceBaseModel(ABC):
+class FileServiceBaseModel(ABC):
 
     @abstractmethod
     def upload_file(self):

@@ -1,1 +1,0 @@
-from .fileUploads import DocumentFileUploadResource

@@ -1,5 +1,7 @@
 def book_dto(book):
     try:
+        if not book:
+            return None
         return {
             'id': str(book.pk),
             'book_name': book.name,

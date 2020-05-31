@@ -5,6 +5,9 @@ from . import EmbeddedDocumentDTO
 
 def user_dto(user):
     try:
+        if not user:
+            print(f"DEBUG: Received : {user} for user_dto.")
+            return None
         book_bucket = list()
         books = UserUtils.get_user_favourite_books(user)
         if books:

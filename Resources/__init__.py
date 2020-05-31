@@ -3,7 +3,7 @@ from . import (users, books, admin)
 from .users import *
 from .books import *
 from .admin import *
-from .fileUploads import *
+from .files import *
 
 
 def generate_resources_for_app(app):

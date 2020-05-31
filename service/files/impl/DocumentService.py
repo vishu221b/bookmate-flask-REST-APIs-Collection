@@ -1,4 +1,4 @@
-from . import FileUploadServiceBaseModel
+from . import FileServiceBaseModel, bookCreateUpdateService
 import io
 from Utils import SecurityUtils
 from Enums import BookEnums, ErrorEnums
@@ -8,7 +8,7 @@ import datetime
 from dto.BookDTO import book_dto
 
 
-class DocumentUploadServiceImpl(FileUploadServiceBaseModel):
+class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
 
     def __init__(self, aws_service_instance):
         self._aws_service = aws_service_instance
@@ -74,7 +74,7 @@ class DocumentUploadServiceImpl(FileUploadServiceBaseModel):
                 ))
             return [{'error': 'There was some error.'}, 500]
         response = self._book_dao.update_document_details_for_book(
-            self._book, self._repo_key, e_tag, self._file_name, self._privacy_scope)
+            self._book, self._repo_key, e_tag, self._file_name, self._privacy_scope, self._user_id)
         return response
 
     def bytes_to_obj(self):
@@ -83,5 +83,20 @@ class DocumentUploadServiceImpl(FileUploadServiceBaseModel):
     def make_repo_key(self):
         return SecurityUtils.calculate_md5(self._user_id)
 
-    def download_file(self):
-        pass
+    def download_file(self, book_id):
+        valid_book = bookCreateUpdateService.validate_book_id(book_id)
+        if valid_book.get('error'):
+            return valid_book.get('response')
+        book = book_dto(valid_book.get('book'))
+        if not book.get('is_active'):
+            return [ErrorEnums.INACTIVE_BOOK_ERROR.value, 400]
+        if book.get('privacy_scope') == BookEnums.PRIVATE.value:
+            return [ErrorEnums.PROTECTED_BOOK_ACCESS_ERROR.value, 403]
+        response = self._aws_service.get_file_from_s3(
+            repoKey=book.get('book_repo'),
+            fileName=book.get('document_name'),
+            eTag=book.get('entity_tag')
+        )
+        response.setdefault('file_name', book.get('document_name'))
+        print(f"DEBUG: Final response for file download: {response}")
+        return response

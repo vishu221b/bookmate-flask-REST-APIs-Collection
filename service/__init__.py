@@ -3,6 +3,6 @@ from .bookCreateUpdateService import BookCreateUpdateService
 from .sessionService import SessionService
 from .userSocialService import UserSocialService
 from .AWS import AwsServiceBase
-from .fileUploads import FileUploadServiceBaseModel
+from .files import FileServiceBaseModel
 from .AWS.impl.AwsServiceImpl import AwsServiceBaseImpl
-from .fileUploads.impl.DocumentUploadServiceImpl import DocumentUploadServiceImpl
+from .files.impl.DocumentService import DocumentFileServiceBaseModelImpl
