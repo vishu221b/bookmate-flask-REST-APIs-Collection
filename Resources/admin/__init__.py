@@ -13,10 +13,8 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(AdminUserOperationsResource,
-                                         '/user/delete/<user_email>',
-                                         '/user/delete/<user_email>/',
-                                         '/user/activate/<user_email>',
-                                         '/user/activate/<user_email>/',
+                                         '/user/mark/<action>/<user_email>',
+                                         '/user/mark/<action>/<user_email>/',
                                          '/privileges/<permission_type>/<user_email>',
                                          '/privileges/<permission_type>/<user_email>/')
         resource.get('api').add_resource(AdminBookOperationsResource,

@@ -6,3 +6,5 @@ class BookEnums(Enum):
     ALLOWED_EXTENSIONS = ["pdf", "epub", "mobi", "docx"]
     PRIVATE = "PRIVATE"
     PUBLIC = "PUBLIC"
+    RESTORE = "ACTIVE"
+    DELETE = "INACTIVE"

@@ -447,14 +447,21 @@ paths:
           description: successful operation
       security:
       - bearerAuth: []
-  /book/{bookId}:
-    patch:
+  /book/{action}/{bookId}:
+    post:
       tags:
       - Book Operations
-      summary: Restore deleted book by ID
+      summary: Restore/Delete book by ID
       description: For valid response enter valid book ID with length 24
-      operationId: restoreBookById
+      operationId: deleteRestoreBookById
       parameters:
+      - name: action
+        in: path
+        description: Action to be performed
+        required: true
+        schema:
+          type: string
+          enum: [RESTORE, DELETE]
       - name: bookId
         in: path
         description: ID of book that needs to be restored
@@ -477,35 +484,6 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-    delete:
-      tags:
-      - Book Operations
-      summary: Delete book by ID
-      description: For valid response enter valid book ID with length 24
-      operationId: deleteBookById
-      parameters:
-      - name: bookId
-        in: path
-        description: ID of book that needs to be deleted
-        required: true
-        schema:
-          type: string
-          format: hexadecimal
-      responses:
-        200:
-          description: Book successfully deleted
-        400:
-          description: Invalid ID supplied
-        403:
-          description: Access forbidden
-        404:
-          description: Not found
-        409:
-          description: Book already deleted
-        500:
-          description: Unexpected error
-      security:
-      - bearerAuth: []
   /book/favourite/{bookId}/mark:
     post:
       tags:
@@ -564,89 +542,48 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-  /admin/privileges/grant/{userEmail}:
-    put:
-      tags:
-        - Admin Panel
-      summary: Grant admin rights to the user
-      description: Grants the user with email admin privileges
-      operationId: grantAdminAccessToUser
-      parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user
-          required: true
-          schema:
-            type: string
-            format: email
-      responses:
-        200:
-          description: Success
-        400:
-          description: Invalid input supplied
-        404:
-          description: User not found
-      security:
-        - bearerAuth: []
-  /admin/privileges/revoke/{userEmail}:
-    put:
-      tags:
-        - Admin Panel
-      summary: Revoke admin rights for the user
-      description: Revoke admin rights for the user
-      operationId: revokeAdminAccessForUser
-      parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user
-          required: true
-          schema:
-            type: string
-            format: email
-      responses:
-        200:
-          description: Success
-        400:
-          description: Invalid input supplied
-        404:
-          description: User not found
-      security:
-        - bearerAuth: []
-  /admin/user/delete/{userEmail}:
-    delete:
-      tags:
-        - Admin Panel
-      summary: Delete user
-      description: Admins can delete any active user
-      operationId: deleteUserFromAdminPanel
-      parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user that needs to be deleted
-          required: true
-          schema:
-            type: string
-            format: email
-      responses:
-        200:
-          description: Success
-        400:
-          description: Invalid input supplied
-        404:
-          description: User not found
-      security:
-        - bearerAuth: []
-  /admin/user/activate/{userEmail}:
+  /admin/session/details:
     post:
       tags:
         - Admin Panel
-      summary: Activate user
-      description: Admins can activate any inactive user
-      operationId: activateUserFromAdminPanel
+      summary: Fetch session details for token
+      operationId: getUserSessionDetails
+      requestBody:
+        description: Session token to fetch details for
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDetailsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDetailsResponse'
+        400:
+          description: Bad request
+      security:
+        - bearerAuth: []
+  /admin/user/mark/{action}/{userEmail}:
+    post:
+      tags:
+        - Admin Panel
+      summary: Activate Deactivate user
+      description: Admins can activate deacativate any user
+      operationId: activateDeactivateUserFromAdminPanel
       parameters:
+        - name: action
+          in: path
+          description: Action that needs to be performed
+          required: true
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE]
         - name: userEmail
           in: path
-          description: The email of the user that needs to be activated
+          description: The email of the user that needs to be activated or deactivated
           required: true
           schema:
             type: string
@@ -660,34 +597,35 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  /admin/book/delete/{bookId}:
-    delete:
+  /admin/privileges/{action}/{userEmail}:
+    put:
       tags:
         - Admin Panel
-      summary: Delete any book by it's ID
-      description: For valid response enter valid book ID with length 24
-      operationId: deleteBookByIdAdminPanel
+      summary: Grant/Revoke admin rights to/for user
+      description: Grants or Revoke the user with admin privileges
+      operationId: grantRevokeAdminAccessToUser
       parameters:
-        - name: bookId
+        - name: action
           in: path
-          description: ID of book that needs to be deleted
+          description: Action that needs to be performed
           required: true
           schema:
             type: string
-            format: hexadecimal
+            enum: [GRANT, REVOKE]
+        - name: userEmail
+          in: path
+          description: The email of the user
+          required: true
+          schema:
+            type: string
+            format: email
       responses:
         200:
-          description: Book successfully deleted
+          description: Success
         400:
-          description: Invalid ID supplied
-        403:
-          description: Access forbidden
+          description: Invalid input supplied
         404:
-          description: Not found
-        409:
-          description: Book already deleted
-        500:
-          description: Unexpected error
+          description: User not found
       security:
         - bearerAuth: []
   /admin/book/restore/{bookId}:
@@ -720,28 +658,34 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-  /admin/session/details:
-    post:
+  /admin/book/delete/{bookId}:
+    delete:
       tags:
         - Admin Panel
-      summary: Fetch session details for token
-      operationId: getUserSessionDetails
-      requestBody:
-        description: Session token to fetch details for
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SessionDetailsRequest'
+      summary: Delete any book by it's ID
+      description: For valid response enter valid book ID with length 24
+      operationId: deleteBookByIdAdminPanel
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of book that needs to be deleted
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
       responses:
         200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionDetailsResponse'
+          description: Book successfully deleted
         400:
-          description: Bad request
+          description: Invalid ID supplied
+        403:
+          description: Access forbidden
+        404:
+          description: Not found
+        409:
+          description: Book already deleted
+        500:
+          description: Unexpected error
       security:
         - bearerAuth: []
 components:

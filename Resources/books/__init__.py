@@ -1,3 +1,4 @@
+from .bookDeleteRestoreResource import BookDeleteRestoreResource
 from Resources.files import DocumentFileUploadResource, DocumentFileDownloadResource
 from factories import ViewFactory
 from .bookCreateUpdateResource import BookCreateUpdateResource
@@ -15,7 +16,11 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(
-            BookCreateUpdateResource, '/', '/<book_id>', '/<book_id>/')
+            BookCreateUpdateResource, '/')
+        resource.get('api').add_resource(
+            BookDeleteRestoreResource,
+            '/<action>/<book_id>', '/<action>/<book_id>/'
+        )
         resource.get('api').add_resource(
             AllBookResource, '/fetch/all', '/fetch/all/')
         resource.get('api').add_resource(
