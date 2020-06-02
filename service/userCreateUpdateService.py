@@ -1,4 +1,5 @@
 import datetime
+import re
 import dto.UserDTO
 from Dao.userDAO import UserDAO, verify_if_email_already_exists, verify_if_username_already_exists
 from Utils import UserUtils as UserConverter, UserUtils, SecurityUtils
@@ -72,9 +73,6 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
     if not phone_length_is_valid:
         return ErrorEnums.INVALID_PHONE_LENGTH_ERROR.value
 
-    if not UserUtils.validate_min_length(user_request_details.get('password'), UserEnums.MIN_PASSWORD_LENGTH.value):
-        return ErrorEnums.INVALID_PASSWORD_LENGTH_ERROR.value
-
     user_request_details.__setitem__(
         'date_of_birth', TimeUtils.convert_time(
             user_request_details.get('date_of_birth')
@@ -82,11 +80,18 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
     ) if user_request_details.get('date_of_birth') else None
 
     if not user_identity_provided:
+        if not validate_password_format(user_request_details.get('password')):
+            return ErrorEnums.INVALID_PASSWORD_ERROR.value
+        if not validate_email_format(user_request_details.get('email')):
+            return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
         user_request_details.__setitem__('password', UserSecurity.encrypt_pass(user_request_details.get('password')))
         created_user = UserDAO.create_user(user_request_details)
         if isinstance(created_user, str):
             return created_user
         return UserConverter.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(created_user))
+
+    if not validate_email_format(user_request_details.get('email')):
+        return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
 
     if user_request_details.get('email') and user_identity.get('email') != user_request_details.get('email'):
         verify_existence_for_user_email = UserDAO.get_active_user_by_email(user_request_details.get('email'))
@@ -105,6 +110,12 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
     if isinstance(updated_user, str):
         return updated_user
     return UserUtils.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(updated_user))
+
+
+def validate_email_format(email):
+    check_email = re.compile(UserEnums.VALID_EMAIL.value)
+    valid_email = check_email.match(email)
+    return valid_email
 
 
 def get_existing_user_by_id(identity) -> dict:
@@ -166,17 +177,17 @@ def activate_deactivate_user(
 
 
 def update_password(user, old_password, new_password):
-    if not UserUtils.validate_min_length(
-            old_password, UserEnums.MIN_PASSWORD_LENGTH.value
-    ) or not UserUtils.validate_min_length(new_password, UserEnums.MIN_PASSWORD_LENGTH.value):
-        return [
-            {
-                'error': ErrorEnums.INVALID_PASSWORD_LENGTH_ERROR.value
-            }, 404
-        ]
+    if not validate_password_format(old_password) or not validate_password_format(new_password):
+        return [ErrorEnums.INVALID_PASSWORD_ERROR.value, 404]
     persisted_p, requested_p = SecurityUtils.encrypt_pass(old_password), SecurityUtils.encrypt_pass(new_password)
     updated_user = UserDAO.update_password(user, persisted_p, requested_p)
     return updated_user
+
+
+def validate_password_format(password):
+    check_pass = re.compile(UserEnums.VALID_PASS.value)
+    valid_pass = check_pass.match(password)
+    return valid_pass
 
 
 def update_user_name(user: dict, old_username: str, new_username: str):

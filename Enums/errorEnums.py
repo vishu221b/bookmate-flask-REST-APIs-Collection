@@ -3,7 +3,16 @@ from enum import Enum
 
 class ErrorEnums(Enum):
     UNAUTHORIZED_ERROR = {'error': 'You are unauthorized to access this resource.'}
-    INVALID_PASSWORD_LENGTH_ERROR = "Minimum length requirement for password is 8."
+    ALLOWED_SPECIAL_CHARACTERS = ['#', '@', '$', '!', '%', '*', '?', '&', '.', '+', '%', '_', '^']
+    INVALID_PASSWORD_ERROR = {
+        'error':
+            "Invalid Password. Please enter a valid password.",
+        'help':
+            "Minimum length should be 8.\n "
+            "Should contain at least one digit, lowercase character and an uppercase character.\n "
+            "Should contain one special character."
+            "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS.value)
+    }
     INVALID_PHONE_LENGTH_ERROR = "Invalid phone number length. Please check your phone number."
     INACTIVE_USER_ERROR = "User is currently inactive."
     NO_USER_FOUND_ERROR = "No user found. Please check your input."
@@ -17,4 +26,5 @@ class ErrorEnums(Enum):
     NO_BOOK_FOUND_ERROR = {'error': 'No book found.'}
     INACTIVE_BOOK_ERROR = {'error': 'Book is currently inactive.'}
     PROTECTED_BOOK_ACCESS_ERROR = {'error': 'Cannot access book as the book is not public.'}
+    INVALID_EMAIL_FORMAT_ERROR = "Invalid email format. Please check your email and try again."
 

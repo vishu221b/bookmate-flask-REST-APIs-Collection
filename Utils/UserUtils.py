@@ -1,5 +1,6 @@
 import Models
 import json
+import re
 import Constants.userConstants as UserConstants
 from Enums import UserEnums
 from Dao.bookDAO import BookDAO
