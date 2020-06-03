@@ -3,6 +3,7 @@ from flask_jwt_extended import decode_token, create_access_token
 from Utils.TimeUtils import TimeUtils
 from dto.SessionDTO import session_dto
 from Enums import SessionEnums, ErrorEnums
+from Utils import UserUtils as UserConverter
 
 
 class SessionService:
@@ -61,7 +62,7 @@ class SessionService:
         active_token = self.get_active_token_record(user)
         if active_token:
             return active_token
-        session_token = self.generate_fresh_session_token(user)
+        session_token = self.generate_fresh_session_token(UserConverter.convert_user_dto_to_public_response_dto(user))
         self.session_dao.insert_login_session(user.get('email'), session_token)
         return session_token
 

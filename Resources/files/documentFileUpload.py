@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import FileStorage
 from werkzeug import Response
 from Injectors import FilesContainer
+from Enums import ErrorEnums
 
 
 class DocumentFileUploadResource(Resource):
@@ -15,6 +16,8 @@ class DocumentFileUploadResource(Resource):
     def post(self):
         try:
             _user = get_jwt_identity()
+            if not _user:
+                return ErrorEnums.SESSION_NOT_FOUND_ERROR.value, 404
             req = DocumentFileUploadResource.parser.parse_args()
             _scope = req.get('privacyScope')
             _book_id = req.get('bookId')

@@ -39,7 +39,13 @@ paths:
         description: Scope of the request
         required: true
         schema:
+          enum: [all, single]
+      - name: Id
+        in: query
+        description: Id of the user in single user fetch request
+        schema:
           type: string
+        required: false
       responses:
         200:
           description: Success
@@ -48,12 +54,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AllUserFetchResponseBody'
+                  $ref: '#/components/schemas/UserDetailsPublicResponseBody'
                 description: Array of all the active users
         404:
           description: Not found
         500:
           description: Internal sever error
+      security:
+        - bearerAuth: []
   /user/register:
     post:
       tags:
@@ -135,9 +143,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
+                type: object
+                $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
         400:
           description: Bad request
       security:
@@ -328,7 +335,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CreateBookResponse'
+                  $ref: '#/components/schemas/BookResponseBody'
       security:
       - bearerAuth: []
   /book:
@@ -349,7 +356,7 @@ paths:
                  response:
                   type: array
                   items:
-                    $ref: '#/components/schemas/CreateBookResponse'
+                    $ref: '#/components/schemas/BookResponseBody'
       security:
       - bearerAuth: []
     post:
@@ -370,7 +377,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateBookResponse'
+                $ref: '#/components/schemas/BookResponseBody'
         400:
           description: Invalid Order
           content: {}
@@ -395,7 +402,7 @@ paths:
           content:
             application/json:
               'schema':
-                $ref: '#/components/schemas/UpdateBookResponse'
+                $ref: '#/components/schemas/UpdateBookResponseBody'
         400:
           description: Bad request
         404:
@@ -719,7 +726,7 @@ components:
         password:
           type: string
       required: [first_name, date_of_birth, phone_number, email, username,password]
-    AllUserFetchResponseBody:
+    UserDetailsPublicResponseBody:
       type: object
       properties:
         id:
@@ -849,6 +856,8 @@ components:
           format: email
         username:
           type: string
+        alternate_username:
+          type: string
         is_active:
           type: boolean
         created_at:
@@ -865,45 +874,24 @@ components:
           description: Array of favourite books
         followers:
           type: array
+          items:
             $ref: '#/components/schemas/EmbeddedUserDetailsBody'
         following:
           type: array
+          items:
             $ref: '#/components/schemas/EmbeddedUserDetailsBody'
         blocked:
           type: array
+          items:
             $ref: '#/components/schemas/EmbeddedUserDetailsBody'
-    UserGeneralDetailsBody:
-          type: object
-          properties:
-            id:
-              type: string
-            first_name:
-              type: string
-            last_name:
-              type: string
-            date_of_birth:
-              type: string
-              format: date
-            phone_number:
-              type: string
-              format: int64
-              minLength: 9
-              maxLength: 10
-            email:
-              type: string
-              format: email
-            username:
-              type: string
-            is_active:
-              type: boolean
-            created_at:
-              type: string
-              format: date-time
     UserLoginResponseBody:
       type: object
       properties:
         access_token:
           type: string
+        expiry:
+          type: string
+          format: date-time
     UserDetailsUpdateResponseBody:
       type: object
       properties:
@@ -912,8 +900,8 @@ components:
           properties:
             updatedUser:
               type: object
-              $ref: '#/components/schemas/AllUserFetchResponseBody'
-    CreateBookResponse:
+              $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
+    BookResponseBody:
       type: object
       properties:
         id:
@@ -967,7 +955,7 @@ components:
           type: string
         summary:
           type: string
-    UpdateBookResponse:
+    UpdateBookResponseBody:
       type: object
       properties:
         response:
@@ -976,7 +964,7 @@ components:
             Success: 
               type: string
             book:
-              $ref: '#/components/schemas/CreateBookResponse'
+              $ref: '#/components/schemas/BookResponseBody'
       description: Success response on book updation
     SessionDetailsRequest:
       type: object
@@ -992,7 +980,7 @@ components:
           type: string
           format: date-time
         user_details:
-          $ref: '#/components/schemas/UserGeneralDetailsBody'
+          $ref: '#/components/schemas/UserDetailsPublicResponseBody'
         access_token:
           type: string
         access_token_jti:

@@ -1,6 +1,6 @@
 ALL_USER_FIELDS = ["first_name", "last_name", "date_of_birth",
                    "phone_number", "email", "username",
-                   "password", "is_active", "is_admin", "fav_books", "authored_books"]
+                   "password", "is_active", "is_admin", "fav_books"]
 
 USER_MANDATORY_FIELDS = ["first_name", "date_of_birth", "phone_number", "email", "username", "password"]
 

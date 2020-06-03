@@ -80,15 +80,15 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
     ) if user_request_details.get('date_of_birth') else None
 
     if not user_identity_provided:
-        if not validate_password_format(user_request_details.get('password')):
-            return ErrorEnums.INVALID_PASSWORD_ERROR.value
         if not validate_email_format(user_request_details.get('email')):
             return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
+        if not validate_password_format(user_request_details.get('password')):
+            return ErrorEnums.INVALID_PASSWORD_ERROR.value
         user_request_details.__setitem__('password', UserSecurity.encrypt_pass(user_request_details.get('password')))
         created_user = UserDAO.create_user(user_request_details)
         if isinstance(created_user, str):
             return created_user
-        return UserConverter.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(created_user))
+        return dto.UserDTO.user_dto(created_user)
 
     if not validate_email_format(user_request_details.get('email')):
         return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
@@ -109,7 +109,7 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
     updated_user = UserDAO.update_user_generic_data(user_identity, user_request_details)
     if isinstance(updated_user, str):
         return updated_user
-    return UserUtils.convert_user_dto_to_public_response_dto(dto.UserDTO.user_dto(updated_user))
+    return dto.UserDTO.user_dto(updated_user)
 
 
 def validate_email_format(email):
