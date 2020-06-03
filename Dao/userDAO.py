@@ -65,7 +65,7 @@ class UserDAO:
     def get_user_by_id(uid):
         try:
             user_instance = Models.User.objects(pk=str(uid)).first()
-            return user_instance
+            return user_instance  # gives an object
         except Exception as e:
             return {'error': 'There was some error. Error code: {}'.format(str(int(time.time()*1000)))}
 
@@ -120,7 +120,7 @@ class UserDAO:
             user.update(
                 set__email=new_em,
                 set__last_updated_at=datetime.datetime.now(),
-                set__last_updated_by=user  # UserDAO.get_user_by_id(identity.get('id'))
+                set__last_updated_by=user
             )
             updated_user = dto.UserDTO.user_dto(UserDAO.get_user_by_id(identity.get('id')))
             is_update_verified = verify_email_update_for_user(updated_user, new_em)

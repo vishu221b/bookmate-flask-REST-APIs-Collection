@@ -47,9 +47,7 @@ def convert_user_dto_to_public_response_dto(user):
         response_dto.setdefault('last_name', user.get('last_name') if user.get('last_name') else "")
         response_dto.setdefault('date_of_birth', str(user.get('date_of_birth')))
         response_dto.setdefault('email', user.get('email'))
-        response_dto.setdefault('phone_number', user.get('phone_number'))
         response_dto.setdefault('username', user.get('username'))
-        response_dto.setdefault('created_at', str(user.get('created_at')))
         return response_dto
     except Exception as e:
         print("DEBUG: Exception occurred in _USER_DTO_PUBLIC - {}".format(e))

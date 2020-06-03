@@ -119,7 +119,7 @@ def validate_email_format(email):
 
 
 def get_existing_user_by_id(identity) -> dict:
-    user = UserDAO.get_user_by_id(identity)
+    user = UserDAO.get_user_by_id(identity)  # gives an object
     if isinstance(user, dict):
         return user
     return dto.UserDTO.user_dto(user)

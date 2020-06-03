@@ -8,7 +8,7 @@ from .userPasswordUpdateResource import UserPasswordUpdateResource
 from .userDetailsUpdateResource import UpdateUserDetails
 from .userLoginResource import Login
 from.userLogoutResource import Logout
-from.allUserFetchResource import AllUserFetchResource
+from.userFetchResource import UserFetchResource
 
 
 class SingletonResourceFactory:
@@ -21,7 +21,9 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(UserRegister, '/register', '/register/')
-        resource.get('api').add_resource(AllUserFetchResource, '/fetch/all', '/fetch/all/')  # TODO: Get user by id
+        resource.get('api').add_resource(UserFetchResource,
+                                         '/fetch/<scope>',
+                                         '/fetch/<scope>/')  # TODO: Get user by id
         resource.get('api').add_resource(Login, '/', '/login', '/login/')
         resource.get('api').add_resource(Logout, '/logout', '/logout/')
         resource.get('api').add_resource(UpdateUserDetails,

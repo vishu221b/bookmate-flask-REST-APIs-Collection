@@ -27,12 +27,19 @@ tags:
 - name: Admin Panel
   description: Basic admin priviledges
 paths:
-  /user/fetch/all:
+  /user/fetch/{scope}:
     get:
       tags:
       - User
       summary: Get all active users
       operationId: getAllActiveUsers
+      parameters:
+      - name: scope
+        in: path
+        description: Scope of the request
+        required: true
+        schema:
+          type: string
       responses:
         200:
           description: Success
@@ -41,7 +48,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/userGeneralDetailsResponse'
+                  $ref: '#/components/schemas/AllUserFetchResponseBody'
                 description: Array of all the active users
         404:
           description: Not found
@@ -58,7 +65,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userRegistration'
+              $ref: '#/components/schemas/UserRegistrationRequest'
         required: true
       responses:
         200:
@@ -66,7 +73,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userRegistrationResponse'
+                $ref: '#/components/schemas/UserRegistrationResponseBody'
         400:
           description: Bad Request Input
         404:
@@ -84,7 +91,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/userLogin'
+              $ref: '#/components/schemas/UserLoginRequestBody'
         required: true
       responses:
         200:
@@ -92,7 +99,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userLoginResponse'
+                $ref: '#/components/schemas/UserLoginResponseBody'
         400:
           description: Bad request
         404:
@@ -130,7 +137,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/userPersonalDetailsResponse'
+                  $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
         400:
           description: Bad request
       security:
@@ -147,7 +154,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/userGeneralDetailsUpdate'
+              $ref: '#/components/schemas/UserDetailsUpdateRequestBody'
         required: true
       responses:
         200:
@@ -155,7 +162,7 @@ paths:
           content:
             application/json:
               'schema':
-                $ref: '#/components/schemas/userGeneralDetailsUpdateResponse'
+                $ref: '#/components/schemas/UserDetailsUpdateResponseBody'
         400:
           description: Bad request
         404:
@@ -260,7 +267,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userEmailUpdate'
+              $ref: '#/components/schemas/UserEmailUpdateRequestBody'
       responses:
         200:
           description: Success
@@ -279,7 +286,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userNameUpdate'
+              $ref: '#/components/schemas/UserNameUpdateRequestBody'
       responses:
         200:
           description: Success
@@ -298,7 +305,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/passwordUpdate'
+              $ref: '#/components/schemas/PasswordUpdateRequestBody'
       responses:
         200:
           description: Success
@@ -355,7 +362,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/CreateBookRequest'
+              $ref: '#/components/schemas/CreateBookRequestBody'
         required: true
       responses:
         200:
@@ -380,7 +387,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/UpdateBookRequest'
+              $ref: '#/components/schemas/UpdateBookRequestBody'
         required: true
       responses:
         200:
@@ -690,7 +697,7 @@ paths:
         - bearerAuth: []
 components:
   schemas:
-    userRegistration:
+    UserRegistrationRequest:
       type: object
       properties:
         first_name:
@@ -712,15 +719,33 @@ components:
         password:
           type: string
       required: [first_name, date_of_birth, phone_number, email, username,password]
-    userLogin:
+    AllUserFetchResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+    UserLoginRequestBody:
       type: object
       properties:
         email/username:
+          description: Either one of email and username can be used to login
           type: string
         password:
           type: string
       required: [email, password]
-    userGeneralDetailsUpdate:
+    UserDetailsUpdateRequestBody:
       type: object
       properties:
         first_name:
@@ -738,9 +763,10 @@ components:
         email:
           type: string
           format: email
-      required :
-      - email
-    userEmailUpdate:
+        username:
+          type: string
+          format: string
+    UserEmailUpdateRequestBody:
       type: object
       properties:
         oldEmail:
@@ -750,7 +776,7 @@ components:
           type: string
           format: email
       required: [oldEmail, newEmail]
-    userNameUpdate:
+    UserNameUpdateRequestBody:
       type: object
       properties:
         oldUsername:
@@ -758,7 +784,7 @@ components:
         newUsername:
           type: string
       required: [oldUsername, newUsername]
-    passwordUpdate:
+    PasswordUpdateRequestBody:
       type: object
       properties:
         oldPassword:
@@ -768,7 +794,7 @@ components:
       required:
       - oldPassword
       - newPassword
-    CreateBookRequest:
+    CreateBookRequestBody:
       type: object
       properties:
         name:
@@ -782,7 +808,7 @@ components:
         barcode:
           type: string
       required: [name, author, genre]
-    UpdateBookRequest:
+    UpdateBookRequestBody:
       type: object
       properties:
         id:
@@ -798,10 +824,10 @@ components:
         barcode:
           type: string
       required: [id]
-    userRegistrationResponse:
+    UserRegistrationResponseBody:
       type: object
-      $ref: '#/components/schemas/userPersonalDetailsResponse'
-    userPersonalDetailsResponse:
+      $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
+    UserSensitiveDetailsResponseBody:
       type: object
       properties:
         id:
@@ -835,9 +861,18 @@ components:
         fav_books:
           type: array
           items:
-            $ref: '#/components/schemas/CreateBookResponse'
+            $ref: '#/components/schemas/EmbeddedBookDetailsBody'
           description: Array of favourite books
-    userGeneralDetailsResponse:
+        followers:
+          type: array
+            $ref: '#/components/schemas/EmbeddedUserDetailsBody'
+        following:
+          type: array
+            $ref: '#/components/schemas/EmbeddedUserDetailsBody'
+        blocked:
+          type: array
+            $ref: '#/components/schemas/EmbeddedUserDetailsBody'
+    UserGeneralDetailsBody:
           type: object
           properties:
             id:
@@ -864,12 +899,12 @@ components:
             created_at:
               type: string
               format: date-time
-    userLoginResponse:
+    UserLoginResponseBody:
       type: object
       properties:
         access_token:
           type: string
-    userGeneralDetailsUpdateResponse:
+    UserDetailsUpdateResponseBody:
       type: object
       properties:
         response:
@@ -877,7 +912,7 @@ components:
           properties:
             updatedUser:
               type: object
-              $ref: '#/components/schemas/userGeneralDetailsResponse'
+              $ref: '#/components/schemas/AllUserFetchResponseBody'
     CreateBookResponse:
       type: object
       properties:
@@ -908,6 +943,30 @@ components:
           format: email
         is_active:
           type: boolean
+    EmbeddedUserDetailsBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: string
+        book_name:
+          type: string
+        author:
+          type: string
+        summary:
+          type: string
+    EmbeddedBookDetailsBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: string
+        book_name:
+          type: string
+        author:
+          type: string
+        summary:
+          type: string
     UpdateBookResponse:
       type: object
       properties:
@@ -933,7 +992,7 @@ components:
           type: string
           format: date-time
         user_details:
-          $ref: '#/components/schemas/userGeneralDetailsResponse'
+          $ref: '#/components/schemas/UserGeneralDetailsBody'
         access_token:
           type: string
         access_token_jti:

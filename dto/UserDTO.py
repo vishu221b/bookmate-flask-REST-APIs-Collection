@@ -13,6 +13,9 @@ def user_dto(user):
         if books:
             for book in books:
                 book_bucket.append(BookDTO.embed_book_dto(book))
+        user_followers = [EmbeddedDocumentDTO.generate_embedded_dto(user) for user in list(user.all_followers)]
+        user_following = [EmbeddedDocumentDTO.generate_embedded_dto(user) for user in list(user.all_following)]
+        user_blocked = [EmbeddedDocumentDTO.generate_embedded_dto(user) for user in list(user.blocked_users)]
         return {
             'id': str(user.pk),
             'first_name': user.first_name,
@@ -27,9 +30,9 @@ def user_dto(user):
             'password': str(user.password),
             'is_admin': bool(user.is_admin),
             'fav_books': book_bucket if book_bucket else [],
-            'followers': [EmbeddedDocumentDTO.generate_embedded_dto(user) for user in list(user.all_followers)],
-            'following': [EmbeddedDocumentDTO.generate_embedded_dto(user) for user in list(user.all_following)],
-            'blocked': [EmbeddedDocumentDTO.generate_embedded_dto(user) for user in list(user.blocked_users)]
+            'followers': user_followers if user_followers else [],
+            'following': user_following if user_following else [],
+            'blocked': user_blocked if user_blocked else []
         }
     except Exception as e:
         print("DEBUG: Exception occurred at USER_DTO_PRIVATE - {}".format(e))
