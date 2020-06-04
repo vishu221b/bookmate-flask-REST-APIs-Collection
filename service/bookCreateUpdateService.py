@@ -1,5 +1,6 @@
 from Dao.bookDAO import BookDAO
 from dto.BookDTO import book_dto
+from Enums import ErrorEnums
 
 
 class BookCreateUpdateService:
@@ -46,6 +47,8 @@ class BookCreateUpdateService:
             c_book = validate_book_id(book.get('id'))
             if c_book.get('error'):
                 return c_book.get('response')[0], c_book.get('response')[1]
+            elif str(c_book.get('book').created_by) != updated_by.get('id'):
+                return ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 403
             response = BookDAO.update_book_by_id(book, updated_by)
             return response
         except Exception as e:

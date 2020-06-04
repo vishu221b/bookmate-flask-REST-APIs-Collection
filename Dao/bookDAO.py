@@ -57,6 +57,7 @@ class BookDAO:
             set__last_updated_by=updated_by.get('id'),
             set__last_updated_at=datetime.datetime.now()
         )
+        book.reload()
         response = {
                        'response': {
                            'Success': 'Book Sucessfully updated.',
