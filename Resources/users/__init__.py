@@ -23,7 +23,7 @@ class SingletonResourceFactory:
         resource.get('api').add_resource(UserRegister, '/register', '/register/')
         resource.get('api').add_resource(UserFetchResource,
                                          '/fetch/<scope>',
-                                         '/fetch/<scope>/')  # TODO: Get user by id
+                                         '/fetch/<scope>/')
         resource.get('api').add_resource(Login, '/', '/login', '/login/')
         resource.get('api').add_resource(Logout, '/logout', '/logout/')
         resource.get('api').add_resource(UpdateUserDetails,

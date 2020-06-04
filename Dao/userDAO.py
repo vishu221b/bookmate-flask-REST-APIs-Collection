@@ -257,7 +257,7 @@ class UserDAO:
                 print(
                     "DEBUG: Both the people must be in each other's records simultaneously! A mismatch is encountered."
                 )
-                # TODO: Manage response for this use case when there is a mismatch in records for whatever reason
+                return {'unknownError': 'There was some error.'}
 
             newer_version_for_the_one_being_followed = follower_in_target_user.first().version + 1
 
