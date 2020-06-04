@@ -287,11 +287,13 @@ class UserDAO:
 
         user_to_be_added_in_followers_list_of_target = Embedded.Followers(
             user_reference=str(self.user.pk),
+            is_active=True if follow_request else False,
             last_updated_at=datetime.datetime.now(),
             user_email=performer_user.get('email')
         )
         user_to_be_added_in_following_list_of_performer = Embedded.Following(
             user_reference=str(self.target_user.pk),
+            is_active=True if follow_request else False,
             last_updated_at=datetime.datetime.now(),
             user_email=user_to_be_followed_unfollowed.get('email')
         )
