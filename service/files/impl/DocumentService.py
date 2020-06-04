@@ -46,7 +46,7 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         self._file_stream = f_obj.read()
         _file_size_in_mb = BookUtils.convert_bytes_to_mb(self._get_file_size())
         if _file_size_in_mb > BookEnums.MAX_FILE_SIZE_ALLOWED_IN_MB_FOR_DOC.value:
-            return [ErrorEnums.MAX_SIZE_EXCEED_ERROR_FOR_DOC.value, 400]
+            return [ErrorEnums.MAX_SIZE_EXCEED_ERROR_FOR_DOC.value, 413]
         self._book = BookDAO.find_active_book_by_id(_book_id)
         if self._book.created_by != _user_id:
             return [ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 404]
