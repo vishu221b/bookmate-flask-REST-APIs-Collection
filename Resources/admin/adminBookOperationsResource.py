@@ -6,11 +6,14 @@ from service.bookCreateUpdateService import BookCreateUpdateService
 class AdminBookOperationsResource(Resource):
     @jwt_required
     def delete(self, book_id):
-        user = get_jwt_identity()
-        if not user['is_admin']:
-            return {'error': 'Only admins can access this resource.'}, 403
-        response = BookCreateUpdateService.delete_book(book_id, user, True)
-        return response[0], response[1]
+        try:
+            user = get_jwt_identity()
+            if not user['is_admin']:
+                return {'error': 'Only admins can access this resource.'}, 403
+            response = BookCreateUpdateService.delete_book(book_id, user, True)
+            return response[0], response[1]
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400
 
     @jwt_required
     def patch(self, book_id):

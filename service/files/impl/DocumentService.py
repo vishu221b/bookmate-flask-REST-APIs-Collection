@@ -44,6 +44,8 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         if isinstance(self._file_extension, list):
             return self._file_extension
         self._book = BookDAO.find_active_book_by_id(_book_id)
+        if self._book.created_by != _user_id:
+            return [ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 404]
         if not self._book:
             return [ErrorEnums.NO_BOOK_FOUND_ERROR.value, 404]
         if not self._book.is_active:

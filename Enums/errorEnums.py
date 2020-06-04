@@ -7,11 +7,12 @@ class ErrorEnums(Enum):
     INVALID_PASSWORD_ERROR = {
         'error':
             "Invalid Password. Please check your password and try again.",
-        'help':
-            "Minimum length should be 8.\n "
-            "Should contain at least one digit, lowercase character and an uppercase character.\n "
-            "Should contain one special character."
-            "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS)
+        'help': {
+            '1': "Minimum length should be 8.",
+            '2': "Should contain at least one digit, lowercase character and an uppercase character.",
+            '3': "Should contain one special character.",
+            '4': "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS)
+        }
     }
     INVALID_PHONE_LENGTH_ERROR = "Invalid phone number length. Please check your phone number."
     INACTIVE_USER_ERROR = "User is currently inactive."
@@ -29,3 +30,4 @@ class ErrorEnums(Enum):
     PROTECTED_BOOK_ACCESS_ERROR = {'error': 'Cannot access book as the book is not public.'}
     INVALID_EMAIL_FORMAT_ERROR = "Invalid email format. Please check your email and try again."
     INVALID_ID_FORMAT_ERROR = {'error': 'Invalid id detected. Please check your input and try again.'}
+    BOOK_OWNER_NOT_MATCH_ERROR = {'error': 'Only book owner can update the book details.'}

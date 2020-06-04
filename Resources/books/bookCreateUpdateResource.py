@@ -39,7 +39,10 @@ class BookCreateUpdateResource(Resource):
 
     @jwt_required
     def put(self):
-        user = get_jwt_identity()
-        request = BookCreateUpdateResource.updation_parser.parse_args()
-        response = BookCreateUpdateService.update_book(request, user)
-        return response
+        try:
+            user = get_jwt_identity()
+            request = BookCreateUpdateResource.updation_parser.parse_args()
+            response = BookCreateUpdateService.update_book(request, user)
+            return response
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400

@@ -9,10 +9,13 @@ class AdminSessionDetailsResource(Resource):
 
     @jwt_required
     def post(self):
-        user = get_jwt_identity()
-        if not user.get('is_admin'):
-            return {'error': 'Only admins can access this resource.'}, 403
-        session_service = SessionService()
-        request = AdminSessionDetailsResource.parser.parse_args()
-        response = session_service.get_session_details_for_user(request.get('session_token'), user, True)
-        return response[0], response[1]
+        try:
+            user = get_jwt_identity()
+            if not user.get('is_admin'):
+                return {'error': 'Only admins can access this resource.'}, 403
+            session_service = SessionService()
+            request = AdminSessionDetailsResource.parser.parse_args()
+            response = session_service.get_session_details_for_user(request.get('session_token'), user, True)
+            return response[0], response[1]
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400
