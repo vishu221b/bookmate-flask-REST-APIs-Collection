@@ -101,7 +101,7 @@ class UserDAO:
         old_user_data = UserDAO.get_user_by_id(user_identity.get('id'))
         verify_alt_username_existence_for_email = UserDAO().get_user_by_alt_username(
             new_user_data.get('email').rsplit('@')[0]
-        )
+        ) if new_user_data.get('email') else None
         try:
             updated_user = UserUtils.convert_update_request_for_persistence(new_user_data, old_user_data)
             updated_user.last_updated_at = datetime.datetime.now()
