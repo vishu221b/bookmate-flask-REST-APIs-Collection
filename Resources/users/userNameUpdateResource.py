@@ -11,10 +11,15 @@ class UserNameUpdateResource(Resource):
 
     @jwt_required
     def patch(self):
-        user_request = UserNameUpdateResource.parser.parse_args()
-        current_user = get_jwt_identity()
-        response = UserCreateUpdateService.update_user_name(current_user, user_request['oldUsername'], user_request['newUsername'])
-        return {'response': response[0]}, int(response[1])
+        try:
+            user_request = UserNameUpdateResource.parser.parse_args()
+            current_user = get_jwt_identity()
+            response = UserCreateUpdateService.update_user_name(
+                current_user, user_request['oldUsername'], user_request['newUsername']
+            )
+            return {'response': response[0]}, int(response[1])
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400
 
     @jwt_required
     def get(self):

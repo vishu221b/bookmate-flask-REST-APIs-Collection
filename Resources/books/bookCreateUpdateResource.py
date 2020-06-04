@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Constants import REQUEST_FIELDS_FOR_CREATION, REQUEST_FIELDS_FOR_UPDATE
+from Constants import REQUEST_FIELDS_FOR_CREATION, FIELDS_FOR_BOOK_UPDATE_REQUEST
 from service.bookCreateUpdateService import BookCreateUpdateService
 from Utils.BookUtils import validate_incoming_request_dto
 
@@ -11,7 +11,7 @@ class BookCreateUpdateResource(Resource):
         creation_parser.add_argument(field)
 
     updation_parser = reqparse.RequestParser()
-    for field in REQUEST_FIELDS_FOR_UPDATE:
+    for field in FIELDS_FOR_BOOK_UPDATE_REQUEST:
         updation_parser.add_argument(field,
                                      required=True if field == "id" else False,
                                      help=f"{field} is a mandatory field.")
@@ -23,7 +23,7 @@ class BookCreateUpdateResource(Resource):
             validate = validate_incoming_request_dto(request)
             if not validate:
                 user = get_jwt_identity()
-                response = BookCreateUpdateService.create_new_book(request, user['email'])
+                response = BookCreateUpdateService.create_new_book(request, user)
                 return response
             return validate
         except Exception as e:
@@ -39,21 +39,10 @@ class BookCreateUpdateResource(Resource):
 
     @jwt_required
     def put(self):
-        request = BookCreateUpdateResource.updation_parser.parse_args()
-        response = BookCreateUpdateService.update_book(request)
-        return response
-
-    @jwt_required
-    def delete(self, book_id):
-        user = get_jwt_identity()
-        response = BookCreateUpdateService.delete_book(book_id, user, False)
-        return response[0], response[1]
-
-    @jwt_required
-    def patch(self, book_id):
         try:
             user = get_jwt_identity()
-            response = BookCreateUpdateService.restore_book(book_id, user, False)
-            return response[0], response[1]
+            request = BookCreateUpdateResource.updation_parser.parse_args()
+            response = BookCreateUpdateService.update_book(request, user)
+            return response
         except Exception as e:
-            return {'error': e.args}, 500
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400

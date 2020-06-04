@@ -6,3 +6,5 @@ class AdminPermissionEnums(Enum):
     REVOKE = False
     ACTIVATE = True
     DEACTIVATE = False
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"

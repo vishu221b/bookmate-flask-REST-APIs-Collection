@@ -16,7 +16,7 @@ class SessionHistoryDAO:
         self.session = SessionHistory()
         self.session.user_details = User.objects(email=email).first()
         self.session.access_token = access_token
-        self.session.access_token_jti = str(decode_token(access_token)['jti'])
+        self.session.access_token_jti = str(decode_token(access_token).get('jti'))
         self.session.save()
 
     def update_session(self, access_token_jti):
@@ -26,10 +26,11 @@ class SessionHistoryDAO:
             return
         self.session.update(
             set__is_revoked=True,
-            set__revoked_at=datetime.datetime.now())
+            set__revoked_at=datetime.datetime.now()
+        )
 
-    def get_session_details(self, token):
-        self.session = SessionHistory.objects(access_token=token).first()
+    def get_session_details(self, token_jti):
+        self.session = SessionHistory.objects(access_token_jti=token_jti).first()
         if self.session:
             return self.session
         return False

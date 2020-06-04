@@ -1,5 +1,7 @@
 def book_dto(book):
     try:
+        if not book:
+            return None
         return {
             'id': str(book.pk),
             'book_name': book.name,
@@ -11,7 +13,23 @@ def book_dto(book):
             'created_by': book.created_by,
             'last_updated_at': str(book.last_updated_at),
             'last_updated_by': book.last_updated_by,
-            'is_active': book.is_active
+            'is_active': book.is_active,
+            'privacy_scope': book.privacy_scope,
+            'document_name': book.document_name,
+            'entity_tag': book.entity_tag,
+            'book_repo': book.repo_key
         }
     except Exception as e:
-        print("Error at book_dto=>{}".format(e))
+        print("DEBUG: Exception - {}, occurred at BOOK_DTO.".format(e))
+
+
+def embed_book_dto(book):
+    try:
+        return {
+            'id': str(book.pk),
+            'book_name': book.name,
+            'author': book.author,
+            'summary': book.summary
+        }
+    except Exception as e:
+        print("DEBUG: Exception - {}, occurred at EMBED_BOOK_DTO.".format(e))

@@ -1,0 +1,2 @@
+from .documentFileUpload import DocumentFileUploadResource
+from .documentFileDownload import DocumentFileDownloadResource
