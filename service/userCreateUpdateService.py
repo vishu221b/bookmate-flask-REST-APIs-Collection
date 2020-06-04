@@ -90,21 +90,23 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
             return created_user
         return dto.UserDTO.user_dto(created_user)
 
-    if not validate_email_format(user_request_details.get('email')):
-        return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
+    if user_request_details.get('email'):
+        if not validate_email_format(user_request_details.get('email')):
+            return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
 
-    if user_request_details.get('email') and user_identity.get('email') != user_request_details.get('email'):
-        verify_existence_for_user_email = UserDAO.get_active_user_by_email(user_request_details.get('email'))
+        if user_request_details.get('email') and user_identity.get('email') != user_request_details.get('email'):
+            verify_existence_for_user_email = UserDAO.get_active_user_by_email(user_request_details.get('email'))
 
-        if verify_existence_for_user_email:
-            return ErrorEnums.EMAIL_ALREADY_EXISTS_ERROR.value
+            if verify_existence_for_user_email:
+                return ErrorEnums.EMAIL_ALREADY_EXISTS_ERROR.value
 
-    if user_request_details.get('username') and user_identity.get('username') != user_request_details.get('username'):
-        verify_username_existence = UserDAO.get_active_user_by_username(user_request_details.get('username'))
-        verify_alt_username_existence = UserDAO().get_user_by_alt_username(user_request_details.get('username'))
+    if user_request_details.get('username'):
+        if user_request_details.get('username') and user_identity.get('username') != user_request_details.get('username'):
+            verify_username_existence = UserDAO.get_active_user_by_username(user_request_details.get('username'))
+            verify_alt_username_existence = UserDAO().get_user_by_alt_username(user_request_details.get('username'))
 
-        if verify_username_existence or verify_alt_username_existence:
-            return ErrorEnums.USER_NAME_ALREADY_EXISTS.value
+            if verify_username_existence or verify_alt_username_existence:
+                return ErrorEnums.USER_NAME_ALREADY_EXISTS.value
 
     updated_user = UserDAO.update_user_generic_data(user_identity, user_request_details)
     if isinstance(updated_user, str):
