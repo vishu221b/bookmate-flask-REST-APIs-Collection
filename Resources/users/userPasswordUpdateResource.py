@@ -11,13 +11,16 @@ class UserPasswordUpdateResource(Resource):
 
     @jwt_required
     def patch(self):
-        current_user = get_jwt_identity()
-        user_request = UserPasswordUpdateResource.parser.parse_args()
-        update_user = UserCreateUpdateService.update_password(
-            current_user,
-            user_request['oldPassword'],
-            user_request['newPassword'])
-        return {'response': update_user[0]}, int(update_user[1])
+        try:
+            current_user = get_jwt_identity()
+            user_request = UserPasswordUpdateResource.parser.parse_args()
+            update_user = UserCreateUpdateService.update_password(
+                current_user,
+                user_request['oldPassword'],
+                user_request['newPassword'])
+            return {'response': update_user[0]}, int(update_user[1])
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400
 
     @jwt_required
     def get(self):

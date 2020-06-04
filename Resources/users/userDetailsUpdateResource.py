@@ -16,20 +16,23 @@ class UpdateUserDetails(Resource):
 
     @jwt_required
     def put(self):
-        user_identity = get_jwt_identity()
-        user_request = UpdateUserDetails.parser.parse_args()
-        if not user_request:
-            return {'response': 'Details already up to date.'}, 200
-        user_request = UserConverterUtils.convert_request_to_user_update_dto(user_request, user_identity)
-        updated_user = UserCreateUpdateService.create_update_user(user_identity, user_request, True)
-        if not isinstance(updated_user, str):
-            updated_user = updated_user
-            return {
-                'response': {
-                            'updatedUser': updated_user
-                }
-            }, 200
-        return {'error': updated_user}, 400
+        try:
+            user_identity = get_jwt_identity()
+            user_request = UpdateUserDetails.parser.parse_args()
+            if not user_request:
+                return {'response': 'Details already up to date.'}, 200
+            user_request = UserConverterUtils.convert_request_to_user_update_dto(user_request, user_identity)
+            updated_user = UserCreateUpdateService.create_update_user(user_identity, user_request, True)
+            if not isinstance(updated_user, str):
+                updated_user = updated_user
+                return {
+                    'response': {
+                                'updatedUser': updated_user
+                    }
+                }, 200
+            return {'error': updated_user}, 400
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400
 
     @jwt_required
     def delete(self, user_email):
