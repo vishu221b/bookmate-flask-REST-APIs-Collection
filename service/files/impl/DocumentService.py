@@ -48,6 +48,8 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         if _file_size_in_mb > BookEnums.MAX_FILE_SIZE_ALLOWED_IN_MB_FOR_DOC.value:
             return [ErrorEnums.MAX_SIZE_EXCEED_ERROR_FOR_DOC.value, 413]
         self._book = BookDAO.find_active_book_by_id(_book_id)
+        if not self._book:
+            return [ErrorEnums.NO_BOOK_FOUND_ERROR.value, 404]
         if self._book.created_by != _user_id:
             return [ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 404]
         if not self._book:
