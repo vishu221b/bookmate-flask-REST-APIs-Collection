@@ -1,6 +1,6 @@
 from . import FileServiceBaseModel, bookCreateUpdateService
 import io
-from Utils import SecurityUtils
+from Utils import SecurityUtils, BookUtils
 from Enums import BookEnums, ErrorEnums
 from werkzeug.datastructures import FileStorage
 from Dao.bookDAO import BookDAO
@@ -43,6 +43,10 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         self._file_extension = self.verify_file_extension(f_obj.filename)
         if isinstance(self._file_extension, list):
             return self._file_extension
+        self._file_stream = f_obj.read()
+        _file_size_in_mb = BookUtils.convert_bytes_to_mb(self._get_file_size())
+        if _file_size_in_mb > BookEnums.MAX_FILE_SIZE_ALLOWED_IN_MB_FOR_DOC.value:
+            return [ErrorEnums.MAX_SIZE_EXCEED_ERROR_FOR_DOC.value, 400]
         self._book = BookDAO.find_active_book_by_id(_book_id)
         if self._book.created_by != _user_id:
             return [ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 404]
@@ -54,7 +58,6 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         if self._privacy_scope not in BookEnums.PRIVACY_SCOPES_FOR_DOCUMENT.value:
             return [{'error': 'Please provide a valid privacy type.'}, 400]
         self._user_id = _user_id
-        self._file_stream = f_obj.read()
         self._file_obj = self.bytes_to_obj()
         self._file_name = self.get_secure_filename(f_obj.filename, self._user_id, self._file_extension)
         self._repo_key = self.make_repo_key()
@@ -78,6 +81,9 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         response = self._book_dao.update_document_details_for_book(
             self._book, self._repo_key, e_tag, self._file_name, self._privacy_scope, self._user_id)
         return response
+
+    def _get_file_size(self):
+        return len(self._file_stream)
 
     def bytes_to_obj(self):
         return self._stream_processor.BytesIO(self._file_stream)

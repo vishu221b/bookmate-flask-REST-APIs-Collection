@@ -31,3 +31,4 @@ class ErrorEnums(Enum):
     INVALID_EMAIL_FORMAT_ERROR = "Invalid email format. Please check your email and try again."
     INVALID_ID_FORMAT_ERROR = {'error': 'Invalid id detected. Please check your input and try again.'}
     BOOK_OWNER_NOT_MATCH_ERROR = {'error': 'Only book owner can update the book details.'}
+    MAX_SIZE_EXCEED_ERROR_FOR_DOC = {'error': 'Maximum allowed file size is 10 MB.'}

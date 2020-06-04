@@ -8,3 +8,4 @@ class BookEnums(Enum):
     PUBLIC = "PUBLIC"
     RESTORE = "ACTIVE"
     DELETE = "INACTIVE"
+    MAX_FILE_SIZE_ALLOWED_IN_MB_FOR_DOC = 10
