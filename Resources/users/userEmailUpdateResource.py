@@ -11,13 +11,16 @@ class UserEmailUpdateResource(Resource):
 
     @jwt_required
     def patch(self):
-        user_request = UserEmailUpdateResource.parser.parse_args()
-        current_user_identity = get_jwt_identity()
-        response = UserCreateUpdateService.update_user_email(
-            current_user_identity,
-            user_request['oldEmail'],
-            user_request['newEmail'])
-        return {'response': response[0]}, int(response[1])
+        try:
+            user_request = UserEmailUpdateResource.parser.parse_args()
+            current_user_identity = get_jwt_identity()
+            response = UserCreateUpdateService.update_user_email(
+                current_user_identity,
+                user_request['oldEmail'],
+                user_request['newEmail'])
+            return {'response': response[0]}, int(response[1])
+        except Exception as e:
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400
 
     @jwt_required
     def get(self):

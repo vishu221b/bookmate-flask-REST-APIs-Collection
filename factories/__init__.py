@@ -1,2 +1,2 @@
-from . blueprintFactory import BlueprintFactory
-from . resourceFactory import ResourceFactory
+from . viewFactory import ViewFactory
+from . blueprintResourceFactory import BlueprintResourceFactory

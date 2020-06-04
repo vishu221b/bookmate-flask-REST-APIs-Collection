@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_restful import Api
 
 
-class BlueprintFactory:
+class ViewFactory:
     def __init__(self):
         self.blueprint = None
         self.api = None
@@ -11,7 +11,6 @@ class BlueprintFactory:
     def create_blueprint(self, view, views_path):
         self.blueprint = Blueprint(name=view, import_name=views_path, url_prefix='/{}'.format(str(view)))
         self.api = Api(self.blueprint)
-        print(view, views_path)
         return {
             'blueprint': self.blueprint,
             'api': self.api,

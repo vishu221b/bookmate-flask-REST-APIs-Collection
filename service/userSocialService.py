@@ -27,7 +27,9 @@ class UserSocialService:
                 return [{'error': ErrorEnums.UNKNOWN_REQUEST_ERROR.value}, 400]
             self._performer = UserDAO.get_active_user_by_email(requesting_user_email)
             self.user_dao = UserDAO()
-            self.user_dao.follow_unfollow_user(user_dto(self._performer), user_dto(self.target_user), action)
+            response = self.user_dao.follow_unfollow_user(user_dto(self._performer), user_dto(self.target_user), action)
+            if isinstance(response, dict):
+                return [response, 500]
             return [{'response': 'SUCCESS.'}, 200]
         except Exception as e:
             return [{'error': 'Exception - {} - occurred.'.format(e)}, 400]

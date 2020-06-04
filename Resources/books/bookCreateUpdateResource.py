@@ -39,22 +39,10 @@ class BookCreateUpdateResource(Resource):
 
     @jwt_required
     def put(self):
-        user = get_jwt_identity()
-        request = BookCreateUpdateResource.updation_parser.parse_args()
-        response = BookCreateUpdateService.update_book(request, user)
-        return response
-
-    @jwt_required
-    def delete(self, book_id):
-        user = get_jwt_identity()
-        response = BookCreateUpdateService.delete_book(book_id, user, False)
-        return response[0], response[1]
-
-    @jwt_required
-    def patch(self, book_id):
         try:
             user = get_jwt_identity()
-            response = BookCreateUpdateService.restore_book(book_id, user, False)
-            return response[0], response[1]
+            request = BookCreateUpdateResource.updation_parser.parse_args()
+            response = BookCreateUpdateService.update_book(request, user)
+            return response
         except Exception as e:
-            return {'error': e.args}, 500
+            return {'error': 'Exception - {} - occurred.'.format(e.args)}, 400

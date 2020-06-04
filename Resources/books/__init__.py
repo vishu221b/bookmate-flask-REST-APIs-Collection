@@ -1,4 +1,6 @@
-from factories import BlueprintFactory
+from .bookDeleteRestoreResource import BookDeleteRestoreResource
+from Resources.files import DocumentFileUploadResource, DocumentFileDownloadResource
+from factories import ViewFactory
 from .bookCreateUpdateResource import BookCreateUpdateResource
 from .allBookResource import AllBookResource
 from.markUnmarkFavourite import AddRemoveBookFromFavourites
@@ -6,7 +8,7 @@ from.markUnmarkFavourite import AddRemoveBookFromFavourites
 
 class SingletonResourceFactory:
     def __init__(self):
-        self.blueprint_factory = BlueprintFactory()
+        self.blueprint_factory = ViewFactory()
         self.blueprint_map = None
 
     def _generate_api_blueprint(self):
@@ -14,13 +16,27 @@ class SingletonResourceFactory:
 
     def _init_api_resources(self, resource):
         resource.get('api').add_resource(
-            BookCreateUpdateResource, '/', '/<book_id>', '/<book_id>/')
+            BookCreateUpdateResource, '/')
+        resource.get('api').add_resource(
+            BookDeleteRestoreResource,
+            '/<action>/<book_id>', '/<action>/<book_id>/'
+        )
         resource.get('api').add_resource(
             AllBookResource, '/fetch/all', '/fetch/all/')
         resource.get('api').add_resource(
             AddRemoveBookFromFavourites,
             '/favourite/<book_id>/<action>',
             '/favourite/<book_id>/<action>/')
+        resource.get('api').add_resource(
+            DocumentFileUploadResource,
+            '/upload',
+            '/upload/'
+        )
+        resource.get('api').add_resource(
+            DocumentFileDownloadResource,
+            '/download',
+            '/download/'
+        )
 
     def _init_singleton_resource(self):
         self.blueprint_map = self._generate_api_blueprint()

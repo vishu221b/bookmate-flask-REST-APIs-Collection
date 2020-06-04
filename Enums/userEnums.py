@@ -13,3 +13,5 @@ class UserEnums(Enum):
     UNBLOCK = "UNBLOCK"
     FOLLOW = "FOLLOW"
     UNFOLLOW = "UNFOLLOW"
+    VALID_EMAIL = '^([a-zA-Z0-9][a-zA-Z0-9.]+[@][a-zA-Z0-9]+[\\.][a-zA-Z0-9.]+)$'
+    VALID_PASS = '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[#@$!%*?&.+%_\\^])[\\w\\^#%@$!%*?&.+_]{8,}$'

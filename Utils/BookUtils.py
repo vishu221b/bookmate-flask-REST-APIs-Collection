@@ -15,3 +15,7 @@ def validate_incoming_request_dto(request: dict):
         if key not in request.keys() or not request[key]:
             return {'error': f" '{key}' field is a required field."}, 400
     return None
+
+
+def convert_bytes_to_mb(size) -> float:
+    return float(size/(1024*1024))

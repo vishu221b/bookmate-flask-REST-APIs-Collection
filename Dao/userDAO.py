@@ -65,7 +65,7 @@ class UserDAO:
     def get_user_by_id(uid):
         try:
             user_instance = Models.User.objects(pk=str(uid)).first()
-            return user_instance
+            return user_instance  # gives an object
         except Exception as e:
             return {'error': 'There was some error. Error code: {}'.format(str(int(time.time()*1000)))}
 
@@ -120,7 +120,7 @@ class UserDAO:
             user.update(
                 set__email=new_em,
                 set__last_updated_at=datetime.datetime.now(),
-                set__last_updated_by=user  # UserDAO.get_user_by_id(identity.get('id'))
+                set__last_updated_by=user
             )
             updated_user = dto.UserDTO.user_dto(UserDAO.get_user_by_id(identity.get('id')))
             is_update_verified = verify_email_update_for_user(updated_user, new_em)
@@ -257,7 +257,7 @@ class UserDAO:
                 print(
                     "DEBUG: Both the people must be in each other's records simultaneously! A mismatch is encountered."
                 )
-                # TODO: Manage response for this use case when there is a mismatch in records for whatever reason
+                return {'unknownError': 'There was some error.'}
 
             newer_version_for_the_one_being_followed = follower_in_target_user.first().version + 1
 
@@ -287,11 +287,13 @@ class UserDAO:
 
         user_to_be_added_in_followers_list_of_target = Embedded.Followers(
             user_reference=str(self.user.pk),
+            is_active=True if follow_request else False,
             last_updated_at=datetime.datetime.now(),
             user_email=performer_user.get('email')
         )
         user_to_be_added_in_following_list_of_performer = Embedded.Following(
             user_reference=str(self.target_user.pk),
+            is_active=True if follow_request else False,
             last_updated_at=datetime.datetime.now(),
             user_email=user_to_be_followed_unfollowed.get('email')
         )

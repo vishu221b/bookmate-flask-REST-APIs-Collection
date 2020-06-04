@@ -29,8 +29,8 @@ class SessionHistoryDAO:
             set__revoked_at=datetime.datetime.now()
         )
 
-    def get_session_details(self, token):
-        self.session = SessionHistory.objects(access_token=token).first()
+    def get_session_details(self, token_jti):
+        self.session = SessionHistory.objects(access_token_jti=token_jti).first()
         if self.session:
             return self.session
         return False

@@ -13,17 +13,18 @@ class BookDAO:
             new_book = BookUtils.convert_new_book_request_object_for_persistence(book_dto, book)
             if isinstance(new_book, str):
                 return {'error': new_book}, 404
-            new_book.created_by = Models.User.objects(email=creator.get('email'))
-            new_book.last_updated_by = Models.User.objects(email=creator.get('email'))
+            new_book.created_by = creator.get('id')
+            new_book.last_updated_by = creator.get('id')
             new_book.save()
             return {'response': dto.BookDTO.book_dto(new_book)}, 201
         except Exception as e:
             return {'error': f"Exception, {e}, occurred."}, 500
 
     @staticmethod
-    def delete_book_by_id(book_id):
+    def delete_book_by_id(book_id, user_id):
         book = Models.Book.objects(pk=str(book_id)).first()
         book.is_active = False
+        book.last_updated_by = user_id
         book.last_updated_at = datetime.datetime.now()
         book.save()
         return {'response': 'Book was successfully removed.'}
@@ -49,12 +50,14 @@ class BookDAO:
         book.update(
             set__name=up_book.get('name') if up_book.get('name') else book.name,
             set__summary=up_book.get('summary') if up_book.get('summary') else book.summary,
-            set__genre=up_book.get('genre') if up_book.get('genre') else book.summary,
-            set__barcode=up_book.get('barcode') if up_book.get('barcode') else book.summary,
-            set__author=up_book.get('author') if up_book.get('author') else book.summary,
-            set__last_updated_by=Models.User.objects(email=updated_by.get('email')).first(),
+            set__genre=up_book.get('genre') if up_book.get('genre') else book.genre,
+            set__barcode=up_book.get('barcode') if up_book.get('barcode') else book.barcode,
+            set__author=up_book.get('author') if up_book.get('author') else book.author,
+            set__privay_scope=up_book.get('privacy') if up_book.get('privacy') else book.privacy_scope,
+            set__last_updated_by=updated_by.get('id'),
             set__last_updated_at=datetime.datetime.now()
         )
+        book.reload()
         response = {
                        'response': {
                            'Success': 'Book Sucessfully updated.',
@@ -64,9 +67,10 @@ class BookDAO:
         return response
 
     @staticmethod
-    def restore_inactive_book(book_id):
+    def restore_inactive_book(book_id, user_id):
         book = Models.Book.objects(pk=str(book_id)).first()
         book.is_active = True
+        book.last_updated_by = user_id
         book.last_updated_at = datetime.datetime.now()
         book.save()
         return {'response': 'Book was successfully restored.'}
@@ -107,4 +111,21 @@ class BookDAO:
     @staticmethod
     def get_by_barcode(barcode):
         book = Models.Book.objects(barcode=barcode).first()
+        return book
+
+    def update_document_details_for_book(self,
+                                         book: Models.Book,
+                                         repo_key: str,
+                                         e_tag: str,
+                                         doc_name: str,
+                                         privacy: str,
+                                         updator_user_id) -> Models.Book:
+        book.update(
+            set__repo_key=repo_key,
+            set__entity_tag=e_tag,
+            set__document_name=doc_name,
+            set__privacy_scope=privacy,
+            set__last_updated_by=updator_user_id
+        )
+        book.reload()
         return book

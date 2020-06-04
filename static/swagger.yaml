@@ -27,12 +27,25 @@ tags:
 - name: Admin Panel
   description: Basic admin priviledges
 paths:
-  /user/fetch/all:
+  /user/fetch/{scope}:
     get:
       tags:
       - User
       summary: Get all active users
       operationId: getAllActiveUsers
+      parameters:
+      - name: scope
+        in: path
+        description: Scope of the request
+        required: true
+        schema:
+          enum: [all, single]
+      - name: Id
+        in: query
+        description: Id of the user in single user fetch request
+        schema:
+          type: string
+        required: false
       responses:
         200:
           description: Success
@@ -41,12 +54,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/userGeneralDetailsResponse'
+                  $ref: '#/components/schemas/UserDetailsPublicResponseBody'
                 description: Array of all the active users
         404:
           description: Not found
         500:
           description: Internal sever error
+      security:
+        - bearerAuth: []
   /user/register:
     post:
       tags:
@@ -58,7 +73,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userRegistration'
+              $ref: '#/components/schemas/UserRegistrationRequest'
         required: true
       responses:
         200:
@@ -66,7 +81,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userRegistrationResponse'
+                $ref: '#/components/schemas/UserRegistrationResponseBody'
         400:
           description: Bad Request Input
         404:
@@ -84,7 +99,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/userLogin'
+              $ref: '#/components/schemas/UserLoginRequestBody'
         required: true
       responses:
         200:
@@ -92,7 +107,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userLoginResponse'
+                $ref: '#/components/schemas/UserLoginResponseBody'
         400:
           description: Bad request
         404:
@@ -128,9 +143,8 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/userPersonalDetailsResponse'
+                type: object
+                $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
         400:
           description: Bad request
       security:
@@ -147,7 +161,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/userGeneralDetailsUpdate'
+              $ref: '#/components/schemas/UserDetailsUpdateRequestBody'
         required: true
       responses:
         200:
@@ -155,7 +169,7 @@ paths:
           content:
             application/json:
               'schema':
-                $ref: '#/components/schemas/userGeneralDetailsUpdateResponse'
+                $ref: '#/components/schemas/UserDetailsUpdateResponseBody'
         400:
           description: Bad request
         404:
@@ -260,7 +274,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userEmailUpdate'
+              $ref: '#/components/schemas/UserEmailUpdateRequestBody'
       responses:
         200:
           description: Success
@@ -279,7 +293,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/userNameUpdate'
+              $ref: '#/components/schemas/UserNameUpdateRequestBody'
       responses:
         200:
           description: Success
@@ -298,7 +312,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/passwordUpdate'
+              $ref: '#/components/schemas/PasswordUpdateRequestBody'
       responses:
         200:
           description: Success
@@ -321,7 +335,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CreateBookResponse'
+                  $ref: '#/components/schemas/BookResponseBody'
       security:
       - bearerAuth: []
   /book:
@@ -342,7 +356,7 @@ paths:
                  response:
                   type: array
                   items:
-                    $ref: '#/components/schemas/CreateBookResponse'
+                    $ref: '#/components/schemas/BookResponseBody'
       security:
       - bearerAuth: []
     post:
@@ -355,7 +369,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/CreateBookRequest'
+              $ref: '#/components/schemas/CreateBookRequestBody'
         required: true
       responses:
         200:
@@ -363,7 +377,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateBookResponse'
+                $ref: '#/components/schemas/BookResponseBody'
         400:
           description: Invalid Order
           content: {}
@@ -380,7 +394,7 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/UpdateBookRequest'
+              $ref: '#/components/schemas/UpdateBookRequestBody'
         required: true
       responses:
         200:
@@ -388,21 +402,80 @@ paths:
           content:
             application/json:
               'schema':
-                $ref: '#/components/schemas/UpdateBookResponse'
+                $ref: '#/components/schemas/UpdateBookResponseBody'
         400:
           description: Bad request
         404:
           description: Not found
       security:
       - bearerAuth: []
-  /book/{bookId}:
-    patch:
+  /book/upload:
+    post:
+      tags:
+        - Book Operations
+      summary: Uploads a book document
+      operationId: uploadBookDocumentFile
+      parameters:
+        - name: bookId
+          in: query
+          description: Id of the book for which the file is uploaded
+          required: true
+          schema:
+            type: string
+        - name: privacyScope
+          in: query
+          description: Scope of privacy for the book
+          required: true
+          schema:
+            type: string
+            enum: [PUBLIC, PRIVATE]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documentFile:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: successful operation
+      security:
+        - bearerAuth: []
+  /book/download:
+    get:
+      tags:
+        - Book Operations
+      summary: Download a Book Document
+      operationId: downloadBookDocumentFile
+      parameters:
+        - name: bookId
+          in: query
+          description: Id of the book for which link is required
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+      security:
+      - bearerAuth: []
+  /book/{action}/{bookId}:
+    post:
       tags:
       - Book Operations
-      summary: Restore deleted book by ID
+      summary: Restore/Delete book by ID
       description: For valid response enter valid book ID with length 24
-      operationId: restoreBookById
+      operationId: deleteRestoreBookById
       parameters:
+      - name: action
+        in: path
+        description: Action to be performed
+        required: true
+        schema:
+          type: string
+          enum: [RESTORE, DELETE]
       - name: bookId
         in: path
         description: ID of book that needs to be restored
@@ -425,35 +498,6 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-    delete:
-      tags:
-      - Book Operations
-      summary: Delete book by ID
-      description: For valid response enter valid book ID with length 24
-      operationId: deleteBookById
-      parameters:
-      - name: bookId
-        in: path
-        description: ID of book that needs to be deleted
-        required: true
-        schema:
-          type: string
-          format: hexadecimal
-      responses:
-        200:
-          description: Book successfully deleted
-        400:
-          description: Invalid ID supplied
-        403:
-          description: Access forbidden
-        404:
-          description: Not found
-        409:
-          description: Book already deleted
-        500:
-          description: Unexpected error
-      security:
-      - bearerAuth: []
   /book/favourite/{bookId}/mark:
     post:
       tags:
@@ -512,89 +556,48 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-  /admin/privileges/grant/{userEmail}:
-    put:
-      tags:
-        - Admin Panel
-      summary: Grant admin rights to the user
-      description: Grants the user with email admin privileges
-      operationId: grantAdminAccessToUser
-      parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user
-          required: true
-          schema:
-            type: string
-            format: email
-      responses:
-        200:
-          description: Success
-        400:
-          description: Invalid input supplied
-        404:
-          description: User not found
-      security:
-        - bearerAuth: []
-  /admin/privileges/revoke/{userEmail}:
-    put:
-      tags:
-        - Admin Panel
-      summary: Revoke admin rights for the user
-      description: Revoke admin rights for the user
-      operationId: revokeAdminAccessForUser
-      parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user
-          required: true
-          schema:
-            type: string
-            format: email
-      responses:
-        200:
-          description: Success
-        400:
-          description: Invalid input supplied
-        404:
-          description: User not found
-      security:
-        - bearerAuth: []
-  /admin/user/delete/{userEmail}:
-    delete:
-      tags:
-        - Admin Panel
-      summary: Delete user
-      description: Admins can delete any active user
-      operationId: deleteUserFromAdminPanel
-      parameters:
-        - name: userEmail
-          in: path
-          description: The email of the user that needs to be deleted
-          required: true
-          schema:
-            type: string
-            format: email
-      responses:
-        200:
-          description: Success
-        400:
-          description: Invalid input supplied
-        404:
-          description: User not found
-      security:
-        - bearerAuth: []
-  /admin/user/activate/{userEmail}:
+  /admin/session/details:
     post:
       tags:
         - Admin Panel
-      summary: Activate user
-      description: Admins can activate any inactive user
-      operationId: activateUserFromAdminPanel
+      summary: Fetch session details for token
+      operationId: getUserSessionDetails
+      requestBody:
+        description: Session token to fetch details for
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionDetailsRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDetailsResponse'
+        400:
+          description: Bad request
+      security:
+        - bearerAuth: []
+  /admin/user/mark/{action}/{userEmail}:
+    post:
+      tags:
+        - Admin Panel
+      summary: Activate Deactivate user
+      description: Admins can activate deacativate any user
+      operationId: activateDeactivateUserFromAdminPanel
       parameters:
+        - name: action
+          in: path
+          description: Action that needs to be performed
+          required: true
+          schema:
+            type: string
+            enum: [ACTIVE, INACTIVE]
         - name: userEmail
           in: path
-          description: The email of the user that needs to be activated
+          description: The email of the user that needs to be activated or deactivated
           required: true
           schema:
             type: string
@@ -608,34 +611,35 @@ paths:
           description: User not found
       security:
         - bearerAuth: []
-  /admin/book/delete/{bookId}:
-    delete:
+  /admin/privileges/{action}/{userEmail}:
+    put:
       tags:
         - Admin Panel
-      summary: Delete any book by it's ID
-      description: For valid response enter valid book ID with length 24
-      operationId: deleteBookByIdAdminPanel
+      summary: Grant/Revoke admin rights to/for user
+      description: Grants or Revoke the user with admin privileges
+      operationId: grantRevokeAdminAccessToUser
       parameters:
-        - name: bookId
+        - name: action
           in: path
-          description: ID of book that needs to be deleted
+          description: Action that needs to be performed
           required: true
           schema:
             type: string
-            format: hexadecimal
+            enum: [GRANT, REVOKE]
+        - name: userEmail
+          in: path
+          description: The email of the user
+          required: true
+          schema:
+            type: string
+            format: email
       responses:
         200:
-          description: Book successfully deleted
+          description: Success
         400:
-          description: Invalid ID supplied
-        403:
-          description: Access forbidden
+          description: Invalid input supplied
         404:
-          description: Not found
-        409:
-          description: Book already deleted
-        500:
-          description: Unexpected error
+          description: User not found
       security:
         - bearerAuth: []
   /admin/book/restore/{bookId}:
@@ -668,33 +672,39 @@ paths:
           description: Unexpected error
       security:
         - bearerAuth: []
-  /admin/sessionDetails:
-    post:
+  /admin/book/delete/{bookId}:
+    delete:
       tags:
         - Admin Panel
-      summary: Fetch session details for token
-      operationId: getUserSessionDetails
-      requestBody:
-        description: Session token to fetch details for
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SessionDetailsRequest'
+      summary: Delete any book by it's ID
+      description: For valid response enter valid book ID with length 24
+      operationId: deleteBookByIdAdminPanel
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of book that needs to be deleted
+          required: true
+          schema:
+            type: string
+            format: hexadecimal
       responses:
         200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SessionDetailsResponse'
+          description: Book successfully deleted
         400:
-          description: Bad request
+          description: Invalid ID supplied
+        403:
+          description: Access forbidden
+        404:
+          description: Not found
+        409:
+          description: Book already deleted
+        500:
+          description: Unexpected error
       security:
         - bearerAuth: []
 components:
   schemas:
-    userRegistration:
+    UserRegistrationRequest:
       type: object
       properties:
         first_name:
@@ -716,15 +726,33 @@ components:
         password:
           type: string
       required: [first_name, date_of_birth, phone_number, email, username,password]
-    userLogin:
+    UserDetailsPublicResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+    UserLoginRequestBody:
       type: object
       properties:
         email/username:
+          description: Either one of email and username can be used to login
           type: string
         password:
           type: string
       required: [email, password]
-    userGeneralDetailsUpdate:
+    UserDetailsUpdateRequestBody:
       type: object
       properties:
         first_name:
@@ -742,9 +770,10 @@ components:
         email:
           type: string
           format: email
-      required :
-      - email
-    userEmailUpdate:
+        username:
+          type: string
+          format: string
+    UserEmailUpdateRequestBody:
       type: object
       properties:
         oldEmail:
@@ -754,7 +783,7 @@ components:
           type: string
           format: email
       required: [oldEmail, newEmail]
-    userNameUpdate:
+    UserNameUpdateRequestBody:
       type: object
       properties:
         oldUsername:
@@ -762,7 +791,7 @@ components:
         newUsername:
           type: string
       required: [oldUsername, newUsername]
-    passwordUpdate:
+    PasswordUpdateRequestBody:
       type: object
       properties:
         oldPassword:
@@ -772,7 +801,7 @@ components:
       required:
       - oldPassword
       - newPassword
-    CreateBookRequest:
+    CreateBookRequestBody:
       type: object
       properties:
         name:
@@ -786,7 +815,7 @@ components:
         barcode:
           type: string
       required: [name, author, genre]
-    UpdateBookRequest:
+    UpdateBookRequestBody:
       type: object
       properties:
         id:
@@ -802,10 +831,10 @@ components:
         barcode:
           type: string
       required: [id]
-    userRegistrationResponse:
+    UserRegistrationResponseBody:
       type: object
-      $ref: '#/components/schemas/userPersonalDetailsResponse'
-    userPersonalDetailsResponse:
+      $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
+    UserSensitiveDetailsResponseBody:
       type: object
       properties:
         id:
@@ -827,6 +856,8 @@ components:
           format: email
         username:
           type: string
+        alternate_username:
+          type: string
         is_active:
           type: boolean
         created_at:
@@ -839,41 +870,29 @@ components:
         fav_books:
           type: array
           items:
-            $ref: '#/components/schemas/CreateBookResponse'
+            $ref: '#/components/schemas/EmbeddedBookDetailsBody'
           description: Array of favourite books
-    userGeneralDetailsResponse:
-          type: object
-          properties:
-            id:
-              type: string
-            first_name:
-              type: string
-            last_name:
-              type: string
-            date_of_birth:
-              type: string
-              format: date
-            phone_number:
-              type: string
-              format: int64
-              minLength: 9
-              maxLength: 10
-            email:
-              type: string
-              format: email
-            username:
-              type: string
-            is_active:
-              type: boolean
-            created_at:
-              type: string
-              format: date-time
-    userLoginResponse:
+        followers:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmbeddedUserDetailsBody'
+        following:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmbeddedUserDetailsBody'
+        blocked:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmbeddedUserDetailsBody'
+    UserLoginResponseBody:
       type: object
       properties:
         access_token:
           type: string
-    userGeneralDetailsUpdateResponse:
+        expiry:
+          type: string
+          format: date-time
+    UserDetailsUpdateResponseBody:
       type: object
       properties:
         response:
@@ -881,8 +900,8 @@ components:
           properties:
             updatedUser:
               type: object
-              $ref: '#/components/schemas/userGeneralDetailsResponse'
-    CreateBookResponse:
+              $ref: '#/components/schemas/UserSensitiveDetailsResponseBody'
+    BookResponseBody:
       type: object
       properties:
         id:
@@ -912,7 +931,35 @@ components:
           format: email
         is_active:
           type: boolean
-    UpdateBookResponse:
+    EmbeddedUserDetailsBody:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: string
+        created_at:
+          type: string
+          format: date-time
+        last_updated_at:
+          type: string
+          format: date-time
+        is_active:
+          type: boolean
+        version:
+          type: integer
+    EmbeddedBookDetailsBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: string
+        book_name:
+          type: string
+        author:
+          type: string
+        summary:
+          type: string
+    UpdateBookResponseBody:
       type: object
       properties:
         response:
@@ -921,7 +968,7 @@ components:
             Success: 
               type: string
             book:
-              $ref: '#/components/schemas/CreateBookResponse'
+              $ref: '#/components/schemas/BookResponseBody'
       description: Success response on book updation
     SessionDetailsRequest:
       type: object
@@ -937,7 +984,7 @@ components:
           type: string
           format: date-time
         user_details:
-          $ref: '#/components/schemas/userGeneralDetailsResponse'
+          $ref: '#/components/schemas/UserDetailsPublicResponseBody'
         access_token:
           type: string
         access_token_jti:

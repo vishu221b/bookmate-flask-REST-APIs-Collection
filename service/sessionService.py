@@ -3,6 +3,7 @@ from flask_jwt_extended import decode_token, create_access_token
 from Utils.TimeUtils import TimeUtils
 from dto.SessionDTO import session_dto
 from Enums import SessionEnums, ErrorEnums
+from Utils import UserUtils as UserConverter
 
 
 class SessionService:
@@ -11,27 +12,25 @@ class SessionService:
         self.access_token = None
         self.session_dao = None
 
-    def get_session_details_for_user(self, token, user):
+    def get_session_details_for_user(self, token, user, is_admin_request):
         try:
-            if not user.get('is_admin'):
-                return [ErrorEnums.UNAUTHORIZED_ERROR.value, 403]
+            decoded_token_details = decode_token(token, allow_expired=True)
+            if not is_admin_request and user.get('id') != decoded_token_details.get('identity').get('id'):
+                return [ErrorEnums.INVALID_TOKEN_EXCEPTION.value, 403]
+            token_jti = decoded_token_details.get('jti')
             time = TimeUtils()
             self.session_dao = SessionHistoryDAO()
-            if not user.get('is_admin'):
-                return ErrorEnums.UNAUTHORIZED_ERROR.value, 403
-            decoded_token_details = decode_token(token, allow_expired=True)
-            session_details_bucket = self.session_dao.get_session_details(token)
-            session_details_bucket = session_dto(session_details_bucket)
-            session_details_bucket.setdefault(
-                'expiry',
-                str(
-                    time.format_epoch_to_date_time(decoded_token_details.get('exp')
-                                                   )
+            session_details_bucket = self.session_dao.get_session_details(token_jti)
+            if session_details_bucket:
+                session_details_bucket = session_dto(session_details_bucket)
+                session_details_bucket.setdefault(
+                    'expiry',
+                    str(time.format_epoch_to_date_time(decoded_token_details.get('exp')))
                 )
-            )
-            return {
-                        'response': session_details_bucket
-            }, 200
+                return [{
+                            'response': session_details_bucket
+                }, 200]
+            return [{'error': ErrorEnums.SESSION_NOT_FOUND_ERROR.value}, 404]
         except Exception as e:
             return {'error': f'Exception {e} occurred, please contact developer.'}, 500
 
@@ -63,7 +62,7 @@ class SessionService:
         active_token = self.get_active_token_record(user)
         if active_token:
             return active_token
-        session_token = self.generate_fresh_session_token(user)
+        session_token = self.generate_fresh_session_token(UserConverter.convert_user_dto_to_public_response_dto(user))
         self.session_dao.insert_login_session(user.get('email'), session_token)
         return session_token
 

@@ -1,6 +1,6 @@
 from Dao.bookDAO import BookDAO
 from dto.BookDTO import book_dto
-from Dao.userDAO import UserDAO
+from Enums import ErrorEnums
 
 
 class BookCreateUpdateService:
@@ -24,8 +24,8 @@ class BookCreateUpdateService:
             if valid_book.get('error'):
                 return valid_book.get('response')
             book = BookDAO.find_active_inactive_book_by_id(book_id)
-            if is_admin_request or book.created_by == user.get('email'):
-                response = BookDAO.delete_book_by_id(book_id)
+            if is_admin_request or book.created_by == user.get('id'):
+                response = BookDAO.delete_book_by_id(book_id, user.get('id'))
                 verify_deleted_book = verify_delete(book_id)
                 if verify_deleted_book:
                     return [response, 200]
@@ -36,7 +36,7 @@ class BookCreateUpdateService:
 
     @staticmethod
     def get_books_for_user(user):
-        books = BookDAO.find_by_created_by_user(user.get('email'))
+        books = BookDAO.find_by_created_by_user(user.get('id'))
         if books and len(books) > 0:
             return {'response': books}, 200
         return {'error': 'No books have been added yet.'}, 404
@@ -47,6 +47,8 @@ class BookCreateUpdateService:
             c_book = validate_book_id(book.get('id'))
             if c_book.get('error'):
                 return c_book.get('response')[0], c_book.get('response')[1]
+            elif str(c_book.get('book').created_by) != updated_by.get('id'):
+                return ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 403
             response = BookDAO.update_book_by_id(book, updated_by)
             return response
         except Exception as e:
@@ -61,8 +63,8 @@ class BookCreateUpdateService:
         if not verify_status:
             return [{'error': 'Book is already active.'}, 409]
         book = BookDAO.find_active_inactive_book_by_id(book_id)
-        if is_admin_request or book.created_by == owner['email']:
-            response = BookDAO.restore_inactive_book(book_id)
+        if is_admin_request or book.created_by == owner.get('id'):
+            response = BookDAO.restore_inactive_book(book_id, owner.get('id'))
             return [response, 200]
         return [{'error': 'Books can be restored only by their respective owners.'}, 403]
 
@@ -113,10 +115,11 @@ def validate_book_id(book_id):
     if len(book_id) != 24:
         return {'response': [{'error': 'Invalid length exception for book id = {}.'.format(book_id)}, 400],
                 'error': True}
-    if not BookDAO.find_active_inactive_book_by_id(book_id):
+    book = BookDAO.find_active_inactive_book_by_id(book_id)
+    if not book:
         return {'response': [{'error': 'No book exists for id {}'.format(book_id)}, 400],
                 'error': True}
-    return {'error': False}
+    return {'error': False,  'book': book}
 
 
 def check_if_bar_code_exists(book):
