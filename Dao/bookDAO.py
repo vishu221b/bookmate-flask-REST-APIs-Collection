@@ -3,6 +3,7 @@ import datetime
 import dto.BookDTO
 from Utils import BookUtils
 from Constants.BookConstants import FIELDS_FOR_BOOK_UPDATE_REQUEST
+from Enums import BookEnums, ErrorEnums
 
 
 class BookDAO:
@@ -31,40 +32,60 @@ class BookDAO:
 
     @staticmethod
     def update_book_by_id(req_book, updated_by):
-        book = BookDAO.find_active_inactive_book_by_id(req_book.get('id'))
-        if not book.is_active:
-            return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
-        up_book = dto.BookDTO.book_dto(book)
-        for field in FIELDS_FOR_BOOK_UPDATE_REQUEST:
-            if field != "id" and req_book[field] and len(req_book[field].strip()) > 0:
-                up_book[field] = req_book[field]
-        validated_existence = BookDAO.find_by_name_author_genre(up_book)
-        is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
-        if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
-            return {'error': 'Book with the same name already exists for this author.'}, 409
-        if up_book.get(
-                'barcode') and len(up_book.get(
-                'barcode').strip()) > 1 and is_book_by_barcode and dto.BookDTO.book_dto(
-                is_book_by_barcode).get('id') != req_book.get('id'):
-            return {'error': 'Another book with the same barcode already exists. Please use a fresh barcode.'}, 409
-        book.update(
-            set__name=up_book.get('name') if up_book.get('name') else book.name,
-            set__summary=up_book.get('summary') if up_book.get('summary') else book.summary,
-            set__genre=up_book.get('genre') if up_book.get('genre') else book.genre,
-            set__barcode=up_book.get('barcode') if up_book.get('barcode') else book.barcode,
-            set__author=up_book.get('author') if up_book.get('author') else book.author,
-            set__privay_scope=up_book.get('privacy') if up_book.get('privacy') else book.privacy_scope,
-            set__last_updated_by=updated_by.get('id'),
-            set__last_updated_at=datetime.datetime.now()
-        )
-        book.reload()
-        response = {
-                       'response': {
-                           'Success': 'Book Sucessfully updated.',
-                           'updated_book': dto.BookDTO.book_dto(book)
-                       }
-                   }, 200
-        return response
+        try:
+            book = BookDAO.find_active_inactive_book_by_id(req_book.get('id'))
+            print("INFO: Received book from DB {}.".format(dto.BookDTO.book_dto(book)))
+            if not book.is_active:
+                return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
+            up_book = dto.BookDTO.book_dto(book)
+            for field in FIELDS_FOR_BOOK_UPDATE_REQUEST:
+                if field != "id" and req_book[field] and len(req_book[field].strip()) > 0:
+                    up_book[field] = req_book[field]
+                    print("INFO: Prepared upbook is {}".format(up_book))
+            validated_existence = None
+            is_book_by_barcode = None
+            if up_book.get('name') and up_book.get('author') and up_book.get('genre'):
+                validated_existence = BookDAO.find_by_name_author_genre(up_book)
+            if up_book.get('barcode'):
+                is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
+            if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
+                return {'error': 'Book with the same name already exists for this author.'}, 409
+            if up_book.get(
+                    'privacy'
+            ) and up_book.get(
+                'privacy'
+            ).upper() not in BookEnums.PRIVACY_SCOPES_FOR_DOCUMENT.value.keys():
+                return ErrorEnums.INVALID_PRIVACY_ERROR.value, 400
+            if up_book.get(
+                    'barcode') and len(up_book.get(
+                    'barcode').strip()) > 1 and is_book_by_barcode and dto.BookDTO.book_dto(
+                    is_book_by_barcode).get('id') != req_book.get('id'):
+                return {'error': 'Another book with the same barcode already exists. Please use a fresh barcode.'}, 409
+            book.update(
+                set__name=up_book.get('name') if up_book.get('name') else book.name,
+                set__summary=up_book.get('summary') if up_book.get('summary') else book.summary,
+                set__genre=up_book.get('genre') if up_book.get('genre') else book.genre,
+                set__barcode=up_book.get('barcode') if up_book.get('barcode') else book.barcode,
+                set__author=up_book.get('author') if up_book.get('author') else book.author,
+                set__privacy_scope=up_book.get('privacy') if up_book.get('privacy') else book.privacy_scope,
+                set__last_updated_by=updated_by.get('id'),
+                set__last_updated_at=datetime.datetime.now()
+            )
+            book.reload()
+            u_book = dto.BookDTO.book_dto(book)
+            print("DEBUG: Updated book {}.".format(u_book))
+            response = {
+                           'response': {
+                               'Success': 'Book Sucessfully updated.',
+                               'updated_book': u_book
+                           }
+                       }, 200
+            return response
+        except Exception as e:
+            return {
+                'error': 'Exception encountered.',
+                'exceptionMessage': str(e)
+               }
 
     @staticmethod
     def restore_inactive_book(book_id, user_id):

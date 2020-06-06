@@ -40,6 +40,7 @@ class BookCreateUpdateResource(Resource):
     @jwt_required
     def put(self):
         try:
+            print("INFO: Received update request for Book.")
             user = get_jwt_identity()
             request = BookCreateUpdateResource.updation_parser.parse_args()
             response = BookCreateUpdateService.update_book(request, user)

@@ -1,5 +1,5 @@
 from Dao.bookDAO import BookDAO
-from dto.BookDTO import book_dto
+from dto.BookDTO import public_book_response_dto
 from Enums import ErrorEnums
 
 
@@ -44,10 +44,12 @@ class BookCreateUpdateService:
     @staticmethod
     def update_book(book: dict, updated_by: dict):
         try:
+            print("DEBUG: Book update service request received for Book {} and user {}.".format(book, updated_by))
             c_book = validate_book_id(book.get('id'))
             if c_book.get('error'):
                 return c_book.get('response')[0], c_book.get('response')[1]
             elif str(c_book.get('book').created_by) != updated_by.get('id'):
+                print("INFO: Found book for other owner - {}.".format(c_book.get('book')))
                 return ErrorEnums.BOOK_OWNER_NOT_MATCH_ERROR.value, 403
             response = BookDAO.update_book_by_id(book, updated_by)
             return response
@@ -75,7 +77,7 @@ class BookCreateUpdateService:
         if not all_books:
             return {'error': 'No active books found in the repository.'}, 404
         for book in all_books:
-            response.append(book_dto(book))
+            response.append(public_book_response_dto(book))
         return response, 200
 
     def get_active_book_by_id(self, book_id):

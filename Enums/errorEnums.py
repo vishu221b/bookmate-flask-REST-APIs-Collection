@@ -8,10 +8,10 @@ class ErrorEnums(Enum):
         'error':
             "Invalid Password. Please check your password and try again.",
         'help': {
-            '1': "Minimum length should be 8.",
-            '2': "Should contain at least one digit, lowercase character and an uppercase character.",
-            '3': "Should contain one special character.",
-            '4': "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS)
+            1: "Minimum length should be 8.",
+            2: "Should contain at least one digit, lowercase character and an uppercase character.",
+            3: "Should contain one special character.",
+            4: "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS)
         }
     }
     INVALID_PHONE_LENGTH_ERROR = "Invalid phone number length. Please check your phone number."
@@ -32,3 +32,4 @@ class ErrorEnums(Enum):
     INVALID_ID_FORMAT_ERROR = {'error': 'Invalid id detected. Please check your input and try again.'}
     BOOK_OWNER_NOT_MATCH_ERROR = {'error': 'Only book owner can update the book details.'}
     MAX_SIZE_EXCEED_ERROR_FOR_DOC = {'error': 'Maximum allowed file size is 10 MB.'}
+    INVALID_PRIVACY_ERROR = {'error': 'Invalid privacy for book. Valid options are PUBLIC or PRIVATE.'}
