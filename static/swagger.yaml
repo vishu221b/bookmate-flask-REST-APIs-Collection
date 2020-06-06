@@ -356,7 +356,7 @@ paths:
                  response:
                   type: array
                   items:
-                    $ref: '#/components/schemas/BookResponseBody'
+                    $ref: '#/components/schemas/PrivateBookResponseBody'
       security:
       - bearerAuth: []
     post:
@@ -377,7 +377,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookResponseBody'
+                $ref: '#/components/schemas/PrivateBookResponseBody'
         400:
           description: Invalid Order
           content: {}
@@ -830,6 +830,9 @@ components:
           type: string
         barcode:
           type: string
+        privacy:
+          type: string
+          enum: [PUBLIC, PRIVATE]
       required: [id]
     UserRegistrationResponseBody:
       type: object
@@ -922,15 +925,57 @@ components:
           format: date-time
         created_by:
           type: string
-          format: email
+          format: string
         last_updated_at:
           type: string
           format: date-time
         last_updated_by:
           type: string
-          format: email
+          format: string
         is_active:
           type: boolean
+        privacy_scope:
+          type: string
+          enum: [PUBLIC, PRIVATE]
+    PrivateBookResponseBody:
+      type: object
+      properties:
+        id:
+          type: string
+          format: hexadecimal
+        book_name:
+          type: string
+        author:
+          type: string
+        book_genre:
+          type: string
+        summary:
+          type: string
+        barcode:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: string
+        last_updated_at:
+          type: string
+          format: date-time
+        last_updated_by:
+          type: string
+          format: string
+        is_active:
+          type: boolean
+        privacy_scope:
+          type: string
+          enum: [PUBLIC, PRIVATE]
+        document_name:
+          type: string
+        entity_tag:
+          type: string
+        book_repo:
+          type: string
     EmbeddedUserDetailsBody:
       type: object
       properties:
@@ -968,7 +1013,7 @@ components:
             Success: 
               type: string
             book:
-              $ref: '#/components/schemas/BookResponseBody'
+              $ref: '#/components/schemas/PrivateBookResponseBody'
       description: Success response on book updation
     SessionDetailsRequest:
       type: object

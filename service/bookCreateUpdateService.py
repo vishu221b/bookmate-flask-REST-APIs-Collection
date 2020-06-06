@@ -1,5 +1,5 @@
 from Dao.bookDAO import BookDAO
-from dto.BookDTO import book_dto
+from dto.BookDTO import public_book_response_dto
 from Enums import ErrorEnums
 
 
@@ -77,7 +77,7 @@ class BookCreateUpdateService:
         if not all_books:
             return {'error': 'No active books found in the repository.'}, 404
         for book in all_books:
-            response.append(book_dto(book))
+            response.append(public_book_response_dto(book))
         return response, 200
 
     def get_active_book_by_id(self, book_id):

@@ -94,6 +94,7 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         return SecurityUtils.calculate_md5(self._user_id)
 
     def download_file(self, book_id):
+        print("INFO: Received download request for book id {}".format(book_id))
         valid_book = bookCreateUpdateService.validate_book_id(book_id)
         if valid_book.get('error'):
             return valid_book.get('response')
