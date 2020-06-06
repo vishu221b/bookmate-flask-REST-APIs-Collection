@@ -54,7 +54,7 @@ class BookDAO:
                 set__genre=up_book.get('genre') if up_book.get('genre') else book.genre,
                 set__barcode=up_book.get('barcode') if up_book.get('barcode') else book.barcode,
                 set__author=up_book.get('author') if up_book.get('author') else book.author,
-                set__privay_scope=up_book.get('privacy') if up_book.get('privacy') else book.privacy_scope,
+                set__privacy_scope=up_book.get('privacy') if up_book.get('privacy') else book.privacy_scope,
                 set__last_updated_by=updated_by.get('id'),
                 set__last_updated_at=datetime.datetime.now()
             )
