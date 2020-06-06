@@ -31,16 +31,22 @@ class BookDAO:
 
     @staticmethod
     def update_book_by_id(req_book, updated_by):
-        try :
+        try:
             book = BookDAO.find_active_inactive_book_by_id(req_book.get('id'))
+            print("INFO: Received book from DB {}.".format(dto.BookDTO.book_dto(book)))
             if not book.is_active:
                 return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
             up_book = dto.BookDTO.book_dto(book)
             for field in FIELDS_FOR_BOOK_UPDATE_REQUEST:
                 if field != "id" and req_book[field] and len(req_book[field].strip()) > 0:
                     up_book[field] = req_book[field]
-            validated_existence = BookDAO.find_by_name_author_genre(up_book)
-            is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
+                    print("INFO: Prepared upbook is {}".format(up_book))
+            validated_existence = None
+            is_book_by_barcode = None
+            if up_book.get('name') and up_book.get('author') and up_book.get('genre'):
+                validated_existence = BookDAO.find_by_name_author_genre(up_book)
+            if up_book.get('barcode'):
+                is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
             if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
                 return {'error': 'Book with the same name already exists for this author.'}, 409
             if up_book.get(
@@ -59,10 +65,12 @@ class BookDAO:
                 set__last_updated_at=datetime.datetime.now()
             )
             book.reload()
+            u_book = dto.BookDTO.book_dto(book)
+            print("DEBUG: Updated book {}.".format(u_book))
             response = {
                            'response': {
                                'Success': 'Book Sucessfully updated.',
-                               'updated_book': dto.BookDTO.book_dto(book)
+                               'updated_book': u_book
                            }
                        }, 200
             return response
