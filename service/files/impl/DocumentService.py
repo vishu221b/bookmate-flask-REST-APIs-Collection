@@ -102,6 +102,8 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
             return [ErrorEnums.INACTIVE_BOOK_ERROR.value, 400]
         if book.get('privacy_scope') == BookEnums.PRIVATE.value:
             return [ErrorEnums.PROTECTED_BOOK_ACCESS_ERROR.value, 403]
+        if not book.get('book_repo'):
+            return [ErrorEnums.NO_BOOK_FOUND_ERROR.value, 404]
         response = self._aws_service.get_file_from_s3(
             repoKey=book.get('book_repo'),
             fileName=book.get('document_name'),

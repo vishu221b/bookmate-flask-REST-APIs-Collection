@@ -3,6 +3,7 @@ import datetime
 import dto.BookDTO
 from Utils import BookUtils
 from Constants.BookConstants import FIELDS_FOR_BOOK_UPDATE_REQUEST
+from Enums import BookEnums, ErrorEnums
 
 
 class BookDAO:
@@ -49,6 +50,12 @@ class BookDAO:
                 is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
             if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
                 return {'error': 'Book with the same name already exists for this author.'}, 409
+            if up_book.get(
+                    'privacy'
+            ) and up_book.get(
+                'privacy'
+            ).upper() not in BookEnums.PRIVACY_SCOPES_FOR_DOCUMENT.value.keys():
+                return ErrorEnums.INVALID_PRIVACY_ERROR.value, 400
             if up_book.get(
                     'barcode') and len(up_book.get(
                     'barcode').strip()) > 1 and is_book_by_barcode and dto.BookDTO.book_dto(

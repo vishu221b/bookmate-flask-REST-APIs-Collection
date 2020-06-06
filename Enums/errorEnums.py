@@ -32,3 +32,4 @@ class ErrorEnums(Enum):
     INVALID_ID_FORMAT_ERROR = {'error': 'Invalid id detected. Please check your input and try again.'}
     BOOK_OWNER_NOT_MATCH_ERROR = {'error': 'Only book owner can update the book details.'}
     MAX_SIZE_EXCEED_ERROR_FOR_DOC = {'error': 'Maximum allowed file size is 10 MB.'}
+    INVALID_PRIVACY_ERROR = {'error': 'Invalid privacy for book. Valid options are PUBLIC or PRIVATE.'}
