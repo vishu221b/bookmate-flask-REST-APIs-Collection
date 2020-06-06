@@ -8,10 +8,10 @@ class ErrorEnums(Enum):
         'error':
             "Invalid Password. Please check your password and try again.",
         'help': {
-            '1': "Minimum length should be 8.",
-            '2': "Should contain at least one digit, lowercase character and an uppercase character.",
-            '3': "Should contain one special character.",
-            '4': "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS)
+            1: "Minimum length should be 8.",
+            2: "Should contain at least one digit, lowercase character and an uppercase character.",
+            3: "Should contain one special character.",
+            4: "Allowed special characters - {}".format(ALLOWED_SPECIAL_CHARACTERS)
         }
     }
     INVALID_PHONE_LENGTH_ERROR = "Invalid phone number length. Please check your phone number."
