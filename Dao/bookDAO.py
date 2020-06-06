@@ -69,7 +69,7 @@ class BookDAO:
         except Exception as e:
             return {
                 'error': 'Exception encountered.',
-                'exceptionMessage': str(e.args)
+                'exceptionMessage': str(e)
                }
 
     @staticmethod
