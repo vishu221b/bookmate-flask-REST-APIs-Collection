@@ -1,5 +1,4 @@
-# bookmate-flask-REST-APIs-Collection
-
+# Bookmate
 [Bookmate](https://bookme-prod-point.herokuapp.com/) is a simple backend application for Book Management. It is written with Flask-Restful in python.
 It includes collection of APIs which dictate the
 backend operations involved in this application's workflow. These APIs can be integrated in a frontend application to
