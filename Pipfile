@@ -42,6 +42,7 @@ PyJWT = "==1.7.1"
 PyYAML = "==5.2"
 Werkzeug = "==0.16.0"
 Flask-Cors = "==3.0.8"
+uWSGI = {version = "*", sys_platform = "== 'linux'"}
 
 [requires]
 python_version = "3.7"
