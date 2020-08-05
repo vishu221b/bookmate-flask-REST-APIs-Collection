@@ -1,31 +1,31 @@
 import datetime
 import re
-import dto.UserDTO
-from Dao.userDAO import UserDAO, verify_if_email_already_exists, verify_if_username_already_exists
-from Utils import UserUtils as UserConverter, UserUtils, SecurityUtils
-from Enums import UserEnums, ErrorEnums, AdminPermissionEnums
-from Utils import SecurityUtils as UserSecurity
-import Utils.TimeUtils as TimeUtils
-from Dao.sessionHistoryDAO import SessionHistoryDAO
+import dataStateAccess.UserDTO
+from databaseService.userDatabaseService import UserDatabaseService, verify_if_email_already_exists, verify_if_username_already_exists
+from utils import UserUtils as UserConverter, UserUtils, SecurityUtils
+from enums import UserEnums, ErrorEnums, AdminPermissionEnums
+from utils import SecurityUtils as UserSecurity
+import utils.TimeUtils as TimeUtils
+from databaseService.sessionHistoryDatabaseService import SessionHistoryDatabaseService
 from .sessionService import SessionService
 from.bookCreateUpdateService import BookCreateUpdateService
 
 
 def confirm_if_username_or_email_exists_already_during_registration(user_email: str, user_name: str) -> dict:
-    user_instance = UserDAO.get_active_inactive_single_user_by_email(user_email)
+    user_instance = UserDatabaseService.get_active_inactive_single_user_by_email(user_email)
 
     if user_instance:
         return {'result': True, 'value': ErrorEnums.EMAIL_ALREADY_EXISTS_ERROR.value}
 
-    alt_username_user = UserDAO.get_user_by_alt_username(user_name)
-    username_instance = UserDAO.get_user_by_username(user_name)
+    alt_username_user = UserDatabaseService.get_user_by_alt_username(user_name)
+    username_instance = UserDatabaseService.get_user_by_username(user_name)
 
     if username_instance or alt_username_user:
         return {'result': True, 'value': ErrorEnums.USER_NAME_ALREADY_EXISTS.value}
 
 
 def verify_id_email_for_email_update(uid, email):
-    user = UserDAO.get_user_by_id(uid)
+    user = UserDatabaseService.get_user_by_id(uid)
     if not user:
         return {'result': False, 'error': 'No user found with id {}.'.format(uid)}
     if isinstance(user, dict) and 'error' in user.keys():
@@ -36,35 +36,35 @@ def verify_id_email_for_email_update(uid, email):
 
 
 def get_all_users() -> list:
-    users_from_persistence = UserDAO.get_all_active_users()
+    users_from_persistence = UserDatabaseService.get_all_active_users()
     aggregated_result = []
     for user in users_from_persistence:
-        aggregated_result.append(dto.UserDTO.user_dto(user))
+        aggregated_result.append(dataStateAccess.UserDTO.user_dto(user))
     return aggregated_result
 
 
 def confirm_if_user_name_already_exists(username):
-    user_instance = UserDAO.get_user_by_username(username)
+    user_instance = UserDatabaseService.get_user_by_username(username)
     if user_instance.username == username:
         return True
     return False
 
 
 def get_existing_user_by_username(username):
-    user = UserDAO.get_user_by_username(username)
-    return dto.UserDTO.user_dto(user)
+    user = UserDatabaseService.get_user_by_username(username)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def get_existing_user_by_email(email):
-    user = UserDAO.get_active_inactive_single_user_by_email(email)
+    user = UserDatabaseService.get_active_inactive_single_user_by_email(email)
     if not user:
         return {'error': 'No user found for email {}.'.format(email)}
-    return dto.UserDTO.user_dto(user)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def get_active_user_by_email(email):
-    user = UserDAO.get_active_user_by_email(email)
-    return dto.UserDTO.user_dto(user)
+    user = UserDatabaseService.get_active_user_by_email(email)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def create_update_user(user_identity, user_request_details: dict, user_identity_provided: bool):
@@ -85,33 +85,33 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
         if not validate_password_format(user_request_details.get('password')):
             return ErrorEnums.INVALID_PASSWORD_ERROR.value
         user_request_details.__setitem__('password', UserSecurity.encrypt_pass(user_request_details.get('password')))
-        created_user = UserDAO.create_user(user_request_details)
+        created_user = UserDatabaseService.create_user(user_request_details)
         if isinstance(created_user, str):
             return created_user
-        return dto.UserDTO.user_dto(created_user)
+        return dataStateAccess.UserDTO.user_dto(created_user)
 
     if user_request_details.get('email'):
         if not validate_email_format(user_request_details.get('email')):
             return ErrorEnums.INVALID_EMAIL_FORMAT_ERROR.value
 
         if user_request_details.get('email') and user_identity.get('email') != user_request_details.get('email'):
-            verify_existence_for_user_email = UserDAO.get_active_user_by_email(user_request_details.get('email'))
+            verify_existence_for_user_email = UserDatabaseService.get_active_user_by_email(user_request_details.get('email'))
 
             if verify_existence_for_user_email:
                 return ErrorEnums.EMAIL_ALREADY_EXISTS_ERROR.value
 
     if user_request_details.get('username'):
         if user_request_details.get('username') and user_identity.get('username') != user_request_details.get('username'):
-            verify_username_existence = UserDAO.get_active_user_by_username(user_request_details.get('username'))
-            verify_alt_username_existence = UserDAO().get_user_by_alt_username(user_request_details.get('username'))
+            verify_username_existence = UserDatabaseService.get_active_user_by_username(user_request_details.get('username'))
+            verify_alt_username_existence = UserDatabaseService().get_user_by_alt_username(user_request_details.get('username'))
 
             if verify_username_existence or verify_alt_username_existence:
                 return ErrorEnums.USER_NAME_ALREADY_EXISTS.value
 
-    updated_user = UserDAO.update_user_generic_data(user_identity, user_request_details)
+    updated_user = UserDatabaseService.update_user_generic_data(user_identity, user_request_details)
     if isinstance(updated_user, str):
         return updated_user
-    return dto.UserDTO.user_dto(updated_user)
+    return dataStateAccess.UserDTO.user_dto(updated_user)
 
 
 def validate_email_format(email):
@@ -121,10 +121,10 @@ def validate_email_format(email):
 
 
 def get_existing_user_by_id(identity) -> dict:
-    user = UserDAO.get_user_by_id(identity)  # gives an object
+    user = UserDatabaseService.get_user_by_id(identity)  # gives an object
     if isinstance(user, dict):
         return user
-    return dto.UserDTO.user_dto(user)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def update_user_email(user, old_em, new_em):
@@ -141,7 +141,7 @@ def update_user_email(user, old_em, new_em):
     email_exists_already = verify_if_email_already_exists(new_em)
     if email_exists_already:
         return [{'error': 'Cannot update email as the user with email id - {} already exists.'.format(new_em)}, 409]
-    updated_user = UserDAO.update_email(user, new_em)
+    updated_user = UserDatabaseService.update_email(user, new_em)
     return updated_user
 
 
@@ -157,12 +157,12 @@ def activate_deactivate_user(
         return email_length_invalid
     elif curr_user.get('email') != email and not is_admin_action:
         return [{'error': 'Please provide your own valid email id address.'}, 404]
-    UserDAO.activate_deactivate_user(curr_user, email, is_admin_action, action)
+    UserDatabaseService.activate_deactivate_user(curr_user, email, is_admin_action, action)
     if action == AdminPermissionEnums.DEACTIVATE.name:
-        deleted_user = dto.UserDTO.user_dto(UserDAO.get_active_inactive_single_user_by_email(email))
+        deleted_user = dataStateAccess.UserDTO.user_dto(UserDatabaseService.get_active_inactive_single_user_by_email(email))
         if deleted_user and not deleted_user.get('is_active'):
             # # Active tokens for current user should be revoked as soon as the user marks himself as inactive.
-            user_session_history = SessionHistoryDAO()
+            user_session_history = SessionHistoryDatabaseService()
             session_bucket = user_session_history.get_active_sessions_for_user(deleted_user)
             if session_bucket:
                 session_service = SessionService()
@@ -170,7 +170,7 @@ def activate_deactivate_user(
             return [{'response': 'User successfully deleted.'}, 200]
         return [{'error': 'No user with email {} found.'.format(email)}, 400]
     elif action == AdminPermissionEnums.ACTIVATE.name:
-        activated_user = dto.UserDTO.user_dto(UserDAO.get_active_inactive_single_user_by_email(email))
+        activated_user = dataStateAccess.UserDTO.user_dto(UserDatabaseService.get_active_inactive_single_user_by_email(email))
         if activated_user and activated_user.get('is_active'):
             return [{'response': 'User successfully restored.'}, 200]
         return [{'error': 'No user with email {} found .'.format(email)}, 400]
@@ -182,7 +182,7 @@ def update_password(user, old_password, new_password):
     if not validate_password_format(old_password) or not validate_password_format(new_password):
         return [ErrorEnums.INVALID_PASSWORD_ERROR.value, 404]
     persisted_p, requested_p = SecurityUtils.encrypt_pass(old_password), SecurityUtils.encrypt_pass(new_password)
-    updated_user = UserDAO.update_password(user, persisted_p, requested_p)
+    updated_user = UserDatabaseService.update_password(user, persisted_p, requested_p)
     return updated_user
 
 
@@ -210,7 +210,7 @@ def update_user_name(user: dict, old_username: str, new_username: str):
         return [{'error': 'Username is already up to date for the user.'}, 200]
     if verify_if_username_already_exists(new_username):
         return [{'error': 'User with username - {} already exists.'.format(new_username)}, 409]
-    response = UserDAO.update_username(user, new_username)
+    response = UserDatabaseService.update_username(user, new_username)
     return response
 
 
@@ -224,12 +224,12 @@ def is_phone_vaild(phone_num):
 
 
 def admin_access(performer, user_email: str, permission_type: str) -> list:
-    user = UserDAO.get_active_inactive_single_user_by_email(user_email)
+    user = UserDatabaseService.get_active_inactive_single_user_by_email(user_email)
     if not user.is_active:
         return [{'error': 'Cannot grant access as the user is inactive. Please activate the user profile first.'}, 400]
     access_type = AdminPermissionEnums.__dict__.get(permission_type.upper())
-    UserDAO.admin_access(performer, user_email, access_type.value)
-    verify_user_access = UserDAO.get_active_user_by_email(user_email).is_admin
+    UserDatabaseService.admin_access(performer, user_email, access_type.value)
+    verify_user_access = UserDatabaseService.get_active_user_by_email(user_email).is_admin
     if verify_user_access is True:
         return [{'response': 'User granted admin privileges.'}, 200]
     elif verify_user_access is False:
@@ -243,7 +243,7 @@ def mark_unmark_book_as_favourite(user, book_id, action):
             user, book_id, action, user.get('_session_signature')
         ))
     book_service = BookCreateUpdateService()
-    user_dao = UserDAO()
+    user_dao = UserDatabaseService()
     books = user_dao.get_favourite_books_ids_by_email(user.get('email'))
     if book_id in books and action == UserEnums.MARK.name:
         return [{'error': 'Book is already marked as favourite.'}, 400]
