@@ -1,9 +1,9 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import service.userCreateUpdateService as UserCreateUpdateService
-import Constants.userConstants as UserConstants
-import Utils.UserUtils as UserConverterUtils
-from Enums import AdminPermissionEnums
+import constants.userConstants as UserConstants
+import utils.UserUtils as UserConverterUtils
+from enums import AdminPermissionEnums
 
 
 class UpdateUserDetails(Resource):

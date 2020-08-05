@@ -1,9 +1,9 @@
 from . import FileServiceBaseModel, bookCreateUpdateService
 import io
-from Utils import SecurityUtils, BookUtils
-from Enums import BookEnums, ErrorEnums
+from utils import SecurityUtils, BookUtils
+from enums import BookEnums, ErrorEnums
 from werkzeug.datastructures import FileStorage
-from Dao.bookDAO import BookDAO
+from databaseService.bookDatabaseService import BookDatabaseService
 import datetime
 from dto.BookDTO import book_dto
 
@@ -12,7 +12,7 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
 
     def __init__(self, aws_service_instance):
         self._aws_service = aws_service_instance
-        self._book_dao = BookDAO()
+        self._book_dao = BookDatabaseService()
         self._file_name = None
         self._file_obj = None
         self._file_stream = None
@@ -47,7 +47,7 @@ class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
         _file_size_in_mb = BookUtils.convert_bytes_to_mb(self._get_file_size())
         if _file_size_in_mb > BookEnums.MAX_FILE_SIZE_ALLOWED_IN_MB_FOR_DOC.value:
             return [ErrorEnums.MAX_SIZE_EXCEED_ERROR_FOR_DOC.value, 413]
-        self._book = BookDAO.find_active_book_by_id(_book_id)
+        self._book = BookDatabaseService.find_active_book_by_id(_book_id)
         if not self._book:
             return [ErrorEnums.NO_BOOK_FOUND_ERROR.value, 404]
         if self._book.created_by != _user_id:

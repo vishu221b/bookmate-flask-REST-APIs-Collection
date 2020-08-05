@@ -1,12 +1,12 @@
-import Models
+import models
 import json
 import re
-import Constants.userConstants as UserConstants
-from Enums import UserEnums
-from Dao.bookDAO import BookDAO
+import constants.userConstants as UserConstants
+from enums import UserEnums
+from databaseService.bookDatabaseService import BookDatabaseService
 
 
-def validate_and_convert_new_user_request_object(aa: dict, bb: Models.User):
+def validate_and_convert_new_user_request_object(aa: dict, bb: models.User):
     for field in UserConstants.USER_MANDATORY_FIELDS:
         if field not in aa.keys():
             return f"Required field {field} is missing"
@@ -102,7 +102,7 @@ def verify_email_length(curr, new):
 
 
 def get_user_favourite_books(user):
-    book_service = BookDAO()
+    book_service = BookDatabaseService()
     book_bucket = list()
     for book in user.fav_books:
         book_bucket.append(

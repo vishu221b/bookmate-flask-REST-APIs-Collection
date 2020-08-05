@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from service import userCreateUpdateService as UserCreateUpdateService
-from Enums import ErrorEnums, AdminPermissionEnums
+from enums import ErrorEnums, AdminPermissionEnums
 
 
 class AdminUserOperationsResource(Resource):

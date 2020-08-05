@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from service import userCreateUpdateService as UserCreateUpdateService
-import Constants.userConstants as UserConstants
+import constants.userConstants as UserConstants
 
 
 class UserRegister(Resource):

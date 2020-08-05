@@ -1,10 +1,10 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import get_jwt_identity, jwt_required, decode_token
-from Utils.TimeUtils import TimeUtils
+from utils.TimeUtils import TimeUtils
 from service.sessionService import SessionService
 from service import userLoginService as UserLoginService
 from service import userCreateUpdateService
-from Enums import AdminPermissionEnums
+from enums import AdminPermissionEnums
 
 
 class Login(Resource):

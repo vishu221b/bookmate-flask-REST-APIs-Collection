@@ -1,15 +1,15 @@
-import Models
+import models
 import datetime
 import dto.BookDTO
-from Utils import BookUtils
-from Constants.BookConstants import FIELDS_FOR_BOOK_UPDATE_REQUEST
-from Enums import BookEnums, ErrorEnums
+from utils import BookUtils
+from constants.BookConstants import FIELDS_FOR_BOOK_UPDATE_REQUEST
+from enums import BookEnums, ErrorEnums
 
 
-class BookDAO:
+class BookDatabaseService:
     @staticmethod
     def create_new_book(book_dto, creator):
-        book = Models.Book()
+        book = models.Book()
         try:
             new_book = BookUtils.convert_new_book_request_object_for_persistence(book_dto, book)
             if isinstance(new_book, str):
@@ -23,7 +23,7 @@ class BookDAO:
 
     @staticmethod
     def delete_book_by_id(book_id, user_id):
-        book = Models.Book.objects(pk=str(book_id)).first()
+        book = models.Book.objects(pk=str(book_id)).first()
         book.is_active = False
         book.last_updated_by = user_id
         book.last_updated_at = datetime.datetime.now()
@@ -33,8 +33,8 @@ class BookDAO:
     @staticmethod
     def update_book_by_id(req_book, updated_by):
         try:
-            book = BookDAO.find_active_inactive_book_by_id(req_book.get('id'))
-            print("INFO: Received book from DB {}.".format(dto.BookDTO.book_dto(book)))
+            book = BookDatabaseService.find_active_inactive_book_by_id(req_book.get('id'))
+            print("INFO: Received book from db {}.".format(dto.BookDTO.book_dto(book)))
             if not book.is_active:
                 return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
             up_book = dto.BookDTO.book_dto(book)
@@ -45,9 +45,9 @@ class BookDAO:
             validated_existence = None
             is_book_by_barcode = None
             if up_book.get('name') and up_book.get('author') and up_book.get('genre'):
-                validated_existence = BookDAO.find_by_name_author_genre(up_book)
+                validated_existence = BookDatabaseService.find_by_name_author_genre(up_book)
             if up_book.get('barcode'):
-                is_book_by_barcode = BookDAO.get_by_barcode(up_book.get('barcode'))
+                is_book_by_barcode = BookDatabaseService.get_by_barcode(up_book.get('barcode'))
             if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
                 return {'error': 'Book with the same name already exists for this author.'}, 409
             if up_book.get(
@@ -89,7 +89,7 @@ class BookDAO:
 
     @staticmethod
     def restore_inactive_book(book_id, user_id):
-        book = Models.Book.objects(pk=str(book_id)).first()
+        book = models.Book.objects(pk=str(book_id)).first()
         book.is_active = True
         book.last_updated_by = user_id
         book.last_updated_at = datetime.datetime.now()
@@ -99,48 +99,48 @@ class BookDAO:
     @staticmethod
     def find_by_created_by_user(email):
         all_books = []
-        books = Models.Book.objects(created_by=email)
+        books = models.Book.objects(created_by=email)
         for book in books:
             all_books.append(dto.BookDTO.book_dto(book))
         return all_books
 
     @staticmethod
     def find_all_active_books():
-        books = Models.Book.objects(is_active=True)
+        books = models.Book.objects(is_active=True)
         return books
 
     @staticmethod
     def find_book_by_author(author):
-        books = Models.Book.objects(author=author)
+        books = models.Book.objects(author=author)
         return books
 
     @staticmethod
     def find_by_name_author_genre(book):
-        result_book = Models.Book.objects(name=book['name'], author=book['author'], genre=book['genre']).first()
+        result_book = models.Book.objects(name=book['name'], author=book['author'], genre=book['genre']).first()
         return result_book
 
     @staticmethod
     def find_active_inactive_book_by_id(book_id):
-        book = Models.Book.objects(pk=str(book_id)).first()
+        book = models.Book.objects(pk=str(book_id)).first()
         return book
 
     @staticmethod
     def find_active_book_by_id(book_id):
-        book = Models.Book.objects(pk=str(book_id)).first()
+        book = models.Book.objects(pk=str(book_id)).first()
         return book
 
     @staticmethod
     def get_by_barcode(barcode):
-        book = Models.Book.objects(barcode=barcode).first()
+        book = models.Book.objects(barcode=barcode).first()
         return book
 
     def update_document_details_for_book(self,
-                                         book: Models.Book,
+                                         book: models.Book,
                                          repo_key: str,
                                          e_tag: str,
                                          doc_name: str,
                                          privacy: str,
-                                         updator_user_id) -> Models.Book:
+                                         updator_user_id) -> models.Book:
         book.update(
             set__repo_key=repo_key,
             set__entity_tag=e_tag,

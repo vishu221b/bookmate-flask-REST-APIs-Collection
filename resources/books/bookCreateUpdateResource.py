@@ -1,8 +1,8 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from Constants import REQUEST_FIELDS_FOR_CREATION, FIELDS_FOR_BOOK_UPDATE_REQUEST
+from constants import REQUEST_FIELDS_FOR_CREATION, FIELDS_FOR_BOOK_UPDATE_REQUEST
 from service.bookCreateUpdateService import BookCreateUpdateService
-from Utils.BookUtils import validate_incoming_request_dto
+from utils.BookUtils import validate_incoming_request_dto
 
 
 class BookCreateUpdateResource(Resource):

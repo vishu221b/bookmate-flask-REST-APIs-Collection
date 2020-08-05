@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from service.bookCreateUpdateService import BookCreateUpdateService
-from Enums import BookEnums
+from enums import BookEnums
 
 
 class BookDeleteRestoreResource(Resource):

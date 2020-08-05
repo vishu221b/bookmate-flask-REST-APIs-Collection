@@ -1,5 +1,5 @@
 from service import userCreateUpdateService
-from Utils.UserUtils import convert_user_dto_to_public_response_dto
+from utils.UserUtils import convert_user_dto_to_public_response_dto
 
 
 def session_dto(session):

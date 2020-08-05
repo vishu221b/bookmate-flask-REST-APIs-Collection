@@ -1,9 +1,9 @@
-from Constants.BookConstants import MANDATORY_FIELDS_FOR_CREATION
-import Models
+from constants.BookConstants import MANDATORY_FIELDS_FOR_CREATION
+import models
 import json
 
 
-def convert_new_book_request_object_for_persistence(aa: dict, bb: Models.Book):
+def convert_new_book_request_object_for_persistence(aa: dict, bb: models.Book):
     for field in MANDATORY_FIELDS_FOR_CREATION:
         if field not in aa.keys():
             return f"Required field {field} is missing"

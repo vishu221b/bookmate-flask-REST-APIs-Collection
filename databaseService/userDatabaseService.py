@@ -1,14 +1,14 @@
-import Models
-import Models.EmbeddedModels as Embedded
-import Utils.UserUtils as UserUtils
+import models
+import models.EmbeddedModels as Embedded
+import utils.UserUtils as UserUtils
 import time
 import dto.UserDTO
-from Enums import AdminPermissionEnums, UserEnums
+from enums import AdminPermissionEnums, UserEnums
 import datetime
-from CustomExceptions import UserException
+from exceptions import UserException
 
 
-class UserDAO:
+class UserDatabaseService:
 
     def __init__(self):
         self.is_follower_up_to_date = False
@@ -20,51 +20,51 @@ class UserDAO:
 
     @staticmethod
     def get_all_active_users():
-        users = Models.User.objects(is_active=True).all()
+        users = models.User.objects(is_active=True).all()
         return users
 
     @staticmethod
     def get_all_inactive_users():
-        users = Models.User.objects(is_active=False)
+        users = models.User.objects(is_active=False)
         return users
 
     @staticmethod
     def get_all_users():
-        users = Models.User.objects()
+        users = models.User.objects()
         return users
 # #----------------------------Email------------------------------------------
 
     @staticmethod
     def get_active_inactive_single_user_by_email(email):
-        user_instance = Models.User.objects(email=email).first()
+        user_instance = models.User.objects(email=email).first()
         return user_instance
 
     @staticmethod
     def get_active_user_by_email(email):
-        user_instance = Models.User.objects(email=email, is_active=True).first()
+        user_instance = models.User.objects(email=email, is_active=True).first()
         return user_instance
 # #----------------------------Username----------------------------------------
 
     @staticmethod
     def get_active_user_by_username(username):
-        user_instance = Models.User.objects(username=username, is_active=True).first()
+        user_instance = models.User.objects(username=username, is_active=True).first()
         return user_instance
 
     @staticmethod
     def get_user_by_username(username):
-        user_instance = Models.User.objects(username=username).first()
+        user_instance = models.User.objects(username=username).first()
         return user_instance
 
     @staticmethod
     def get_user_by_alt_username(alt_username):
-        user = Models.User.objects(alt_username=alt_username).first()
+        user = models.User.objects(alt_username=alt_username).first()
         return user
 # #----------------------------------------------------------------------------
 
     @staticmethod
     def get_user_by_id(uid):
         try:
-            user_instance = Models.User.objects(pk=str(uid)).first()
+            user_instance = models.User.objects(pk=str(uid)).first()
             return user_instance  # gives an object
         except Exception as e:
             return {'error': 'There was some error. Error code: {}'.format(str(int(time.time()*1000)))}
@@ -72,16 +72,16 @@ class UserDAO:
     @staticmethod
     def get_favourite_books_ids_by_email(email):
         books = []
-        user = Models.User.objects(email=email).first()
+        user = models.User.objects(email=email).first()
         for i in user.fav_books:
             books.append(str(i.id))
         return books
 
     @staticmethod
     def create_user(user):
-        new_user = Models.User()
+        new_user = models.User()
         try:
-            verify_alt_username_existence_for_email = UserDAO().get_user_by_alt_username(
+            verify_alt_username_existence_for_email = UserDatabaseService().get_user_by_alt_username(
                 user.get('email').rsplit('@')[0]
             )
             returned_user = UserUtils.validate_and_convert_new_user_request_object(user, new_user)
@@ -98,8 +98,8 @@ class UserDAO:
 
     @staticmethod
     def update_user_generic_data(user_identity, new_user_data):
-        old_user_data = UserDAO.get_user_by_id(user_identity.get('id'))
-        verify_alt_username_existence_for_email = UserDAO().get_user_by_alt_username(
+        old_user_data = UserDatabaseService.get_user_by_id(user_identity.get('id'))
+        verify_alt_username_existence_for_email = UserDatabaseService().get_user_by_alt_username(
             new_user_data.get('email').rsplit('@')[0]
         ) if new_user_data.get('email') else None
         try:
@@ -115,14 +115,14 @@ class UserDAO:
 
     @staticmethod
     def update_email(identity, new_em):
-        user = UserDAO.get_user_by_id(identity.get('id'))
+        user = UserDatabaseService.get_user_by_id(identity.get('id'))
         try:
             user.update(
                 set__email=new_em,
                 set__last_updated_at=datetime.datetime.now(),
                 set__last_updated_by=user
             )
-            updated_user = dto.UserDTO.user_dto(UserDAO.get_user_by_id(identity.get('id')))
+            updated_user = dto.UserDTO.user_dto(UserDatabaseService.get_user_by_id(identity.get('id')))
             is_update_verified = verify_email_update_for_user(updated_user, new_em)
             if not is_update_verified:
                 return [
@@ -143,7 +143,7 @@ class UserDAO:
 
     @staticmethod
     def update_password(identity, opa, npa):
-        user = UserDAO.get_user_by_id(identity.get('id'))
+        user = UserDatabaseService.get_user_by_id(identity.get('id'))
         if user.password != opa:
             return [{'error': 'Invalid old Password. Please check your password and try again.'}, 403]
         user.update(
@@ -151,7 +151,7 @@ class UserDAO:
             set__last_updated_at=datetime.datetime.now(),
             set__last_updated_by=user
         )
-        verify_user = UserDAO.get_active_user_by_email(user.email)
+        verify_user = UserDatabaseService.get_active_user_by_email(user.email)
         if verify_user.password == npa:
             return [
                 {
@@ -170,13 +170,13 @@ class UserDAO:
 
     @staticmethod
     def update_username(identity, new_username):
-        user = UserDAO.get_user_by_id(identity.get('id'))
+        user = UserDatabaseService.get_user_by_id(identity.get('id'))
         user.update(
             set__username=new_username,
             set__last_updated_at=datetime.datetime.now(),
             set__last_updated_by=user
         )
-        updated_user = dto.UserDTO.user_dto(UserDAO.get_user_by_id(identity.get('id')))
+        updated_user = dto.UserDTO.user_dto(UserDatabaseService.get_user_by_id(identity.get('id')))
         is_validated = verify_username_update_for_user(updated_user, new_username)
         if is_validated:
             return [
@@ -189,45 +189,45 @@ class UserDAO:
 
     @staticmethod
     def activate_deactivate_user(performer, target_email, is_admin_action, action):
-        user_instance = UserDAO.get_active_inactive_single_user_by_email(target_email)
+        user_instance = UserDatabaseService.get_active_inactive_single_user_by_email(target_email)
         if user_instance:
             if action == AdminPermissionEnums.DEACTIVATE.name:
                 user_instance.update(
                     set__marked_active_inactive_by_admin=is_admin_action,
                     set__is_active=AdminPermissionEnums.DEACTIVATE.value,
                     set__last_updated_at=datetime.datetime.now(),
-                    set__last_updated_by=UserDAO.get_active_user_by_email(performer.get('email'))
+                    set__last_updated_by=UserDatabaseService.get_active_user_by_email(performer.get('email'))
                 )
             elif action == AdminPermissionEnums.ACTIVATE.name:
                 user_instance.update(
                     set__marked_active_inactive_by_admin=is_admin_action,
                     set__is_active=AdminPermissionEnums.ACTIVATE.value,
                     set__last_updated_at=datetime.datetime.now(),
-                    set__last_updated_by=UserDAO.get_active_user_by_email(performer.get('email'))
+                    set__last_updated_by=UserDatabaseService.get_active_user_by_email(performer.get('email'))
                 )
 
     @staticmethod
     def admin_access(performer, user_email, give_permission):
-        user = Models.User.objects(email=user_email).first()
+        user = models.User.objects(email=user_email).first()
         user.update(
             set__is_admin=give_permission,
-            set__last_updated_by=UserDAO.get_active_user_by_email(performer.get('email')),
+            set__last_updated_by=UserDatabaseService.get_active_user_by_email(performer.get('email')),
             set__last_updated_at=datetime.datetime.now()
         )
 
     def set_unset_book_as_favourite(self, user, book, action):
         self.book = book
-        self.user = UserDAO.get_active_user_by_email(user.get('email'))
+        self.user = UserDatabaseService.get_active_user_by_email(user.get('email'))
         if action == UserEnums.MARK.name:
             self.user.update(
                 push__fav_books=book,
-                set__last_updated_by=UserDAO.get_active_user_by_email(user.get('email')),
+                set__last_updated_by=UserDatabaseService.get_active_user_by_email(user.get('email')),
                 set__last_updated_at=datetime.datetime.now()
             )
         if action == UserEnums.REMOVE.name:
             self.user.update(
                 pull__fav_books=book,
-                set__last_updated_by=UserDAO.get_active_user_by_email(user.get('email')),
+                set__last_updated_by=UserDatabaseService.get_active_user_by_email(user.get('email')),
                 set__last_updated_at=datetime.datetime.now()
             )
 
@@ -239,8 +239,8 @@ class UserDAO:
         :param action: Enum confirming if it is a Follow request or Unfollow request
         :return: None
         """
-        self.user = UserDAO.get_active_user_by_email(performer_user.get('email'))
-        self.target_user = UserDAO.get_active_user_by_email(user_to_be_followed_unfollowed.get('email'))
+        self.user = UserDatabaseService.get_active_user_by_email(performer_user.get('email'))
+        self.target_user = UserDatabaseService.get_active_user_by_email(user_to_be_followed_unfollowed.get('email'))
 
         follow_request = action == UserEnums.FOLLOW.value  # returns a boolean
 
@@ -305,8 +305,8 @@ class UserDAO:
         )
 
     def block_unblock_users(self, performer: dict, user_to_be_blocked_unblocked: dict, action: str):
-        self.user = UserDAO.get_active_user_by_email(performer.get('email'))
-        self.target_user = UserDAO.get_active_user_by_email(user_to_be_blocked_unblocked.get('email'))
+        self.user = UserDatabaseService.get_active_user_by_email(performer.get('email'))
+        self.target_user = UserDatabaseService.get_active_user_by_email(user_to_be_blocked_unblocked.get('email'))
 
         block_user_request = action == UserEnums.BLOCK.value
         unblock_user_request = action == UserEnums.UNBLOCK.value
@@ -340,19 +340,19 @@ class UserDAO:
         )
 
     def get_all_followers(self, user_email):
-        self.followers = Models.User.objects(email=user_email).only('all_followers')
+        self.followers = models.User.objects(email=user_email).only('all_followers')
         if self.followers:
             return list(self.followers)
         return None
 
     def get_all_following(self, user_email):
-        self.following = Models.User.objects(email=user_email).only('all_following')
+        self.following = models.User.objects(email=user_email).only('all_following')
         if self.following:
             return list(self.following)
         return None
 
     def get_blocked_users(self, user_email):
-        self.blocked_users = Models.User.objects(email=user_email).only('blocked_users')
+        self.blocked_users = models.User.objects(email=user_email).only('blocked_users')
         if self.blocked_users:
             return list(self.blocked_users)
         return None
@@ -365,7 +365,7 @@ def verify_username_update_for_user(user: dict, username: str) -> bool:
 
 
 def verify_if_username_already_exists(username):
-    user = UserDAO.get_user_by_username(username)
+    user = UserDatabaseService.get_user_by_username(username)
     if not user:
         return False
     return True
@@ -378,7 +378,7 @@ def verify_email_update_for_user(user: dict, email: str) -> bool:
 
 
 def verify_if_email_already_exists(email):
-    user = UserDAO.get_active_inactive_single_user_by_email(email)
+    user = UserDatabaseService.get_active_inactive_single_user_by_email(email)
     if not user:
         return False
     return True

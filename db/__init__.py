@@ -1,4 +1,4 @@
-from DB.mongo import global_mongo_init, mongo_disconnect
+from db.mongo import global_mongo_init, mongo_disconnect
 import projectSettings
 
 

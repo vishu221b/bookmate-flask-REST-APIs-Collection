@@ -1,9 +1,9 @@
-from Dao.sessionHistoryDAO import SessionHistoryDAO
+from databaseService.sessionHistoryDatabaseService import SessionHistoryDatabaseService
 from flask_jwt_extended import decode_token, create_access_token
-from Utils.TimeUtils import TimeUtils
+from utils.TimeUtils import TimeUtils
 from dto.SessionDTO import session_dto
-from Enums import SessionEnums, ErrorEnums
-from Utils import UserUtils as UserConverter
+from enums import SessionEnums, ErrorEnums
+from utils import UserUtils as UserConverter
 
 
 class SessionService:
@@ -19,7 +19,7 @@ class SessionService:
                 return [ErrorEnums.INVALID_TOKEN_EXCEPTION.value, 403]
             token_jti = decoded_token_details.get('jti')
             time = TimeUtils()
-            self.session_dao = SessionHistoryDAO()
+            self.session_dao = SessionHistoryDatabaseService()
             session_details_bucket = self.session_dao.get_session_details(token_jti)
             if session_details_bucket:
                 session_details_bucket = session_dto(session_details_bucket)
@@ -35,7 +35,7 @@ class SessionService:
             return {'error': f'Exception {e} occurred, please contact developer.'}, 500
 
     def get_active_token_record(self, user):
-        self.session_dao = SessionHistoryDAO()
+        self.session_dao = SessionHistoryDatabaseService()
         time_utils = TimeUtils()
         active_token_bucket = self.session_dao.get_active_sessions_for_user(user)
         if not active_token_bucket:
@@ -54,11 +54,11 @@ class SessionService:
         return session_token
 
     def revoke_session_token(self, jti):
-        self.session_dao = SessionHistoryDAO()
+        self.session_dao = SessionHistoryDatabaseService()
         self.session_dao.update_session(jti)
 
     def generate_session_token(self, user):
-        self.session_dao = SessionHistoryDAO()
+        self.session_dao = SessionHistoryDatabaseService()
         active_token = self.get_active_token_record(user)
         if active_token:
             return active_token
@@ -68,7 +68,7 @@ class SessionService:
 
 
 def get_revoked_tokens():
-    session_dao = SessionHistoryDAO()
+    session_dao = SessionHistoryDatabaseService()
     blacklisted_token_bucket = set()
     token_bucket = session_dao.get_revoked_tokens()
     for token in token_bucket:

@@ -1,11 +1,11 @@
-from Models.sessionHistory import SessionHistory
-from Models.user import User
+from models.sessionHistory import SessionHistory
+from models.user import User
 import datetime
 from flask_jwt_extended import decode_token
 from dto import SessionDTO
 
 
-class SessionHistoryDAO:
+class SessionHistoryDatabaseService:
 
     def __init__(self):
         self.session = None

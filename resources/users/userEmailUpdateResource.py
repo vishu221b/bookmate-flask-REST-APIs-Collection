@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from Constants import userConstants as UserConstants
+from constants import userConstants as UserConstants
 import service.userCreateUpdateService as UserCreateUpdateService
 
 

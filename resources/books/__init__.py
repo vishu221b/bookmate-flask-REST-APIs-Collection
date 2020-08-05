@@ -1,5 +1,5 @@
 from .bookDeleteRestoreResource import BookDeleteRestoreResource
-from Resources.files import DocumentFileUploadResource, DocumentFileDownloadResource
+from resources.files import DocumentFileUploadResource, DocumentFileDownloadResource
 from factories import ViewFactory
 from .bookCreateUpdateResource import BookCreateUpdateResource
 from .allBookResource import AllBookResource

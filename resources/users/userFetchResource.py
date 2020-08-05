@@ -1,8 +1,8 @@
 from flask_restful import Resource, reqparse
-from Utils import UserUtils as UserConverter
+from utils import UserUtils as UserConverter
 from service import userCreateUpdateService as UserCreateUpdateService
 from flask_jwt_extended import jwt_optional, get_jwt_identity
-from Enums import ErrorEnums
+from enums import ErrorEnums
 
 
 class UserFetchResource(Resource):
