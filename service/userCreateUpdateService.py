@@ -1,6 +1,6 @@
 import datetime
 import re
-import dto.UserDTO
+import dataStateAccess.UserDTO
 from databaseService.userDatabaseService import UserDatabaseService, verify_if_email_already_exists, verify_if_username_already_exists
 from utils import UserUtils as UserConverter, UserUtils, SecurityUtils
 from enums import UserEnums, ErrorEnums, AdminPermissionEnums
@@ -39,7 +39,7 @@ def get_all_users() -> list:
     users_from_persistence = UserDatabaseService.get_all_active_users()
     aggregated_result = []
     for user in users_from_persistence:
-        aggregated_result.append(dto.UserDTO.user_dto(user))
+        aggregated_result.append(dataStateAccess.UserDTO.user_dto(user))
     return aggregated_result
 
 
@@ -52,19 +52,19 @@ def confirm_if_user_name_already_exists(username):
 
 def get_existing_user_by_username(username):
     user = UserDatabaseService.get_user_by_username(username)
-    return dto.UserDTO.user_dto(user)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def get_existing_user_by_email(email):
     user = UserDatabaseService.get_active_inactive_single_user_by_email(email)
     if not user:
         return {'error': 'No user found for email {}.'.format(email)}
-    return dto.UserDTO.user_dto(user)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def get_active_user_by_email(email):
     user = UserDatabaseService.get_active_user_by_email(email)
-    return dto.UserDTO.user_dto(user)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def create_update_user(user_identity, user_request_details: dict, user_identity_provided: bool):
@@ -88,7 +88,7 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
         created_user = UserDatabaseService.create_user(user_request_details)
         if isinstance(created_user, str):
             return created_user
-        return dto.UserDTO.user_dto(created_user)
+        return dataStateAccess.UserDTO.user_dto(created_user)
 
     if user_request_details.get('email'):
         if not validate_email_format(user_request_details.get('email')):
@@ -111,7 +111,7 @@ def create_update_user(user_identity, user_request_details: dict, user_identity_
     updated_user = UserDatabaseService.update_user_generic_data(user_identity, user_request_details)
     if isinstance(updated_user, str):
         return updated_user
-    return dto.UserDTO.user_dto(updated_user)
+    return dataStateAccess.UserDTO.user_dto(updated_user)
 
 
 def validate_email_format(email):
@@ -124,7 +124,7 @@ def get_existing_user_by_id(identity) -> dict:
     user = UserDatabaseService.get_user_by_id(identity)  # gives an object
     if isinstance(user, dict):
         return user
-    return dto.UserDTO.user_dto(user)
+    return dataStateAccess.UserDTO.user_dto(user)
 
 
 def update_user_email(user, old_em, new_em):
@@ -159,7 +159,7 @@ def activate_deactivate_user(
         return [{'error': 'Please provide your own valid email id address.'}, 404]
     UserDatabaseService.activate_deactivate_user(curr_user, email, is_admin_action, action)
     if action == AdminPermissionEnums.DEACTIVATE.name:
-        deleted_user = dto.UserDTO.user_dto(UserDatabaseService.get_active_inactive_single_user_by_email(email))
+        deleted_user = dataStateAccess.UserDTO.user_dto(UserDatabaseService.get_active_inactive_single_user_by_email(email))
         if deleted_user and not deleted_user.get('is_active'):
             # # Active tokens for current user should be revoked as soon as the user marks himself as inactive.
             user_session_history = SessionHistoryDatabaseService()
@@ -170,7 +170,7 @@ def activate_deactivate_user(
             return [{'response': 'User successfully deleted.'}, 200]
         return [{'error': 'No user with email {} found.'.format(email)}, 400]
     elif action == AdminPermissionEnums.ACTIVATE.name:
-        activated_user = dto.UserDTO.user_dto(UserDatabaseService.get_active_inactive_single_user_by_email(email))
+        activated_user = dataStateAccess.UserDTO.user_dto(UserDatabaseService.get_active_inactive_single_user_by_email(email))
         if activated_user and activated_user.get('is_active'):
             return [{'response': 'User successfully restored.'}, 200]
         return [{'error': 'No user with email {} found .'.format(email)}, 400]

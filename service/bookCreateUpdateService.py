@@ -1,5 +1,5 @@
 from databaseService.bookDatabaseService import BookDatabaseService
-from dto.BookDTO import public_book_response_dto
+from dataStateAccess.BookDTO import public_book_response_dto
 from enums import ErrorEnums
 
 

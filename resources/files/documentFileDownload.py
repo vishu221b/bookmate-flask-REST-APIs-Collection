@@ -1,7 +1,7 @@
 from flask_restful import reqparse, Resource
 from flask_jwt_extended import jwt_required
 from werkzeug import Response
-from Injectors import FilesContainer
+from dependencyInjectors import FilesContainer
 
 
 class DocumentFileDownloadResource(Resource):

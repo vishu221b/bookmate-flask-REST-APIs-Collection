@@ -2,7 +2,7 @@ import models
 import models.EmbeddedModels as Embedded
 import utils.UserUtils as UserUtils
 import time
-import dto.UserDTO
+import dataStateAccess.UserDTO
 from enums import AdminPermissionEnums, UserEnums
 import datetime
 from exceptions import UserException
@@ -122,7 +122,7 @@ class UserDatabaseService:
                 set__last_updated_at=datetime.datetime.now(),
                 set__last_updated_by=user
             )
-            updated_user = dto.UserDTO.user_dto(UserDatabaseService.get_user_by_id(identity.get('id')))
+            updated_user = dataStateAccess.UserDTO.user_dto(UserDatabaseService.get_user_by_id(identity.get('id')))
             is_update_verified = verify_email_update_for_user(updated_user, new_em)
             if not is_update_verified:
                 return [
@@ -176,7 +176,7 @@ class UserDatabaseService:
             set__last_updated_at=datetime.datetime.now(),
             set__last_updated_by=user
         )
-        updated_user = dto.UserDTO.user_dto(UserDatabaseService.get_user_by_id(identity.get('id')))
+        updated_user = dataStateAccess.UserDTO.user_dto(UserDatabaseService.get_user_by_id(identity.get('id')))
         is_validated = verify_username_update_for_user(updated_user, new_username)
         if is_validated:
             return [

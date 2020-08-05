@@ -1,6 +1,6 @@
 from databaseService.userDatabaseService import UserDatabaseService
 from enums import ErrorEnums, UserEnums
-from dto.UserDTO import user_dto
+from dataStateAccess.UserDTO import user_dto
 
 
 class UserSocialService:

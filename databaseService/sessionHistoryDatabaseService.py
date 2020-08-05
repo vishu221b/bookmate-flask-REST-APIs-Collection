@@ -2,7 +2,7 @@ from models.sessionHistory import SessionHistory
 from models.user import User
 import datetime
 from flask_jwt_extended import decode_token
-from dto import SessionDTO
+from dataStateAccess import SessionDTO
 
 
 class SessionHistoryDatabaseService:

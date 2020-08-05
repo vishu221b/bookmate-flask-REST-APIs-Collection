@@ -1,7 +1,7 @@
 from databaseService.sessionHistoryDatabaseService import SessionHistoryDatabaseService
 from flask_jwt_extended import decode_token, create_access_token
 from utils.TimeUtils import TimeUtils
-from dto.SessionDTO import session_dto
+from dataStateAccess.SessionDTO import session_dto
 from enums import SessionEnums, ErrorEnums
 from utils import UserUtils as UserConverter
 

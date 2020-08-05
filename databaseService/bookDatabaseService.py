@@ -1,6 +1,6 @@
 import models
 import datetime
-import dto.BookDTO
+import dataStateAccess.BookDTO
 from utils import BookUtils
 from constants.BookConstants import FIELDS_FOR_BOOK_UPDATE_REQUEST
 from enums import BookEnums, ErrorEnums
@@ -17,7 +17,7 @@ class BookDatabaseService:
             new_book.created_by = creator.get('id')
             new_book.last_updated_by = creator.get('id')
             new_book.save()
-            return {'response': dto.BookDTO.book_dto(new_book)}, 201
+            return {'response': dataStateAccess.BookDTO.book_dto(new_book)}, 201
         except Exception as e:
             return {'error': f"Exception, {e}, occurred."}, 500
 
@@ -34,10 +34,10 @@ class BookDatabaseService:
     def update_book_by_id(req_book, updated_by):
         try:
             book = BookDatabaseService.find_active_inactive_book_by_id(req_book.get('id'))
-            print("INFO: Received book from db {}.".format(dto.BookDTO.book_dto(book)))
+            print("INFO: Received book from db {}.".format(dataStateAccess.BookDTO.book_dto(book)))
             if not book.is_active:
                 return {'error': 'Cannot update an inactive book. Please restore the book to active first.'}, 403
-            up_book = dto.BookDTO.book_dto(book)
+            up_book = dataStateAccess.BookDTO.book_dto(book)
             for field in FIELDS_FOR_BOOK_UPDATE_REQUEST:
                 if field != "id" and req_book[field] and len(req_book[field].strip()) > 0:
                     up_book[field] = req_book[field]
@@ -48,7 +48,7 @@ class BookDatabaseService:
                 validated_existence = BookDatabaseService.find_by_name_author_genre(up_book)
             if up_book.get('barcode'):
                 is_book_by_barcode = BookDatabaseService.get_by_barcode(up_book.get('barcode'))
-            if validated_existence and dto.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
+            if validated_existence and dataStateAccess.BookDTO.book_dto(validated_existence).get('id') != req_book.get('id'):
                 return {'error': 'Book with the same name already exists for this author.'}, 409
             if up_book.get(
                     'privacy'
@@ -58,7 +58,7 @@ class BookDatabaseService:
                 return ErrorEnums.INVALID_PRIVACY_ERROR.value, 400
             if up_book.get(
                     'barcode') and len(up_book.get(
-                    'barcode').strip()) > 1 and is_book_by_barcode and dto.BookDTO.book_dto(
+                    'barcode').strip()) > 1 and is_book_by_barcode and dataStateAccess.BookDTO.book_dto(
                     is_book_by_barcode).get('id') != req_book.get('id'):
                 return {'error': 'Another book with the same barcode already exists. Please use a fresh barcode.'}, 409
             book.update(
@@ -72,7 +72,7 @@ class BookDatabaseService:
                 set__last_updated_at=datetime.datetime.now()
             )
             book.reload()
-            u_book = dto.BookDTO.book_dto(book)
+            u_book = dataStateAccess.BookDTO.book_dto(book)
             print("DEBUG: Updated book {}.".format(u_book))
             response = {
                            'response': {
@@ -101,7 +101,7 @@ class BookDatabaseService:
         all_books = []
         books = models.Book.objects(created_by=email)
         for book in books:
-            all_books.append(dto.BookDTO.book_dto(book))
+            all_books.append(dataStateAccess.BookDTO.book_dto(book))
         return all_books
 
     @staticmethod

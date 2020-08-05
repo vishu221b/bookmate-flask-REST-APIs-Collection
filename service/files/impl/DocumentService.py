@@ -5,7 +5,7 @@ from enums import BookEnums, ErrorEnums
 from werkzeug.datastructures import FileStorage
 from databaseService.bookDatabaseService import BookDatabaseService
 import datetime
-from dto.BookDTO import book_dto
+from dataStateAccess.BookDTO import book_dto
 
 
 class DocumentFileServiceBaseModelImpl(FileServiceBaseModel):
