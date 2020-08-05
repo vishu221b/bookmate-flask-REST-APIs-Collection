@@ -1,8 +1,16 @@
 openapi: 3.0.1
 info:
-  title: BooKMate
-  description: 'This is a basic flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code and documentation for this app
-    here [BooKMate APIs collection](https://github.com/vishu221b/bukme-REST-APIs) .'
+  title: Bookmate
+  description: 'Bookmate is your very own Book Management app where you can upload your books and keep it saved or share it with
+    others. You can find the source code and documentation for this app
+    here at [Bookmate Flask API collection](https://github.com/vishu221b/bukme-REST-APIs) .
+    <br>
+    <br><br>
+    <hr>
+    <h3>Trying out your very first Bookmate API</h3><p style="margin: 30px 0px 20px 0px;">Click on <a href="/#/User/getAllActiveUsers" target="_self" style="text-decoration:none;">/user/fetch/{scope}</a> under <strong>User</strong> section having a blue color
+    GET button against it. Once the API section opens, click on "Try it out" button at right side and then click
+    "Execute". This will trigger the GET api and the result will be displayed under the <strong>Responses</strong> section.</p>
+    <hr><br>'
   termsOfService: https://github.com/vishu221b/bukme-REST-APIs
   contact:
     email: vishal.dogra738@gmail.com
