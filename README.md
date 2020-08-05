@@ -13,4 +13,4 @@ Technologies used:
 - MongoEngine
 
 
-![GitHub Logo]()
+![GitHub Logo](https://img.shields.io/github/license/vishu221b/bookmate-flask-REST-APIs-Collection?color=npm)
