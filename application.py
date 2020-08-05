@@ -33,5 +33,3 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
     }
 )
 application.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
-
-application.run(port=5000)
