@@ -29,7 +29,7 @@ swagger_ui_blueprint = get_swaggerui_blueprint(
     SWAGGER_URL,
     API_URL_SWAG,
     config={
-        "app_name": "BooKMate"
+        "app_name": "Bookmate"
     }
 )
 application.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
