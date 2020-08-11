@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Bookmate
   description: 'Bookmate is Book Management app API collection powered by Flask-Restful and Mongoengine.
-  <br><brs>
+  <br><br>
   Developed by:[vishu221b](https://github.com/vishu221b/).'
   termsOfService: https://github.com/vishu221b/bukme-REST-APIs
   contact:
