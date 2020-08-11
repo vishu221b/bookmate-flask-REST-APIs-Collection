@@ -1,8 +1,9 @@
 openapi: 3.0.1
 info:
-  title: BooKMate
-  description: 'This is a basic flask based Book Management app. Users can add their own books and browse other users books as well.  You can find the source code and documentation for this app
-    here [BooKMate APIs collection](https://github.com/vishu221b/bukme-REST-APIs) .'
+  title: Bookmate
+  description: 'Bookmate is Book Management app API collection powered by Flask-Restful and Mongoengine.
+  <br>
+  Developed by:[vishu221b](https://github.com/vishu221b/).'
   termsOfService: https://github.com/vishu221b/bukme-REST-APIs
   contact:
     email: vishal.dogra738@gmail.com
